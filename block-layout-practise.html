@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      height: 40px;
+      line-height: 40px;
+      color: #b0b0b0;
+      background: rgb(50, 53, 52);
+      padding-left: calc(50% - 300px);
+      box-shadow: 1px 1px 1px 2px #ccc;
+    }
+    .container {
+      width: 600px;
+      min-height: calc(100vh - 40px - 20px - 36px);
+      padding: 10px calc(50% - 300px);
+    }
+    .block ul li {
+      box-sizing: border-box;
+      width: 180px;
+      height: 40px;
+      line-height: 34px;
+      margin: 15px 0;
+      border: 3px solid black;
+      background: pink;
+    }
+    .block ul li:hover {
+      background: orange;
+    }
+    .block ul li:nth-child(n+5) {
+      margin-left: 210px;
+    }
+    .block ul li:nth-child(n+9) {
+      margin-left: 420px;
+    }
+    .block ul li:nth-child(4n+5) {
+      margin-top: -220px;
+    }
+    .link ul {
+      overflow: hidden;
+    }
+    .link ul li {
+      border-bottom: 1px dotted;
+      margin-bottom: -1px;
+    }
+    .footer {
+      background: deeppink;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">hello world 请调整浏览器窗口大小查看效果</div>
+  <div class="container">
+    <div class="main">页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px 页面主体 宽度600px</div>
+    <div class="block">
+      <ul>
+        <li>宽180高40(包含边框)</li>
+        <li>水平间隙30px</li>
+        <li>垂直间隙15px</li>
+        <li>边框宽度3px</li>
+        <li>产品</li>
+        <li>产品</li>
+        <li>产品</li>
+        <li>产品</li>
+        <li>产品</li>
+        <li>产品</li>
+        <li>产品</li>
+        <li>产品</li>
+      </ul>
+    </div>
+    <div class="link">
+      <ul>
+        <li>link</li>
+        <li>link</li>
+        <li>link</li>
+        <li>link</li>
+        <li>link</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">
+    <div>©版权所有</div>
+    <div>本页所有布局均使用块元素</div>
+  </div>
+</body>
+</html>
