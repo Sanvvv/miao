@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+    }
+    .shell {
+      position: relative;
+      background: url('./img/shell.jpg') no-repeat fixed;
+      height: 200vh;
+    }
+    .shell .container {
+      position: absolute;
+      width: 60vw;
+      height: 175vh;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      border: 1px solid rgb(17, 172, 183);
+      background: url('./img/shell-blur.jpg') no-repeat fixed;
+    }
+    .mi {
+      float: right;
+      width: 50px;
+      height: 50px;
+      background: url('./img/mi-home.jpg') -50px 0 no-repeat;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .mi:hover {
+      background-position-x: 0;
+    }
+    .porsche > div {
+      height: 100vh;
+      border-top: 1px solid;
+      background: url('./img/porsche-1.png') center no-repeat fixed;
+    }
+    .porsche .porsche-2 {
+      background-image: url('./img/porsche-2.png');
+    }
+    .porsche .porsche-3 {
+      background-image: url('./img/porsche-3.png');
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <i class="mi"></i>
+    <div class="container"></div>
+  </div>
+  <div class="porsche">
+    <div class="porsche-1"></div>
+    <div class="porsche-2"></div>
+    <div class="porsche-3"></div>
+  </div>
+</body>
+</html>
