@@ -12,8 +12,8 @@
     #checkbox-animation:checked + label::before {
       width: 100%;
       height: 100%;
-      left: 0;
       top: 0;
+      left: 0;
       background: rgb(110, 220, 96);
     }
     #checkbox-animation:checked + label::after {
@@ -27,6 +27,7 @@
       height: 1.24em;
       border-radius: 999px;
       background: rgb(221, 221, 221);
+      cursor: pointer;
     }
     #checkbox-animation + label::before {
       display: inline-block;
@@ -34,8 +35,8 @@
       position: absolute;
       width: 0;
       height: 0;
-      left: 50%;
       top: 50%;
+      left: 50%;
       border-radius: 999px;
       background: transparent;
       transition: all 0.2s;
@@ -51,13 +52,35 @@
       left: 0.12em;
       border-radius: 50%;
       background: white;
-      box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       transition: left 0.2s;
+    }
+    #love {
+      display: none;
+    }
+    #love:checked + label {
+      background-position: -1400px 0;
+      transition: all 0.7s;
+      transition-timing-function: steps(27);
+    }
+    #love + label {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      background: url('./img/love.png');
+      background-size: 1450px auto;
+      cursor: pointer;
+    }
+    #love:not(:checked) + label:hover {
+      background-position: -50px 0;
     }
   </style>
 </head>
 <body>
   <input type="checkbox" id="checkbox-animation">
   <label for="checkbox-animation"></label>
+  <br>
+  <input type="checkbox" name="love" id="love">
+  <label for="love"></label>
 </body>
 </html>
