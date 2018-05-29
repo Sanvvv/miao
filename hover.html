@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+    }
+    .container {
+      min-height: calc(100vh - 60px);
+    }
+    .text-animation-single {
+      width: 200px;
+      height: 100px;
+      background: greenyellow;
+      border: none;
+      border-bottom: 4px solid red;
+      text-align: justify;
+      line-height: calc(185px - 1em);
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .text-animation-single:active {
+      background: rgba(0, 0, 0, .8);
+      color: white;
+    }
+    .text-animation-single:focus {
+      font-size: 40px;
+      line-height: calc(185px - 1em);
+      background: aquamarine;
+      transition: all 2s linear, background .3s ease;
+    }
+    .sudoku-hover {
+      border-collapse: collapse;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    .sudoku-hover td {
+      width: 3em;
+      height: 3em;
+      text-align: center;
+    }
+    .sudoku-hover tr {
+      border: 5px solid blue;
+    }
+    .sudoku-hover col {
+      border: 5px solid blue;
+    }
+    .sudoku-hover td:hover {
+      border: 5px solid red;
+    }
+    .sticky-footer {
+      line-height: 60px;
+      text-align: center;
+      background: #eee;
+      color: grey;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="text-animation-single">订阅博客</button>
+    <br><br>
+    <table class="sudoku-hover">
+      <col>
+      <col>
+      <col>
+      <tr>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>5</td>
+        <td>6</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>8</td>
+        <td>9</td>
+      </tr>
+    </table>
+  </div>
+  <div class="sticky-footer">Place sticky footer content here.</div>
+</body>
+</html>

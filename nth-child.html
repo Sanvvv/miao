@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="reset.css">
+  <style>
+    /* wx */
+    .wx-avatar {
+      margin: 10px;
+      margin-right: 1%;
+      width: 10%;
+      float: left;
+    }
+    .wx-avatar img {
+      width: 100%;
+    }
+    .wx-container {
+      margin: 10px;
+      width: calc(89% - 30px);
+      float: left;
+    }
+    .wx-message {
+      margin: 5px 0;
+    }
+    .wx-name {
+      font-weight: bold;
+      color: #576b95;
+    }
+    .wx-pic {
+      width: 300px;
+    }
+    .wx-pic div {
+      margin: 0 5px 5px 0;
+      width: 90px;
+      height: 90px;
+      background: rgb(255, 1, 118);
+      float: left;
+      cursor: pointer;
+    }
+    .wx-pic div:first-child:nth-last-child(4),
+    .wx-pic div:first-child:nth-last-child(4) ~ div {
+      width: 120px;
+      height: 120px;
+    }
+    .wx-container div.wx-pic div:active {
+      position: fixed;
+      width: 40vw;
+      height: 40vw;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      box-shadow: 0 0 0 2000px black;
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+    /* vocabulary-main */
+    .vocabulary {
+      height: 100vh;
+      overflow: hidden;
+    }
+    .vocabulary > div {
+      box-sizing: border-box;
+      width: 200px;
+      height: 100%;
+      border-right: 1px solid #ccc;
+      background: #ebeef1;
+      /* overflow: auto; */
+    }
+    .vocabulary .v-list ul {
+      height: calc(100% - 21px);
+      overflow: auto;
+    }
+    .vocabulary .v-help {
+      border-right: none;
+    }
+    /* .v-float */
+    .v-float .v-list {
+      float: left;
+    }
+    .v-float .v-content {
+      display: flow-root;
+      width: auto;
+    }
+    .v-float .v-vocabulary {
+      float: right;
+    }
+    .v-float .v-help {
+      float: right;
+    }
+    /* v-absolute */
+    .v-absolute > div {
+      position: absolute;
+    }
+    .v-absolute .v-content {
+      width: calc(100% - 600px);
+      left: 200px;
+    }
+    .v-absolute .v-vocabulary {
+      right: 200px;
+    }
+    .v-absolute .v-help {
+      right: 0;
+    }
+    /* v-inline */
+    .v-inline {
+      font-size: 0;
+    }
+    .v-inline > div {
+      font-size: 16px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .v-inline .v-content {
+      width: calc(100% - 600px);
+    }
+    /* square-queue */
+    .square-queue ul li {
+      position: relative;
+      width: 32%;
+      padding-bottom: 32%;
+      margin: 0 0 1% 1%;
+      background: rgb(255, 1, 118);
+      float: left;
+    }
+    .square-queue ul li span {
+      box-sizing: border-box;
+      position: absolute;
+      padding: 16px;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- wx -->
+  <h1>微信布局</h1>
+  <div class="wx">
+    <div class="wx-avatar">
+      <img src="img/cat.png" alt="cat">
+    </div>
+    <div class="wx-container">
+      <div class="wx-name">meow chan</div>
+      <div class="wx-message">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex veniam placeat praesentium unde voluptates id molestias consequuntur. Cum voluptates, maxime quod repellat, totam inventore reiciendis facilis earum sit deserunt quos.</div>
+      <div class="wx-pic">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+  <div class="wx">
+    <div class="wx-avatar">
+      <img src="img/cat.png" alt="cat">
+    </div>
+    <div class="wx-container">
+      <div class="wx-name">meow chan</div>
+      <div class="wx-message">Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae saepe error minus aliquid libero eius est tenetur! Numquam excepturi cupiditate rem quis accusantium voluptatem similique non, iste eos tempora quaerat.</div>
+      <div class="wx-pic">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+  <!-- v -->
+  <h1>词典布局-float</h1>
+  <div class="vocabulary v-float">
+    <div class="v-list">
+      <div>list</div>
+      <ul>
+        <li>01</li>
+        <li>02</li>
+        <li>03</li>
+        <li>04</li>
+        <li>05</li>
+        <li>06</li>
+        <li>07</li>
+        <li>08</li>
+        <li>09</li>
+        <li>10</li>
+        <li>11</li>
+        <li>12</li>
+        <li>13</li>
+        <li>14</li>
+        <li>15</li>
+        <li>16</li>
+        <li>17</li>
+        <li>18</li>
+        <li>19</li>
+        <li>20</li>
+        <li>21</li>
+        <li>22</li>
+        <li>23</li>
+        <li>24</li>
+        <li>25</li>
+        <li>26</li>
+        <li>27</li>
+        <li>28</li>
+        <li>29</li>
+        <li>30</li>
+      </ul>
+    </div>
+    <div class="v-help">
+      help
+    </div> 
+    <div class="v-vocabulary">
+      vocabulary
+    </div>
+    <div class="v-content">
+      content
+    </div>
+  </div>
+  <h1>词典布局-absolute</h1>
+  <div class="vocabulary v-absolute">
+    <div class="v-list">
+      <div>list</div>
+      <ul>
+        <li>01</li>
+        <li>02</li>
+        <li>03</li>
+        <li>04</li>
+        <li>05</li>
+        <li>06</li>
+        <li>07</li>
+        <li>08</li>
+        <li>09</li>
+        <li>10</li>
+        <li>11</li>
+        <li>12</li>
+        <li>13</li>
+        <li>14</li>
+        <li>15</li>
+        <li>16</li>
+        <li>17</li>
+        <li>18</li>
+        <li>19</li>
+        <li>20</li>
+        <li>21</li>
+        <li>22</li>
+        <li>23</li>
+        <li>24</li>
+        <li>25</li>
+        <li>26</li>
+        <li>27</li>
+        <li>28</li>
+        <li>29</li>
+        <li>30</li>
+      </ul>
+    </div>
+    <div class="v-content">
+      content
+    </div>
+    <div class="v-vocabulary">
+      vocabulary
+    </div>
+    <div class="v-help">
+      help
+    </div>  
+  </div>
+  <h1>词典布局-inline</h1>
+  <div class="vocabulary v-inline">
+    <div class="v-list">
+      <div>list</div>
+      <ul>
+        <li>01</li>
+        <li>02</li>
+        <li>03</li>
+        <li>04</li>
+        <li>05</li>
+        <li>06</li>
+        <li>07</li>
+        <li>08</li>
+        <li>09</li>
+        <li>10</li>
+        <li>11</li>
+        <li>12</li>
+        <li>13</li>
+        <li>14</li>
+        <li>15</li>
+        <li>16</li>
+        <li>17</li>
+        <li>18</li>
+        <li>19</li>
+        <li>20</li>
+        <li>21</li>
+        <li>22</li>
+        <li>23</li>
+        <li>24</li>
+        <li>25</li>
+        <li>26</li>
+        <li>27</li>
+        <li>28</li>
+        <li>29</li>
+        <li>30</li>
+      </ul>
+    </div>
+    <div class="v-content">
+      content
+    </div>
+    <div class="v-vocabulary">
+      vocabulary
+    </div>
+    <div class="v-help">
+      help
+    </div>  
+  </div>
+  <!-- square -->
+  <h1>正方形阵列</h1>
+  <div class="square-queue">
+    <ul>
+      <li><span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur odio soluta voluptas deleniti mollitia numquam quam, ducimus aliquid, aut repellat minima ipsam, repellendus alias reprehenderit dicta ad perferendis. Numquam, quo.</span></li>
+      <li><span>2</span></li>
+      <li><span>3</span></li>
+      <li><span>4</span></li>
+      <li><span>5</span></li>
+      <li><span>6</span></li>
+    </ul>
+  </div>
+</body>
+</html>

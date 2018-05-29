@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="reset.css">
+  <style>
+    .three-cols {
+      overflow: hidden;
+      border: 5px solid;
+    }
+    .three-cols > div {
+      box-sizing: border-box;
+      border-right: 5px solid;
+      padding: 5px 5px 1005px;
+      margin-bottom: -1000px;
+    }
+    .three-cols > div:nth-child(2) {
+      border: none;
+    }
+    .three-cols .left {
+      float: left;
+      width: 20%;
+      min-width: 100px;
+      background: blanchedalmond;
+    }
+    .three-cols .middle {
+      display: flow-root;
+      background: rgb(255, 1, 118);
+    }
+    .three-cols .right {
+      float: right;
+      width: 20%;
+      min-width: 100px;
+      background: rgb(17, 172, 183);
+    }
+  </style>
+</head>
+<body>
+  <div class="three-cols">
+    <div class="left">Lorem ipsum dolor sit amet.</div>
+    <div class="right">Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat rem provident atque enim consequatur maiores, adipisci rerum eius quo eligendi.</div>
+    <div class="middle">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Corrupti nostrum praesentium dolore perspiciatis. Dolore voluptatum eveniet doloremque nam praesentium aliquid nesciunt doloribus id, consequatur fugiat laboriosam deserunt perspiciatis aut reiciendis iure recusandae voluptatem amet officiis obcaecati atque quasi dolorem tempore? Sed natus velit minus exercitationem eos magnam odit? Obcaecati.</div>
+  </div>
+</body>
+</html>
