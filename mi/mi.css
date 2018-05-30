@@ -92,9 +92,11 @@ h2 {
   transform-origin: top;
   transform: scaleY(0);
   transition: 0.2s 0.3s ease-in-out;
+  z-index: 1;
 }
 /* header */
 .mi-header {
+  position: relative;
   height: 100px;
   line-height: 100px;
 }
@@ -116,21 +118,70 @@ h2 {
   float: left;
   width: 850px;
 }
-.header-nav ul {
+.header-nav > ul {
   margin-left: 185px;
 }
-.header-nav ul li {
+.header-nav > ul > li {
   display: inline-block;
-  line-height: 50px;
+  line-height: 100px;
   font-size: 16px;
 }
-.header-nav ul li a {
+.header-nav > ul > li > a {
   display: inline-block;
   height: 50px;
   padding: 0 8px;
 }
-.header-nav ul li a:hover {
+.header-nav > ul > li > a:hover {
   color: #ff6700;
+}
+.header-nav > ul > li:hover .header-dropdown {
+  transform: scaleY(1);
+  transition: 0.2s ease-in-out;
+}
+.header-dropdown {
+  position: absolute;
+  width: 100%;
+  height: 230px;
+  top: 100px;
+  left: 0;
+  background: white;
+  transform-origin: top;
+  transform: scaleY(0);
+  z-index: 1;
+  transition: 0.2s 0.2s ease-in-out;
+}
+.header-dropdown li {
+  position: relative;
+  float: left;
+  width: 204px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.header-dropdown li img {
+  display: block;
+  width: 160px;
+  height: 110px;
+  margin: 38px auto 13px;
+}
+.header-dropdown .flag-hollow {
+  position: absolute;
+  width: 64px;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border: 1px solid #ff6700;
+  color: #ff6700;
+}
+.header-dropdown li:not(:last-child):after {
+  content: '';
+  position: absolute;
+  top: 37px;
+  right: 0;
+  width: 1px;
+  height: 106px;
+  background: #ddd;
 }
 .header-search {
   float: right;
@@ -222,6 +273,9 @@ h2 {
 }
 .sidenav-dropdown li {
   margin: 33px 0 21px 0;
+}
+.sidenav-dropdown li:hover {
+  color: #ff6700;
 }
 .sidenav-dropdown li:first-child {
   margin-top: 21px;
@@ -448,6 +502,6 @@ h2 {
 .price > span:first-child {
   color: #ff6709;
 }
-.price > span:last-child {
+.price > span:last-child:not(:first-child) {
   text-decoration: line-through;
 }
