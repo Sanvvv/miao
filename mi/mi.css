@@ -175,31 +175,63 @@ h2 {
   height: 460px;
 }
 .sidenav-main {
+  position: relative;
   width: 234px;
   height: 100%;
   color: #fff;
   background: rgba(0,0,0,0.6);
 }
-.sidenav-main ul {
+.sidenav-main > ul {
   padding: 20px 0;
 }
-.sidenav-main ul li {
+.sidenav-main > ul > li {
   line-height: 42px;
 }
-.sidenav-main ul li a {
+.sidenav-main > ul > li > a {
   display: inline-block;
   position: relative;
   width: calc(100% - 30px);
   padding-left: 30px;
 }
-.sidenav-main ul li a:hover {
+.sidenav-main > ul > li > a:hover {
   background: #ff6700;
 }
-.sidenav-main ul li a i {
+.sidenav-main > ul > li > a i {
   position: absolute;
   right: 20px;
   color: #e0e0e0;
   font-weight: bold;
+}
+.sidenav-main > ul > li:hover .sidenav-dropdown {
+  display: block;
+}
+.sidenav-dropdown {
+  position: absolute;
+  height: 460px;
+  top: 0;
+  left: 234px;
+  color: #333;
+  background: #fff;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.18);
+  display: none;
+}
+.sidenav-dropdown ul {
+  float: left;
+  width: 265px;
+  height: 100%;
+}
+.sidenav-dropdown li {
+  margin: 33px 0 21px 0;
+}
+.sidenav-dropdown li:first-child {
+  margin-top: 21px;
+}
+.sidenav-dropdown li a img {
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
+  margin-left: 20px;
+  margin-right: 7px;
 }
 .sidenav-slider {
   position: absolute;
