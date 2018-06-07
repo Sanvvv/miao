@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="reset.css">
+  <style>
+    .container {
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center; 
+      animation: 120s linear infinite text-color;
+      font-size: 42px;
+      opacity: 0;
+      margin-top: 100px;
+    }
+    input[type=checkbox] {
+      width: 22px;
+      height: 22px;
+      margin-right: 20px;
+    }
+    input[type=radio]:checked + * + * + * + * + * + * + * + div {
+      opacity: 1;
+      z-index: 1;
+    }
+    input[type=checkbox]:checked + div.pulse {
+      animation: 0.8s ease 1 pulse;
+    }
+    input[type=checkbox]:checked + div.fadeInDown {
+      animation: 0.8s ease-out 1 fadeInDown;
+    }
+    input[type=checkbox]:checked + div.bounceInLeft {
+      animation: 1s ease 1 bounceInLeft;
+    }
+    input[type=checkbox]:checked + div.zoomOut {
+      animation: 1s ease 1 zoomOut;
+    }
+    input[type=checkbox]:checked + div.slideInUp {
+      animation: 0.8s ease 1 slideInUp;
+    }
+    .blockRotate {
+      position: relative;
+      padding: 0 10px;
+      color: white;
+      background: rgba(255, 5, 130, 0.6);
+      transform-origin: center center -28px;
+      transform-style: preserve-3d;
+      transition: transform 0.3s;
+      transform: perspective(1000px);
+    }
+    .blockRotate::after {
+      content: 'Animation';
+      position: absolute;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      top: 100%;
+      left: 0;
+      color: white;
+      background: deeppink;
+      transform-origin: top;
+      transform: rotateX(-90deg);
+      transition: 0.2s 0.05s;
+    }
+    .blockRotate:hover {
+      transform: perspective(1000px) rotateX(90deg);
+    }
+    .blockRotate:hover::after {
+      background: rgba(255, 5, 130, 0.6);
+    }
+    .textTranslate {
+      position: relative;
+      overflow: hidden;
+    }
+    .textTranslate div {
+      transition: 0.3s;
+    }
+    .textTranslate:hover div {
+      transform: translateY(-100%);
+    }
+    .textTranslate div::after {
+      content: 'Animation';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 100%;
+      left: 0;
+    }
+    .loading {
+      position: relative;
+      width: 72px;
+      font-size: 24px;
+    }
+    .loading::after {
+      position: absolute;
+      content: '•';
+      left: 30px;
+      top: 24px;
+      animation: 0.8s ease infinite loadingDots;
+    }
+    @keyframes text-color {
+      from {
+        color: red;
+      }
+      16% {
+        color: orange;
+      }
+      32% {
+        color: yellow;
+      }
+      48% {
+        color: green;
+      }
+      64% {
+        color: aqua;
+      }
+      80% {
+        color: blue;
+      }
+      to {
+        color: deeppink;
+      }
+    }
+    @keyframes pulse {
+      50% {
+        transform: scale(1.1);
+      }
+    }
+    @keyframes fadeInDown {
+      from {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    @keyframes bounceInLeft {
+      from {
+        transform: translateX(-60vw);
+      }
+      60% {
+        transform: translateX(10px);
+      }
+      72% {
+        transform: translateX(-10px);
+      }
+      84% {
+        transform: translateX(3px);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+    @keyframes zoomOut {
+      60% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+    @keyframes slideInUp {
+      from {
+        transform: translateY(70px);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+    @keyframes loadingDots {
+      from {
+        text-shadow: currentColor -10px 0, currentColor 10px 0;
+      }
+      to {
+        text-shadow: currentColor 10px 0, currentColor -10px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <input type="radio" name="type">pulse
+  <input type="radio" name="type">fadeInDown
+  <input type="radio" name="type">bounceInLeft
+  <input type="radio" name="type">zoomOut
+  <input type="radio" name="type">slideInUp
+  <input type="radio" name="type">blockRotate
+  <input type="radio" name="type">textTraslate
+  <input type="radio" name="type" checked>loading
+  <div class="container">
+    <input type="checkbox">
+    <div class="pulse">Animation</div>
+  </div>
+  <div class="container">
+    <input type="checkbox">
+    <div class="fadeInDown">Animation</div>
+  </div>
+  <div class="container">
+    <input type="checkbox">
+    <div class="bounceInLeft">Animation</div>
+  </div>
+  <div class="container">
+    <input type="checkbox">
+    <div class="zoomOut">Animation</div>
+  </div>
+  <div class="container">
+    <input type="checkbox">
+    <div class="slideInUp">Animation</div>
+  </div>
+  <div class="container">
+    <div class="blockRotate">Animation</div>
+  </div>
+  <div class="container">
+    <div class="textTranslate">
+      <div>Animation</div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="loading">加载中</div>
+  </div>
+</body>
+</html>

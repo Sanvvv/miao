@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="reset.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      margin-top: 60px;
+    }
+    .container {
+      width: 100px;
+      height: 100px;
+      transform-origin: 50px 50px 50px;
+      transform: rotateX(-30deg) rotateY(-30deg);
+      transform-style: preserve-3d;
+      transition: 3s;
+    }
+    .container:hover {
+      transform: rotateX(-30deg) rotateY(-90deg);
+    }
+    .container > div {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      opacity: 1;
+    }
+    .front-block {
+      background: conic-gradient(rgb(255,255,128) 0%, rgb(255,255,255) 12.5%, rgb(255,128,255) 25%, rgb(255,0,255) 37.5%, rgb(255,0,128) 50%, rgb(255,0,0) 67.5%, rgb(255,128,0) 75%, rgb(255,255,0) 87.5%);
+      transform: translateZ(100px);
+    }
+    .right-block {
+      background: conic-gradient(rgb(128, 255, 255) 0%, rgb(0,255,255) 12.5%, rgb(0,128,255) 25%, rgb(0,0,255) 37.5%, rgb(128,0,255) 50%, rgb(255,0,255) 67.5%, rgb(255,128,255) 75%, rgb(255,255,255) 87.5%, rgb(128,255,255) 100%);
+      transform-origin: right;
+      transform: rotateY(90deg);
+      
+    }
+    .left-block {
+      background: aqua;
+      transform-origin: left;
+      transform: rotateY(-90deg);
+    }
+    .back-block {
+      background: orange;
+    }
+    .top-block {
+      background: conic-gradient(rgb(0,255,128) 0%, rgb(0,255,255) 12.5%, rgb(128,255,255) 25%, rgb(255,255,255) 37.5%, rgb(255,255,128) 50%, rgb(255,255,0) 67.5%, rgb(128,255,0) 75%, rgb(0,255,0) 87.5%);
+      transform-origin: top;
+      transform: rotateX(90deg);
+    }
+    .bottom-block {
+      background: purple;
+      transform-origin: bottom;
+      transform: rotateX(-90deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="front-block"></div>
+    <div class="right-block"></div>
+    <div class="left-block"></div>
+    <div class="back-block"></div>
+    <div class="top-block"></div>
+    <div class="bottom-block"></div>
+  </div>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+  <script src="//leaverou.github.io/conic-gradient/conic-gradient.js"></script>
+</body>
+</html>
