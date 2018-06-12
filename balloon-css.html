@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="reset.css">
+  <style>
+    body {
+      margin: 50px 150px;
+    }
+    button {
+      display: block;
+      margin-top: 80px;
+    }
+    [data-balloon] {
+      position: relative;
+      cursor: pointer;
+    }
+    /* after */
+    [data-balloon]::after {
+      content: attr(data-balloon);
+      position: absolute;
+      min-width: 60px;
+      max-width: 300px;
+      padding: 8px 12px;
+      background: #29281d;
+      border-radius: 4px;
+      color: white;
+      opacity: 0;
+      transition: .2s .1s;
+      pointer-events: none;
+    }
+    [data-balloon-pos=top]::after,
+    [data-balloon-pos=bottom]::after {
+      margin: 12px 0;
+    }
+    [data-balloon-pos=right]::after,
+    [data-balloon-pos=left]::after {
+      margin: 0 12px;
+    }
+    /* before */
+    [data-balloon]::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      border: 6px solid transparent;
+      opacity: 0;
+      transition: .2s .1s;
+      pointer-events: none;
+    }
+    [data-balloon-pos=top]::before {
+      border-top-color: #29281d;
+    }
+    [data-balloon-pos=right]::before {
+      border-right-color: #29281d;
+    }
+    [data-balloon-pos=bottom]::before {
+      border-bottom-color: #29281d;
+    }
+    [data-balloon-pos=left]::before {
+      border-left-color: #29281d;
+    }
+    /* after & before position */
+    [data-balloon-pos=top]::after,
+    [data-balloon-pos=top]::before {
+      left: 50%;
+      bottom: 50%;
+      transform: translateX(-50%);
+    }
+    [data-balloon-pos=right]::after,
+    [data-balloon-pos=right]::before {
+      left: 90%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    [data-balloon-pos=bottom]::after,
+    [data-balloon-pos=bottom]::before {
+      left: 50%;
+      top: 50%;
+      transform: translateX(-50%);
+    }
+    [data-balloon-pos=left]::after,
+    [data-balloon-pos=left]::before {
+      right: 90%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    /* after & before hover */
+    [data-balloon]:hover::after,
+    [data-balloon]:hover::before {
+      opacity: 1;
+    }
+    [data-balloon-pos=top]:hover::after,
+    [data-balloon-pos=top]:hover::before {
+      bottom: 100%;
+    }
+    [data-balloon-pos=right]:hover::after,
+    [data-balloon-pos=right]:hover::before {
+      left: 102%;
+    }
+    [data-balloon-pos=bottom]:hover::after,
+    [data-balloon-pos=bottom]:hover::before {
+      top: 100%;
+    }
+    [data-balloon-pos=left]:hover::after,
+    [data-balloon-pos=left]:hover::before {
+      right: 102%;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <button data-balloon="rua!" data-balloon-pos="top">Hover Me!</button>
+    <button data-balloon="rua!rua!" data-balloon-pos="right">Hover Me!</button>
+    <button data-balloon="rua!rua!rua!" data-balloon-pos="bottom">Hover Me!</button>
+    <button data-balloon="rua!rua!rua!rua!" data-balloon-pos="left">Hover Me!</button>
+  </div>
+</body>
+</html>
