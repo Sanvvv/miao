@@ -256,7 +256,7 @@ h2 {
   font-weight: bold;
 }
 .sidenav-main > ul > li:hover .sidenav-dropdown {
-  display: block;
+  display: flex;
 }
 .sidenav-dropdown {
   position: absolute;
@@ -269,7 +269,6 @@ h2 {
   display: none;
 }
 .sidenav-dropdown ul {
-  float: left;
   width: 265px;
   height: 100%;
 }

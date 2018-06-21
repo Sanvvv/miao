@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Note</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial;
+      background: #f3f2f0;
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+    }
+    .sidenav ul {
+      list-style: none;
+      width: 100%;
+      line-height: 50px;
+      background: #fff;
+      box-shadow: 0 0 2px 0 rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: flex-end;
+      color: #777;
+    }
+    .sidenav ul li {
+      margin: 0 10px;
+    }
+    .board {
+      width: 720px;
+      min-height: 100vh;
+      padding: 50px 70px 200px;
+      margin: 30px auto;
+      background: #fff;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.3);
+      color: #333;
+    }
+    .board ul {
+      outline: none;
+    }
+  </style>
+</head>
+<body spellcheck="false">
+  <div class="sidenav">
+    <ul>
+      <li>笔记</li>
+      <li>想读</li>
+      <li>在读</li>
+      <li>读完</li>
+    </ul>
+  </div>
+  <div class="board">
+    <ul contenteditable="true">
+      <li></li>
+    </ul>
+  </div>
+  <script>
+    var board = document.querySelector('.board');
+    board.addEventListener('input', updateContent);
+
+    if (localStorage.content) {
+      board.innerHTML = localStorage.getItem('content');
+    }
+
+    function updateContent() {
+      localStorage.setItem('content', board.innerHTML);
+    }
+  </script>
+</body>
+</html>
