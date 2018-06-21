@@ -70,11 +70,12 @@
     function calc() {
       var valueArr = []
       for (var i = 0; i < 3; i++) {
-        if (input[i].value === '') {
-          alert('不能为空!')
+        var value = input[i].value
+        if (value === '' || isNaN(value)) {
+          alert('不能为空或者需要输入数字!')
           return
         }
-        valueArr[i] = input[i].value
+        valueArr[i] = value
       }
       equation(...valueArr)
     }
@@ -82,11 +83,12 @@
     function calc2() {
       var valueArr = []
       for (var i = 0; i < 6; i++) {
-        if (input[i + 3].value === '') {
-          alert('不能为空!')
+        var value = input[i + 3].value
+        if (value === '' || isNaN(value)) {
+          alert('不能为空或者需要输入数字!')
           return
         }
-        valueArr[i] = input[i + 3].value
+        valueArr[i] = value
       }
       equation2(...valueArr)
     }
