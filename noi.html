@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script id="ch0105/01">
+    var total = Number(prompt('请输入人数'))
+    var sum = 0
+    for (var i = 0; i < total; i++) {
+      sum += Number(prompt('请输入年龄'))
+    }
+    console.log(sum / total)
+  </script>
+
+  <script id="ch0105/02">
+    var sum = 0
+    for (var i = 0; i < 12; i++) {
+      sum += Number(prompt('price'))
+    }
+    sum = '$' + sum.toFixed(2)
+    console.log(sum)
+  </script>
+
+  <script id="ch0105/03">
+    var total = Number(prompt())
+    var sum = 0
+    for (var i = 0; i < total; i++) {
+      sum += Number(prompt())
+    }
+    sum = (sum / total).toFixed(4)
+    console.log(sum)
+  </script>
+
+  <script id="ch0105/04">
+    var total = Number(prompt())
+    var sum = 0
+    var average = 0
+    for (var i = 0; i < total; i++) {
+      sum += Number(prompt())
+    }
+    average = (sum / total).toFixed(5)
+    console.log(sum, average)
+  </script>
+
+  <script id="ch0105/05">
+    var total = Number(prompt())
+    var max = 0
+    for (var i = 0; i < total; i++) {
+      var score = Number(prompt())
+      if (score > max)
+        max = score
+    }
+    console.log(max)
+  </script>
+
+  <script id="ch0105/06">
+    var total = Number(prompt())
+    var len = 0
+    var temp
+    for (var i = 0; i < total; i++) {
+      var num = Number(prompt())
+      if (temp) {
+        var tempLen = Math.abs(temp - num)
+        len = tempLen > len ? tempLen : len
+        temp = num
+      } else {
+        temp = num
+      }
+    }
+    console.log(len)
+  </script>
+
+  <script id="ch0105/07">
+    var total = Number(prompt())
+    var Gain = [0, 0, 0]
+    var sum = 0
+    for (var i = 0; i < total; i++) {
+      var everydayGain = prompt().split(' ')
+      for (var j = 0; j < 3; j++) {
+        Gain[i] += Number(everydayGain[i])
+      }  
+    }
+    sum = Gain[0] + Gain[1] + Gain[2]
+    console.log(Gain[0], Gain[1], Gain[2], sum)
+  </script>
+
+  <script id="ch0105/08">
+    var total = Number(prompt())
+    var sum = (total - 2) * 180
+    var result = 0
+    for (var i = 0; i < total - 1; i++) {
+      sum -= prompt()
+    }
+    result = sum
+    console.log(result)
+  </script>
+
+  <script id="ch0105/09">
+    var input = prompt().split(' ')
+    var min = Number(input[0])
+    var max = Number(input[1])
+    var sum = 0
+    if (min % 2 == 0) {
+      min += 1
+    }
+    if (max % 2 == 0) {
+      max -= 1
+    }
+    for (var i = min; i <= max; i += 2) {
+      sum += i
+    }
+    console.log(sum)
+  </script>
+
+  <script id="ch0105/10">
+    var input = prompt().split(' ')
+    var min = Number(input[0])
+    var max = Number(input[1])
+    var sum = 0
+    if (min % 17 != 0) {
+      var nearlest = Math.floor(min / 17) + 1
+      min = nearlest * 17
+    }
+    if (max % 17 != 0) {
+      var nearlest = Math.floor(max / 17)
+      max = nearlest * 17
+    }
+    for (var i = min; i <= max; i += 17) {
+      sum += i
+    }
+    console.log(sum)
+  </script>
+
+  <script id="ch0105/11">
+    var total = Number(prompt())
+    var sum1 = 0
+    var sum5 = 0
+    var sum10 = 0
+    var input = prompt().split(' ')
+    for (var i = 0; i < total; i++) {
+      var num = Number(input[i])
+      if (num == 1) {
+        sum1++
+      } else if (num == 5) {
+        sum5++
+      } else if (num == 10) {
+        sum10++
+      }
+    }
+    console.log(sum1)
+    console.log(sum5)
+    console.log(sum10)
+  </script>
+
+  <script id="ch0105/12">
+    var input = prompt().split(' ')
+    var total = Number(input[0])
+    var sameNum = Number(input[1])
+    var sum = 0
+    var numberInput = prompt().split(' ')
+    for (var i = 0; i < total; i++) {
+      if (Number(numberInput[i]) == sameNum) {
+        sum++
+      }
+    }
+    console.log(sum)
+  </script>
+
+  <script id="ch0105/13">
+    var input = prompt().split(' ')
+    var num = Number(input[0])
+    var total = Number(input[1])
+    var sum = 1
+    for (var i = 0; i < total; i++) {
+      sum *= num
+    }
+  </script>
+
+  <script id="ch0105/14">
+    var input = prompt().split(' ')
+    var num = Number(input[0])
+    var total = Number(input[1])
+    for (var i = 0; i < total; i++) {
+      num *= 1.001
+    }
+    console.log(num.toFixed(4))
+  </script>
+
+  <script id="ch0105/15">
+    var input = prompt().split(' ')
+    var r = Number(input[0])
+    var m = Number(input[1])
+    var y = Number(input[2])
+    for (var i = 0; i < y; i++) {
+      m *= (1 + r / 100)
+    }
+    console.log(Math.floor(m))
+  </script>
+
+  <script id="ch0105/16">
+    var input = prompt().split(' ')
+    var salary = Number(input[0])
+    var interest = 200 * Number(input[1]) / 100
+    var salarySum = 0
+    var priceSum = 200
+
+    for (var i = 1; i < 21; i++) {
+      salarySum += salary
+      priceSum += interest
+      console.log(salarySum, priceSum, i)
+      if (salarySum > priceSum) {
+        console.log(i + 1)
+        break
+      }
+      if (i == 20) {
+        console.log('impossible')
+      }
+    }
+  </script>
+
+  <script id="ch0105/17">
+    var count = Number(prompt())
+    var firstNum = 1
+    var secondNum = 1
+    var currentNum = 1
+    for (var i = 0; i < count - 2; i++) {
+      currentNum = firstNum + secondNum
+      firstNum = secondNum
+      secondNum = currentNum
+    }
+    console.log(currentNum)
+  </script>
+
+  <script id="ch0105/18">
+    var total = Number(prompt())
+    var sampleRate = 0
+    for (var i = 0; i < total; i++) {
+      var log = prompt().split(' ');
+      var rate = Number(log[1]) / Number(log[0])
+      if (i == 0) {
+        sampleRate = rate
+        continue
+      }
+      if (rate - sampleRate > 0.05) {
+        console.log('better')
+      } else if (sampleRate - rate > 0.05) {
+        console.log('worse') 
+      } else {
+        console.log('same')
+      }
+    }
+  </script>
+
+  <script id="ch0105/19">
+    var total = Number(prompt())
+    var timeSum = 0
+    for (var i = 0; i < total; i++) {
+      var input = prompt().split(' ')
+      var disX = Number(input[0])
+      var disY = Number(input[1])
+      var personSum = Number(input[2])
+      var distance = Math.sqrt(disX ** 2 + disY ** 2)
+      var time = distance / 50 * 2 + 1.5 * personSum 
+      timeSum += time
+    }
+    console.log(Math.ceil(timeSum))
+  </script>
+
+  <script id="ch0105/20">
+    var height = Number(prompt())
+    var heightSum = 0
+    for (var i = 0; i < 10; i++) {
+      heightSum += height
+      height = height / 2
+      if (i != 9) {
+        heightSum += height
+      }
+    }
+    console.log(heightSum)
+    console.log(height)
+  </script>
+</body>
+</html>
