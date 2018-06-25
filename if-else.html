@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 评委打分
+    var length = Number(prompt('有多少个评委'))
+    var total = 0
+    var max = 0
+    var min = 0
+    for (var i = 0; i < length; i++) {
+      var score = Number(prompt('输入评分'))
+      if (i === 0) {
+        max = score
+        min = score
+      }
+      if (score > max) {
+        max = score
+      } else if (score < min) {
+        min = score
+      }
+      total += score
+    }
+    var average = (total - max - min) / (length - 2)
+    console.log(average)
+  </script>
+</body>
+</html>
