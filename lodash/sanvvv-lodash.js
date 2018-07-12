@@ -3,13 +3,13 @@ var sanvvv = {
     var res = []
      
     for (var i = 0; i < array.length; i += size) {
-      arr.push(array.slice(i, i + size))
+      res.push(array.slice(i, i + size))
     }
     return res
   },
 
   compact: function (array) {
-    return array.filter((element) => element)
+    return array.filter(element => element)
   },
 
   concat: function (array, ...values) {
@@ -19,17 +19,21 @@ var sanvvv = {
       res.push(item)
     }
     for (var item of values) {
-      // isArray()
       if (Array.isArray(item)) res.push(...item)
       else res.push(item)
     }
     return res
   },
 
-  difference: function (array, values) {
+  difference: function (array, ...values) {
+    let res = array.slice(0, array.length)
+
     if (values) {
-      return array.filter((element) => values.indexOf(element) === -1)
-    } else return array.slice(0, array.length)
+      for (var item of values) {
+        res = res.filter((element) => item.indexOf(element) === -1)
+      }
+    }
+    return res
   },
 
   differenceBy: function (array, values, iteratee) {
@@ -39,11 +43,15 @@ var sanvvv = {
       for (var item of array) {
         var target = true
 
-        if (iteratee) {
+        if (typeof iteratee === 'function') {
           for (var value of values) {
             if (iteratee.call(this, item) === iteratee.call(this, value)) {
               target = false
             }
+          }
+        } else {
+          for (var value of values) {
+            if (JSON.stringify(item) === JSON.stringify(value)) target = false
           }
         }
         if (target) res.push(item)
