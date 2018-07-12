@@ -143,7 +143,7 @@ var sanvvv = {
   },
 
   join: function (array, seperator = ',') {
-    return array.reduce((acc, cur) => acc + seperator + cur)
+    return array.reduce((acc, cur) => '' + acc + seperator + cur)
   },
 
   last: function (array) {
@@ -191,6 +191,7 @@ var sanvvv = {
     for (var i = 0; i < len / 2; i++) {
       [array[i], array[len - i]] = [array[len - i], array[i]]
     }
+    return array
   },
 
   slice: function (array, start = 0, end = array.length) {
@@ -200,19 +201,150 @@ var sanvvv = {
   },
 
   sortedIndex: function (array, value) {
-    var min = 0
-    var max = array.length
-    var mid = Math.floor((min + max) / 2)
+    var left = 0
+    var right = array.length
+    var mid = Math.floor((left + right) / 2)
 
-    while (max - min > 1) {
-      if (array[mid - 1] < value && value <= array[mid] ) return mid
-      else if (array[mid] < value) min = mid
-      else max = mid
-      
-      mid = Math.floor((min + max) / 2)
+    while (right - left > 1) {
+      if (array[mid] >= value) right = mid
+      else left = mid
+      mid = Math.floor((left + right) / 2)
     }
 
     if (array[mid] < value) mid++
     return mid
-  }
+  },
+
+  sortedIndexOf: function (array, value) {
+    var left = 0
+    var right = array.length
+    var mid = Math.floor((left + right) / 2)
+
+    while (right - left > 1) {
+      if (array[mid] >= value) right = mid
+      else left = mid
+      mid = Math.floor((left + right) / 2)
+    }
+
+    if (array[mid] < value) mid++
+    if (array[mid] !== value) return -1
+    else return mid
+  },
+
+  sortedLastIndex: function (array, value) {
+    var left = 0
+    var right = array.length
+    var mid = Math.floor((left + right) / 2)
+
+    while (right - left > 1) {
+      if (array[mid] <= value) left = mid
+      else right = mid
+      mid = Math.floor((left + right) / 2)
+    }
+
+    if (array[mid] <= value) mid++
+    return mid
+  },
+
+  sortedLastIndexOf: function (array, value) {
+    var left = 0
+    var right = array.length
+    var mid = Math.floor((left + right) / 2)
+
+    while (right - left > 1) {
+      if (array[mid] <= value) left = mid
+      else right = mid
+      mid = Math.floor((left + right) / 2)
+    }
+
+    if (array[mid] < value) mid++
+    if (array[mid] !== value) return -1
+    else return mid
+  },
+
+  sortedUniq: function (array) {
+    return array.filter((item, index) => item !== array[index - 1])
+  },
+
+  uniq: function (array) {
+    let set = new Set()
+    return array.filter(item => {
+      if (!set.has(item)) {
+        set.add(item)
+        return true
+      } else return false
+    })
+  },
+
+  tail: function (array) {
+    return array.slice(1, array.length)
+  },
+
+  take: function (array, n = 1) {
+    return array.slice(0, n)
+  },
+
+  takeRight: function (array, n = 1) {
+    if (n > array.length) n = array.length
+    return array.slice(array.length - n, array.length)
+  },
+
+  union: function (...arrays) {
+    return sanvvv.uniq(arrays.reduce((acc, cur) => {
+      acc.push(...cur)
+      return acc
+    }, []))
+  },
+
+  without: function (array, ...values) {
+    return array.filter(item => values.indexOf(item) === -1)
+  },
+
+  xor: function (...arrays) {
+    var arr =  arrays.reduce((acc, cur) => {
+      acc.push(...cur)
+      return acc
+    }, [])
+
+    // !!!
+    return arr.filter(item => arr.indexOf(item) === arr.lastIndexOf(item))
+  },
+
+  zip: function (...arrays) {
+    var res = []
+
+    arrays.forEach(array => {
+      var count = 0
+      array.forEach(item => {
+        if (!res[count]) {
+          res[count] = [item]
+          count++
+        } else {
+          res[count].push(item)
+          count++
+        }
+      })
+    })
+
+    return res
+  },
+
+  unzip: function (array) {
+    return sanvvv.zip(...array)
+  },
+
+  zipObject: function (props = [], values = []) {
+    var res = {}
+
+    props.forEach((item, index) => res[item] = values[index])
+    return res
+  },
+
+  // zipObjectDeep: function (props = [], values = []) {
+  //   var res = {}
+
+  //   props.forEach((item, index) => {
+  //     var paths = item.split('.')     
+  //   })
+  // }
 }
