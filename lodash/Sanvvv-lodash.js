@@ -19,7 +19,7 @@ var Sanvvv = {
       res.push(item)
     }
     for (var item of values) {
-      // isArray
+      // isArray()
       if (Array.isArray(item)) res.push(...item)
       else res.push(item)
     }
