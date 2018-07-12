@@ -54,3 +54,71 @@ var a = [
  ];
 
  findDiagonalOrder(a)
+
+//  var deleteNode = function(root, key) {
+//   if (!root) return null
+//   let nodeArr = []
+//   let lastNode = root
+//   let target = getNode(root, key)
+//   if (target) traverse(target)
+//   else return root
+
+//   let index = nodeArr.indexOf(target)
+//   replaceNode(index) 
+
+//   return root
+  
+//   function getNode(node, key) {
+//     if (key === node.val) {
+//       return node
+//     } else {
+//       lastNode = node
+//     }
+    
+//     if (key < node.val) {
+//       if (!node.left) return null
+//       return getNode(node.left, key)
+//     } else {
+//       if (!node.right) return null
+//       return getNode(node.right, key)
+//     }
+//   }
+
+//   function replaceNode(index) {
+//     if (lastNode.right) {
+//       replaceRight(index)
+//     } else if (lastNode.left) {
+//       replaceLeft(node)
+//     }
+//   }
+
+//   function replaceLeft(index) {
+//     let node = nodeArr[index]
+
+//     if (node) {
+//       if (node.left) {
+//         node.val = nodeArr[index - 1].val
+//         replaceLeft(index - 1)
+//       } else nodeArr[index + 1].left = null
+//     }
+//   }
+
+//   function replaceRight(index) {
+//     let node = nodeArr[index]
+
+//     if (node) {
+//       if (node.right) {
+//         node.val = nodeArr[index + 1].val
+//         replaceRight(index + 1)
+//       } else nodeArr[index - 1].right = null
+//     }
+//   }
+
+//   function traverse(node) {
+//     if (node) {
+//       traverse(node.left)
+//       nodeArr.push(node)
+//       traverse(node.right)
+//     }
+//   }
+// };
