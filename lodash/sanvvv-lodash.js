@@ -26,14 +26,7 @@ var sanvvv = {
   },
 
   difference: function (array, ...values) {
-    let res = array.slice(0, array.length)
-
-    if (values) {
-      for (var item of values) {
-        res = res.filter(element => item.indexOf(element) === -1)
-      }
-    }
-    return res
+    return values.reduce((acc, cur) => acc.filter(item => cur.indexOf(item) === -1), array)
   },
 
   differenceBy: function (array, values, iteratee) {
@@ -58,6 +51,10 @@ var sanvvv = {
       }
       return res
     } else return array.slice(0, array.length)
+  },
+
+  identity: function (...value) {
+    return value[0]
   },
 
   drop: function (array, n = 1) {
@@ -127,9 +124,95 @@ var sanvvv = {
   head: function (array) {
     return array[0]
   },
-  
-  // util
-  identity: function (...value) {
-    return value[0]
+
+  indexOf: function (array, value, fromIndex = 0) {
+    if (fromIndex < 0) fromIndex += array.length
+    for (var i = fromIndex; i < array.length; i++) {
+      if (value !== value && array[i] !== array[i]) return i
+      else if (array[i] === value) return i
+    }
+    return -1
+  },
+
+  initial: function (array) {
+    return array.slice(0, array.length - 1)
+  },
+
+  intersection: function (...arrays) {
+    return arrays.reduce((acc, cur) => acc.filter(item => cur.indexOf(item) !== -1))
+  },
+
+  join: function (array, seperator = ',') {
+    return array.reduce((acc, cur) => acc + seperator + cur)
+  },
+
+  last: function (array) {
+    return array[array.length - 1]
+  },
+
+  lastIndexOf: function (array, value, fromIndex = array.length - 1) {
+    if (fromIndex < 0) fromIndex += array.length
+    for (var i = fromIndex; i >= 0; i--) {
+      if (value !== value && array[i] !== array[i]) return i
+      else if (array[i] === value) return i
+    }
+    return -1
+  },
+
+  nth: function (array, n = 0) {
+    return n >= 0 ? array[n] : array[array.length + n]
+  },
+
+  pull: function (array, ...values) {
+    return values.reduce((acc, cur) => acc.filter(item => item !== cur), array)
+  },
+
+  pullAll: function (array, values) {
+    return values.reduce((acc, cur) => acc.filter(item => item !== cur), array)
+  },
+
+  pullAt: function (array, indexes) {
+    var res = []
+    var count = 0
+
+    indexes.forEach(i => {
+      var temp = array.splice(i - count, i - count)
+      if (temp.length) {
+        res.push(temp[0])
+        count++
+      }
+    })
+    return res
+  },
+
+  reverse: function (array) {
+    var len = array.length - 1
+
+    for (var i = 0; i < len / 2; i++) {
+      [array[i], array[len - i]] = [array[len - i], array[i]]
+    }
+  },
+
+  slice: function (array, start = 0, end = array.length) {
+    if (start < 0) start += array.length
+    if (end < 0) end += array.length
+    return array.filter((item, index) => index >= start && index < end)
+  },
+
+  sortedIndex: function (array, value) {
+    var min = 0
+    var max = array.length
+    var mid = Math.floor((min + max) / 2)
+
+    while (max - min > 1) {
+      if (array[mid - 1] < value && value <= array[mid] ) return mid
+      else if (array[mid] < value) min = mid
+      else max = mid
+      
+      mid = Math.floor((min + max) / 2)
+    }
+
+    if (array[mid] < value) mid++
+    return mid
   }
 }
