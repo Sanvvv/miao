@@ -1,4 +1,4 @@
-var Sanvvv = {
+var sanvvv = {
   chucnk: function (array, size = 1) {
     var res = []
      
