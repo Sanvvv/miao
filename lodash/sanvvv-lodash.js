@@ -1,5 +1,5 @@
 var sanvvv = {
-  chucnk: function (array, size = 1) {
+  chunk: function (array, size = 1) {
     var res = []
      
     for (var i = 0; i < array.length; i += size) {
@@ -9,7 +9,7 @@ var sanvvv = {
   },
 
   compact: function (array) {
-    return array.filter((element) => element != false)
+    return array.filter((element) => element)
   },
 
   concat: function (array, ...values) {
