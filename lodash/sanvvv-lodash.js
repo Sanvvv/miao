@@ -29,28 +29,27 @@ var sanvvv = {
     return values.reduce((acc, cur) => acc.filter(item => cur.indexOf(item) === -1), array)
   },
 
-  differenceBy: function (array, values, iteratee) {
-    var res = []
+  iteratee: function (iter) {
+    if (typeof iter === 'string') return obj => obj[iter]
+    else return iter
+  },
 
-    if (values) {
-      for (var item of array) {
-        var target = true
+  differenceBy: function (array, values, iteratee = sanvvv.identity) {
+    var f = sanvvv.iteratee(iteratee)
+    var differBy = values.map(x => f(x))
 
-        if (typeof iteratee === 'function') {
-          for (var value of values) {
-            if (iteratee.call(this, item) === iteratee.call(this, value)) {
-              target = false
-            }
-          }
-        } else {
-          for (var value of values) {
-            if (JSON.stringify(item) === JSON.stringify(value)) target = false
-          }
-        }
-        if (target) res.push(item)
-      }
-      return res
-    } else return array.slice(0, array.length)
+    return array.filter(item => differBy.indexOf(f(item)) === -1)
+  },
+
+  // var tag = false
+  // values.forEach(el => {
+  //   if (comparator(item, el)) tag = true
+  // })
+  // if (tag) return false
+  // else return true
+
+  differenceWith: function (array, values, comparator) {
+    return array.filter(arr => values.every(value => !comparator(arr, value)))
   },
 
   identity: function (...value) {
@@ -176,6 +175,7 @@ var sanvvv = {
     var count = 0
 
     indexes.forEach(i => {
+      //  !!!
       var temp = array.splice(i - count, i - count)
       if (temp.length) {
         res.push(temp[0])
@@ -267,7 +267,7 @@ var sanvvv = {
   },
 
   uniq: function (array) {
-    let set = new Set()
+    var set = new Set()
     return array.filter(item => {
       if (!set.has(item)) {
         set.add(item)
@@ -300,6 +300,7 @@ var sanvvv = {
     return array.filter(item => values.indexOf(item) === -1)
   },
 
+  
   xor: function (...arrays) {
     var arr =  arrays.reduce((acc, cur) => {
       acc.push(...cur)
@@ -346,5 +347,21 @@ var sanvvv = {
   //   props.forEach((item, index) => {
   //     var paths = item.split('.')     
   //   })
-  // }
+  // },
+
+  isEqual: function (value, other) {
+    if (value === other) return true
+    if (value !== value && other !== other) return true
+
+    // more...
+
+    if (typeof value === 'object') {
+      if (typeof other !== 'object') return false
+      for (var key in other) {
+        if (!sanvvv.isEqual(value[key], other[key])) return false
+      }
+      return true
+    }
+    return false
+  }
 }

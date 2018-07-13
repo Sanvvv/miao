@@ -21,6 +21,17 @@ var test = {
     {
       i: [[{ 'x': 2 }, { 'x': 1 }], [{ 'x': 1 }], 'x'],
       e: [{ 'x': 2 }]
+    },
+    {
+      i: [[2.1, 1.2], [2.3, 3.4], Math.floor],
+      e: [1.2]
+    }
+  ],
+
+  differenceWith: [
+    {
+      i: [[{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }, { 'x': 3, 'y': 1 }], [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }], sanvvv.isEqual],
+      e: [{ 'x': 3, 'y': 1 }]
     }
   ],
 
@@ -391,14 +402,14 @@ var test = {
       e: [['a', 1, true], ['b', 2, false]]
     }
   ],
-
+  
   unzip: [
     {
       i: [[['fred', 30, true], ['barney', 40, false]]],
       e: [['fred', 'barney'], [30, 40], [true, false]]
     }
   ],
-
+    
   zipObject: [
     {
       i: [['a', 'b'], [1, 2]],
@@ -411,7 +422,18 @@ var test = {
   //     i: [['a.b[0].c', 'a.b[1].d'], [1, 2]],
   //     e: { 'a': { 'b': [{ 'c': 1 }, { 'd': 2 }] } }
   //   }
-  // ]
+  // ],
+
+  isEqual: [
+    {
+      i: [{ 'a': 1 }, { 'a': 1 }],
+      e: true
+    },
+    {
+      i: [[1,2,3], [1,2,3]],
+      e: true
+    }
+  ]
 }
 
 for (let func in test) {
