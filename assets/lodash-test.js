@@ -148,6 +148,44 @@ var test = {
     }
   ],
 
+  findIndex: [
+    {
+      i: [[
+        { 'user': 'barney',  'active': false },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': true }
+      ], { 'user': 'fred', 'active': false }],
+      e: 1
+    },
+    {
+      i: [[
+        { 'user': 'barney',  'active': false },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': true }
+      ], 'active'],
+      e: 2
+    }
+  ],
+
+  findLastIndex: [
+    {
+      i: [[
+        { 'user': 'barney',  'active': true },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': false }
+      ], 'active'],
+      e: 0
+    },
+    {
+      i: [[
+        { 'user': 'barney',  'active': true },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': false }
+      ], function(o) { return o.user == 'pebbles'; }],
+      e: 2
+    }
+  ],
+
   flattenDeep: [
     {
       i: [[1, [2, [3, [4]], 5]]],
@@ -212,6 +250,24 @@ var test = {
       i: [[2, 1, 4], [2, 1, 5], [2, 1, 5]],
       e: [2, 1]
     },
+  ],
+
+  intersectionBy: [
+    {
+      i: [[2.1, 1.2], [2.3, 3.4], Math.floor],
+      e: [2.1]
+    },
+    {
+      i: [[{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1}], 'x'],
+      e: [{ 'x': 1 }]
+    }
+  ],
+
+  intersectionWith: [
+    {
+      i: [[{ 'x': 1, 'y': 1 }, { 'x': 2, 'y': 1 }], [{ 'x': 1, 'y': 1 }, { 'x': 2, 'y': 2 }], [{ 'x': 1, 'y': 1 }], sanvvv.isEqual],
+      e: [{ 'x': 1, 'y': 1 }]
+    }
   ],
 
   join: [

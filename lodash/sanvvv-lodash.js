@@ -105,6 +105,16 @@ var sanvvv = {
     return res
   },
 
+  findIndex: function (array, predicate = sanvvv.identity, fromIndex = 0) {
+    var f = sanvvv.iteratee(predicate)
+    return sanvvv.indexOf(array.map(x => f(x)), true, fromIndex)
+  },
+
+  findLastIndex: function (array, predicate = sanvvv.identity, fromIndex = array.length - 1) {
+    var f = sanvvv.iteratee(predicate)
+    return sanvvv.lastIndexOf(array.map(x => f(x)), true, fromIndex)
+  },
+
   flattenDeep: function (array) {
     var res = []
 
@@ -159,6 +169,22 @@ var sanvvv = {
 
   intersection: function (...arrays) {
     return arrays.reduce((acc, cur) => acc.filter(item => cur.indexOf(item) !== -1))
+  },
+
+  intersectionBy: function (...rest) {
+    var iteratee = sanvvv.identity
+    // isArray
+    if (Object.prototype.toString.call(rest[rest.length - 1]) !== '[object Array]') {
+      iteratee = rest.pop()
+    }
+    var f = sanvvv.iteratee(iteratee)
+    
+    return rest.reduce((acc, cur) => acc.filter(item => cur.map(x => f(x)).indexOf(f(item)) !== -1))
+  },
+
+  intersectionWith: function (...rest) {
+    var comparator = rest.pop()
+    return rest.reduce((acc, cur) => acc.filter(item => cur.some(el => comparator(item, el))))
   },
 
   join: function (array, seperator = ',') {
