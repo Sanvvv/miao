@@ -65,6 +65,64 @@ var test = {
     }
   ],
 
+  dropRightWhile: [
+    {
+      i: [[
+        { 'user': 'barney',  'active': true },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': false }
+      ], { 'user': 'pebbles', 'active': false }],
+      e: [{ 'user': 'barney',  'active': true }, { 'user': 'fred', 'active': false }]
+    },
+    {
+      i: [[
+        { 'user': 'barney',  'active': true },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': false }
+      ], function(o) { return !o.active; }],
+      e: [{ 'user': 'barney',  'active': true }]
+    },
+    {
+      i: [[
+        { 'user': 'barney',  'active': true },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': false }
+      ], ['active', false]],
+      e: [{ 'user': 'barney',  'active': true }]
+    },
+    {
+      i: [[
+        { 'user': 'barney',  'active': true },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': false }
+      ], 'active'],
+      e: [
+        { 'user': 'barney',  'active': true },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': false }
+      ]
+    }
+  ],
+
+  dropWhile: [
+    {
+      i: [[
+        { 'user': 'barney',  'active': false },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': true }
+      ], ['active', false]],
+      e: [{ 'user': 'pebbles', 'active': true }]
+    },
+    {
+      i: [[
+        { 'user': 'barney',  'active': false },
+        { 'user': 'fred',    'active': false },
+        { 'user': 'pebbles', 'active': true }
+      ], function(o) { return !o.active; }],
+      e: [{ 'user': 'pebbles', 'active': true }]
+    }
+  ],
+
   fill: [
     {
       i: [[4, 6, 8, 10], '*', 1, 3],
@@ -450,6 +508,23 @@ for (let func in test) {
     }
   }
 }
+
+// console.log('-------------------------------')
+// console.log('iteratee')
+
+// var users = [
+//   { 'user': 'barney', 'age': 36, 'active': true },
+//   { 'user': 'fred',   'age': 40, 'active': false }
+// ];
+
+// var it = sanvvv.iteratee({ 'user': 'barney', 'active': true })
+// console.log(users.filter(x => it(x)))
+
+// var it = sanvvv.iteratee(['user', 'fred'])
+// console.log(users.filter(x => it(x)))
+
+// var it = sanvvv.iteratee('user')
+// console.log(users.map(x => it(x)), 'expect: ["barney", "fred"]')
 
 console.log('-------------------------------')
 console.log('complete')

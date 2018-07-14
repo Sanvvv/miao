@@ -22,16 +22,12 @@ var sanvvv = {
       if (Array.isArray(item)) res.push(...item)
       else res.push(item)
     }
+
     return res
   },
 
   difference: function (array, ...values) {
     return values.reduce((acc, cur) => acc.filter(item => cur.indexOf(item) === -1), array)
-  },
-
-  iteratee: function (iter) {
-    if (typeof iter === 'string') return obj => obj[iter]
-    else return iter
   },
 
   differenceBy: function (array, values, iteratee = sanvvv.identity) {
@@ -52,10 +48,6 @@ var sanvvv = {
     return array.filter(arr => values.every(value => !comparator(arr, value)))
   },
 
-  identity: function (...value) {
-    return value[0]
-  },
-
   drop: function (array, n = 1) {
     if (n < 0) return array.slice(0, array.length)
     else return array.slice(n, array.length)
@@ -64,6 +56,34 @@ var sanvvv = {
   dropRight: function (array, n = 1) {
     if (n >= array.length) return []
     else return array.slice(0, array.length - n)
+  },
+
+  dropRightWhile: function (array, predicate = sanvvv.identity) {
+    var f = sanvvv.iteratee(predicate)
+    var index = -1
+
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (!f(array[i])) {
+        index = i
+        break
+      }
+    }
+
+    return array.slice(0, index + 1)
+  },
+
+  dropWhile: function (array, predicate = sanvvv.identity) {
+    var f = sanvvv.iteratee(predicate)
+    var index = -1
+
+    for (var i = 0; i < array.length; i++) {
+      if (!f(array[i])) {
+        index = i
+        break
+      }
+    }
+
+    return array.slice(index, array.length)
   },
 
   fill: function (array, value, start = 0, end = array.length) {
@@ -182,6 +202,7 @@ var sanvvv = {
         count++
       }
     })
+
     return res
   },
 
@@ -363,5 +384,35 @@ var sanvvv = {
       return true
     }
     return false
-  }
+  },
+
+  identity: function (...value) {
+    return value[0]
+  },
+
+  iteratee: function (iter) {
+    // TODO: The predicate is invoked with three arguments: (value, index, array).
+
+    // isObject
+    if (Object.prototype.toString.call(iter) === '[object Object]') {
+      return obj => {
+        for (var property in iter) {
+          if (!sanvvv.isEqual(obj[property], iter[property])) return false
+        }
+        return true
+      }
+    }
+
+    // isArray
+    if (Object.prototype.toString.call(iter) === '[object Array]') {
+      // !!! 只写了数组 length === 2 的情况
+      return obj => sanvvv.isEqual(obj[iter[0]], iter[1])
+    }
+
+    // isString
+    if (typeof iter === 'string') return obj => obj[iter]
+    
+    // function ...
+    return iter
+  },
 }

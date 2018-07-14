@@ -1,3 +1,44 @@
+var sortedListToBST = function(head) {
+  let arr = []
+  while (head) {
+    arr.push(head.val)
+    head = head.next
+  }
+  return traverse(arr)
+
+  function traverse(nums) {
+    if (!nums.length) return null
+
+    let headIndex = Math.floor(nums.length / 2)
+    let head = new TreeNode(nums[headIndex])
+    let leftNums = nums.slice(0, headIndex)
+    let rightNums = nums.slice(headIndex + 1, nums.length)
+    
+    if (leftNums.length) head.left = traverse(leftNums)
+    if (rightNums.length) head.right = traverse(rightNums)
+
+    return head
+  }
+};
+
+function testLinkedList () {
+  var list = new ListNode(1)
+  // add(10, list)
+  // add(9, list)
+  // add(8, list)
+  // add(7, list)
+  // add(6, list)
+  add(5, list)
+  add(4, list)
+  add(3, list)
+  add(2, list)
+  // add(1, list)
+  return list
+}
+
+var list = testLinkedList()
+// console.log(sortedListToBST([-10,-3,0,5,9]))
+
 // var kthSmallest = function(root, k) {
 //   let arr = []
 //   traverse(root)
