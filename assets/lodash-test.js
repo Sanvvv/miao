@@ -338,7 +338,7 @@ var test = {
 
   pullAt: [
     {
-      i: [['a', 'b', 'c', 'd'], [1, 3]],
+      i: [['a', 'b', 'c', 'd', 'e'], [1, 3]],
       e: ['b', 'd']
     }
   ],
@@ -433,6 +433,17 @@ var test = {
     {
       i: [[false, 0, '0', 1, '1']],
       e: [false, 0, '0', 1, '1']
+    }
+  ],
+
+  uniqBy: [
+    {
+      i: [[2.1, 1.2, 2.3], Math.floor],
+      e: [2.1, 1.2]
+    },
+    {
+      i: [[{ 'x': 1 }, { 'x': 2 }, { 'x': 1 }], 'x'],
+      e: [{ 'x': 1 }, { 'x': 2 }]
     }
   ],
 
@@ -565,6 +576,7 @@ for (let func in test) {
   }
 }
 
+// ***************** iteratee ************************
 // console.log('-------------------------------')
 // console.log('iteratee')
 
@@ -581,6 +593,7 @@ for (let func in test) {
 
 // var it = sanvvv.iteratee('user')
 // console.log(users.map(x => it(x)), 'expect: ["barney", "fred"]')
+// **************************************************
 
 console.log('-------------------------------')
 console.log('complete')

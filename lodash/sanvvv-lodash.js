@@ -218,17 +218,22 @@ var sanvvv = {
 
   pullAt: function (array, indexes) {
     var res = []
-    var count = 0
+    var slow = 0
+    var index = 0
 
-    indexes.forEach(i => {
-      //  !!!
-      var temp = array.splice(i - count, i - count)
-      if (temp.length) {
-        res.push(temp[0])
-        count++
+    indexes.sort((a, b) => a - b)
+
+    for (var i = 0; i < array.length; i++) {
+      if (i === indexes[index]) {
+        res.push(array[i])
+        index++
+      } else {
+        array[slow] = array[i]
+        slow++
       }
-    })
+    }
 
+    array.splice(slow, array.length)
     return res
   },
 
@@ -318,6 +323,19 @@ var sanvvv = {
     return array.filter(item => {
       if (!set.has(item)) {
         set.add(item)
+        return true
+      } else return false
+    })
+  },
+
+  uniqBy: function (array, iteratee = sanvvv.identity) {
+    var f = sanvvv.iteratee(iteratee)
+    var set = new Set()
+
+    return array.filter(item => {
+      var el = f(item)
+      if (!set.has(el)) {
+        set.add(el)
         return true
       } else return false
     })
