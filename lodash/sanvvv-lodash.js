@@ -209,10 +209,12 @@ var sanvvv = {
   },
 
   pull: function (array, ...values) {
+    // TODO: this method mutates array
     return values.reduce((acc, cur) => acc.filter(item => item !== cur), array)
   },
 
   pullAll: function (array, values) {
+    // TODO: this method mutates array
     return values.reduce((acc, cur) => acc.filter(item => item !== cur), array)
   },
 
@@ -355,6 +357,7 @@ var sanvvv = {
   },
 
   union: function (...arrays) {
+    // !!!
     return sanvvv.uniq(arrays.reduce((acc, cur) => {
       acc.push(...cur)
       return acc
@@ -414,6 +417,121 @@ var sanvvv = {
   //   })
   // },
 
+  countBy: function (collection, iteratee = sanvvv.identity) {
+    var res = {}
+    var f = sanvvv.iteratee(iteratee)
+
+    collection.forEach(item => {
+      var val = f(item)
+      if (!res[val]) res[val] = 1
+      else res[val]++ 
+    })
+
+    return res
+  },
+
+  every: function (collection, predicate = sanvvv.identity) {
+    var f = sanvvv.iteratee(predicate)
+
+    for (var item of collection) {
+      if (!f(item)) return false
+    }
+
+    return true
+  },
+
+  filter: function (collection, predicate = sanvvv.identity) {
+    var f = sanvvv.iteratee(predicate)
+    var res = []
+
+    for (var item of collection) {
+      if (f(item)) res.push(item)
+    }
+
+    return res
+  },
+
+  find: function (collection, predicate = sanvvv.identity, fromIndex = 0) {
+    var f = sanvvv.iteratee(predicate)
+    for (var item of collection) {
+      if (f(item)) return item
+    }
+  },
+
+  flatMap: function (collection, iteratee = sanvvv.identity) {
+    var f = sanvvv.iteratee(iteratee)
+    return sanvvv.flatten(collection.map(x => f(x)))
+  },
+
+  flatMapDepth: function (collection, iteratee = sanvvv.identity, depth = 1) {
+    var f = sanvvv.iteratee(iteratee)
+    return sanvvv.flattenDepth(collection.map(x => f(x)), depth)
+  },
+
+  forEach: function (collection, iteratee = sanvvv.identity) {
+    // !!!
+    for (var item in collection) {
+      iteratee(collection[item], item)
+    }
+  },
+
+  groupBy: function (collection, iteratee = sanvvv.identity) {
+    var f = sanvvv.iteratee(iteratee)
+    var res = {}
+
+    collection.forEach(item => {
+      var val = f(item)
+      if (!res[val]) res[val] = [item]
+      else res[val].push(item)
+    })
+
+    return res
+  },
+
+  keyBy: function (collection, iteratee = sanvvv.identity) {
+    var f = sanvvv.iteratee(iteratee)
+    var res = {}
+
+    collection.forEach(item => {
+      var val = f(item)
+      res[val] = item
+    })
+
+    return res
+  },
+
+  map: function (collection, iteratee = sanvvv.identity) {
+    var f = sanvvv.iteratee(iteratee)
+    var res = []
+
+    // !!!
+    for (var item in collection) {
+      res.push(f(collection[item]))
+    }
+
+    return res
+  },
+
+  partition: function (collection, predicate = sanvvv.identity) {
+    var f = sanvvv.iteratee(predicate)
+    var res = [[], []]
+
+    collection.forEach(item => {
+      if (f(item)) res[0].push(item)
+      else res[1].push(item)
+    })
+
+    return res
+  },
+  
+  isArguments: function (value) {
+    return Object.prototype.toString.call(value) === '[object Arguments]'
+  },
+
+  isArray: function (value) {
+    return Object.prototype.toString.call(value) === '[object Array]'
+  },
+
   isEqual: function (value, other) {
     if (value === other) return true
     if (value !== value && other !== other) return true
@@ -456,7 +574,7 @@ var sanvvv = {
     // isString
     if (typeof iter === 'string') return obj => obj[iter]
     
-    // function ...
-    return iter
+    // isFunction
+    if (typeof iter === 'function') return iter
   },
 }

@@ -503,6 +503,17 @@ var test = {
     }
   ],
 
+  // unionBy: [
+  //   {
+  //     i: [[2.1], [1.2, 2.3], Math.floor],
+  //     e: [2.1, 1.2]
+  //   },
+  //   {
+  //     i: [[{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x'],
+  //     e: [{ 'x': 1 }, { 'x': 2 }]
+  //   }
+  // ],
+
   without: [
     {
       i: [[1, 2, 1, 3], 1, 2],
@@ -548,6 +559,159 @@ var test = {
   //     e: { 'a': { 'b': [{ 'c': 1 }, { 'd': 2 }] } }
   //   }
   // ],
+
+  countBy: [
+    {
+      i: [[6.1, 4.2, 6.3], Math.floor],
+      e: { '4': 1, '6': 2 }
+    },
+    {
+      i: [['one', 'two', 'three'], 'length'],
+      e: { '3': 2, '5': 1 }
+    }
+  ],
+
+  every: [
+    {
+      i: [[
+        { 'user': 'barney', 'age': 36, 'active': false },
+        { 'user': 'fred',   'age': 40, 'active': false }
+      ], { 'user': 'barney', 'active': false }],
+      e: false
+    },
+    {
+      i: [[true, 1, null, 'yes'], Boolean],
+      e: false
+    }
+  ],
+
+  filter: [
+    {
+      i: [[
+        { 'user': 'barney', 'age': 36, 'active': true },
+        { 'user': 'fred',   'age': 40, 'active': false }
+      ], function(o) { return !o.active; }],
+      e: [{ 'user': 'fred',   'age': 40, 'active': false }]
+    },
+    {
+      i: [[
+        { 'user': 'barney', 'age': 36, 'active': true },
+        { 'user': 'fred',   'age': 40, 'active': false }
+      ], { 'age': 36, 'active': true }],
+      e: [{ 'user': 'barney', 'age': 36, 'active': true }]
+    },
+    {
+      i: [[
+        { 'user': 'barney', 'age': 36, 'active': true },
+        { 'user': 'fred',   'age': 40, 'active': false }
+      ], ['active', false]],
+      e: [{ 'user': 'fred',   'age': 40, 'active': false }]
+    }
+  ],
+
+  find: [
+    {
+      i: [[
+        { 'user': 'barney',  'age': 36, 'active': true },
+        { 'user': 'fred',    'age': 40, 'active': false },
+        { 'user': 'pebbles', 'age': 1,  'active': true }
+      ], function(o) { return o.age < 40; }],
+      e: { 'user': 'barney',  'age': 36, 'active': true },
+    },
+    {
+      i: [[
+        { 'user': 'barney',  'age': 36, 'active': true },
+        { 'user': 'fred',    'age': 40, 'active': false },
+        { 'user': 'pebbles', 'age': 1,  'active': true }
+      ], { 'age': 1, 'active': true }],
+      e: { 'user': 'pebbles', 'age': 1,  'active': true }
+    }
+  ],
+
+  flatMap: [
+    {
+      i: [[1,2], function duplicate(n) {
+        return [n, n];
+      }],
+      e: [1,1,2,2]
+    }
+  ],
+
+  flatMapDepth: [
+    {
+      i: [[1, 2], function duplicate(n) {
+        return [[[n, n]]];
+      }, 2],
+      e: [[1, 1], [2, 2]]
+    }
+  ],
+
+  forEach: [
+    {
+      i: [{ 'a': 1, 'b': 2 }, function(value, key) {
+        // console.log(key);
+      }],
+      e: undefined
+    }
+  ],
+
+  groupBy: [
+    {
+      i: [[6.1, 4.2, 6.3], Math.floor],
+      e: { '4': [4.2], '6': [6.1, 6.3] }
+    },
+    {
+      i: [['one', 'two', 'three'], 'length'],
+      e: { '3': ['one', 'two'], '5': ['three'] }
+    }
+  ],
+
+  keyBy: [
+    {
+      i: [[
+        { 'dir': 'left', 'code': 97 },
+        { 'dir': 'right', 'code': 100 }
+      ], function(o) {
+        return String.fromCharCode(o.code);
+      }],
+      e: { 'a': { 'dir': 'left', 'code': 97 }, 'd': { 'dir': 'right', 'code': 100 } }
+    }
+  ],
+
+  map: [
+    {
+      i: [[4, 8], function square(n) {
+        return n * n;
+      }],
+      e: [16, 64]
+    },
+    {
+      i: [[
+        { 'user': 'barney' },
+        { 'user': 'fred' }
+      ], 'user'],
+      e: ['barney', 'fred']
+    },
+    {
+      i: [{ 'a': 4, 'b': 8 }, function square(n) {
+        return n * n;
+      }],
+      e: [16, 64]
+    }
+  ],
+
+
+
+  isArguments: [
+    {
+      i: [function() { return arguments; }()],
+      e: true
+    },
+    {
+      i: [[1,2,3]],
+      e: false
+    }
+  ],
 
   isEqual: [
     {
