@@ -532,7 +532,7 @@ var sanvvv = {
   },
 
   isObject: function (value) {
-    return typeof value !== null && typeof value === 'object' || typeof value === 'function'
+    return value !== null && typeof value === 'object' || typeof value === 'function'
   },
 
   isPlainObject: function (value) {
