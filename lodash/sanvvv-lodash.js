@@ -515,7 +515,7 @@ var sanvvv = {
       if (f(cur)) acc[0].push(cur)
       else acc[1].push(cur)
       return acc
-    }, [[], []])
+    }, [[],[]])
   },
 
   // reduce: function (collection, iteratee, accumulator) {
@@ -584,9 +584,25 @@ var sanvvv = {
     if (typeof iter === 'string') {
       var reg = /(?<=\/).*?(?=\/)/
       var isReg = reg.exec(iter)
+
+      // 正则
       if (isReg) {
         var r = new RegExp(isReg[0])
         return obj => r.exec(obj)
+      // 'a.b'
+      } else if (iter.indexOf('.') !== -1) {
+        var paths = iter.split('.')
+        return obj => {
+          var val = obj
+          var i = 0
+          while (paths[i]) {
+            var path = paths[i]
+            val = val[path]
+            i++
+          }
+          return val
+        }
+      //'property'
       } else {
         return obj => obj[iter]
       }
