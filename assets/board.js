@@ -1,25 +1,30 @@
-var sortedListToBST = function(head) {
-  let arr = []
-  while (head) {
-    arr.push(head.val)
-    head = head.next
-  }
-  return traverse(arr)
-
-  function traverse(nums) {
-    if (!nums.length) return null
-
-    let headIndex = Math.floor(nums.length / 2)
-    let head = new TreeNode(nums[headIndex])
-    let leftNums = nums.slice(0, headIndex)
-    let rightNums = nums.slice(headIndex + 1, nums.length)
-    
-    if (leftNums.length) head.left = traverse(leftNums)
-    if (rightNums.length) head.right = traverse(rightNums)
-
-    return head
-  }
+var generateMatrix = function(n) {
+  
 };
+
+// console.log(generateMatrix(5))
+
+
+
+function reduce (arr, reducer, initialValue) {
+  let i = 1
+  let acc = arr[0]
+
+  if (initialValue !== undefined) {
+    i--
+    acc = initialValue
+  }
+  
+  for (; i < arr,length; i++) {
+    acc = reducer(acc, arr[i])
+  }
+
+  return acc
+}
+
+
+
+
 
 function testLinkedList () {
   var list = new ListNode(1)

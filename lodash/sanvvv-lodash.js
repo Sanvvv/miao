@@ -49,8 +49,7 @@ var sanvvv = {
   },
 
   drop: function (array, n = 1) {
-    if (n < 0) return array.slice(0, array.length)
-    else return array.slice(n, array.length)
+    return n < 0 ? array.slice(0) : array.slice(n)
   },
 
   dropRight: function (array, n = 1) {
@@ -321,13 +320,7 @@ var sanvvv = {
   },
 
   uniq: function (array) {
-    var set = new Set()
-    return array.filter(item => {
-      if (!set.has(item)) {
-        set.add(item)
-        return true
-      } else return false
-    })
+    return [...new Set(array)]
   },
 
   uniqBy: function (array, iteratee = sanvvv.identity) {
@@ -357,7 +350,6 @@ var sanvvv = {
   },
 
   union: function (...arrays) {
-    // !!!
     return sanvvv.uniq(arrays.reduce((acc, cur) => {
       acc.push(...cur)
       return acc
@@ -409,46 +401,62 @@ var sanvvv = {
     return res
   },
 
-  // zipObjectDeep: function (props = [], values = []) {
-  //   var res = {}
+  zipObjectDeep: function (props = [], values = []) {
+    var res = {}
 
-  //   props.forEach((item, index) => {
-  //     var paths = item.split('.')     
-  //   })
-  // },
+    props.forEach((item, index) => {
+      var paths = item.split('.')
+      helper(paths, 0, res, values[index])
+    })
+    return res
+
+    function helper (paths, index, obj, val) {
+      var path = paths[index]
+
+      // 终止条件
+      if (index === paths.length - 1) return obj[path] = val
+
+      // 处理数组/对象情况
+      if (path.indexOf('[') !== -1) {
+        var left = path.indexOf('[')
+        var right = path.indexOf(']')
+        var i = path.slice(right - 1, right)
+        path = path.slice(0, left)
+
+        if (!obj[path]) obj[path] = []
+        obj[path][i] = {}
+        return helper(paths, index + 1, obj[path][i], val)
+      } else {
+        if (!obj[path]) obj[path] = {}
+        return helper(paths, index + 1, obj[path], val)
+      }
+    }
+  },
 
   countBy: function (collection, iteratee = sanvvv.identity) {
-    var res = {}
     var f = sanvvv.iteratee(iteratee)
-
-    collection.forEach(item => {
-      var val = f(item)
-      if (!res[val]) res[val] = 1
-      else res[val]++ 
-    })
-
-    return res
+    return collection.reduce((acc, cur) => {
+      var val = f(cur)
+      if (!acc[val]) acc[val] = 1
+      else acc[val]++ 
+      return acc
+    }, {})
   },
 
   every: function (collection, predicate = sanvvv.identity) {
     var f = sanvvv.iteratee(predicate)
-
     for (var item of collection) {
       if (!f(item)) return false
     }
-
     return true
   },
 
   filter: function (collection, predicate = sanvvv.identity) {
     var f = sanvvv.iteratee(predicate)
-    var res = []
-
-    for (var item of collection) {
-      if (f(item)) res.push(item)
-    }
-
-    return res
+    return collection.reduce((acc, cur) => {
+      if (f(cur)) acc.push(cur)
+      return acc
+    }, [])
   },
 
   find: function (collection, predicate = sanvvv.identity, fromIndex = 0) {
@@ -469,60 +477,50 @@ var sanvvv = {
   },
 
   forEach: function (collection, iteratee = sanvvv.identity) {
-    // !!!
-    for (var item in collection) {
-      iteratee(collection[item], item)
+    for (var [key, value] of Object.entries(collection)) {
+      iteratee(value, key)
     }
   },
 
   groupBy: function (collection, iteratee = sanvvv.identity) {
     var f = sanvvv.iteratee(iteratee)
-    var res = {}
-
-    collection.forEach(item => {
-      var val = f(item)
-      if (!res[val]) res[val] = [item]
-      else res[val].push(item)
-    })
-
-    return res
+    return collection.reduce((acc, cur) => {
+      var val = f(cur)
+      if (!acc[val]) acc[val] = [cur]
+      else acc[val].push(cur)
+      return acc
+    }, {})
   },
 
   keyBy: function (collection, iteratee = sanvvv.identity) {
     var f = sanvvv.iteratee(iteratee)
-    var res = {}
-
-    collection.forEach(item => {
-      var val = f(item)
-      res[val] = item
-    })
-
-    return res
+    return collection.reduce((acc, cur) => {
+      acc[f(cur)] = cur
+      return acc
+    }, {})
   },
 
   map: function (collection, iteratee = sanvvv.identity) {
     var f = sanvvv.iteratee(iteratee)
-    var res = []
-
-    // !!!
-    for (var item in collection) {
-      res.push(f(collection[item]))
-    }
-
-    return res
+    return Object.values(collection).reduce((acc, cur) => {
+      acc.push(f(cur))
+      return acc
+    }, [])
   },
 
   partition: function (collection, predicate = sanvvv.identity) {
     var f = sanvvv.iteratee(predicate)
-    var res = [[], []]
-
-    collection.forEach(item => {
-      if (f(item)) res[0].push(item)
-      else res[1].push(item)
-    })
-
-    return res
+    return collection.reduce((acc, cur) => {
+      if (f(cur)) acc[0].push(cur)
+      else acc[1].push(cur)
+      return acc
+    }, [[], []])
   },
+
+  // reduce: function (collection, iteratee, accumulator) {
+  //   iteratee = iteratee || sanvvv.identity
+  //   var f = sanvvv.iteratee(predicate)
+  // },
   
   isArguments: function (value) {
     return Object.prototype.toString.call(value) === '[object Arguments]'

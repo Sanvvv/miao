@@ -553,12 +553,12 @@ var test = {
     }
   ],
 
-  // zipObjectDeep: [
-  //   {
-  //     i: [['a.b[0].c', 'a.b[1].d'], [1, 2]],
-  //     e: { 'a': { 'b': [{ 'c': 1 }, { 'd': 2 }] } }
-  //   }
-  // ],
+  zipObjectDeep: [
+    {
+      i: [['a.b[0].c', 'a.b[1].d'], [1, 2]],
+      e: { 'a': { 'b': [{ 'c': 1 }, { 'd': 2 }] } }
+    }
+  ],
 
   countBy: [
     {
@@ -649,7 +649,13 @@ var test = {
   forEach: [
     {
       i: [{ 'a': 1, 'b': 2 }, function(value, key) {
-        // console.log(key);
+        // console.log(value);
+      }],
+      e: undefined
+    },
+    {
+      i: [[1,2], function(value, key) {
+        // console.log(value);
       }],
       e: undefined
     }
