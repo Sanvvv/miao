@@ -539,6 +539,10 @@ var sanvvv = {
     return Object.prototype.toString.call(value) === '[object Object]'
   },
 
+  isRegExp: function (value) {
+    return Object.prototype.toString.call(value) === '[object RegExp]'
+  },
+
   isEqual: function (value, other) {
     if (value === other) return true
     if (value !== value && other !== other) return true
@@ -580,17 +584,16 @@ var sanvvv = {
       return obj => sanvvv.isEqual(obj[iter[0]], iter[1])
     }
 
-    // isString && reg
-    if (typeof iter === 'string') {
-      var reg = /(?<=\/).*?(?=\/)/
-      var isReg = reg.exec(iter)
+    // isRegExp
+    // /(?<=\/).*?(?=\/)/
+    if (sanvvv.isRegExp(iter)) {
+      return str => iter.exec(str)
+    }
 
-      // 正则
-      if (isReg) {
-        var r = new RegExp(isReg[0])
-        return obj => r.exec(obj)
+    // isString
+    if (typeof iter === 'string') {
       // 'a.b'
-      } else if (iter.indexOf('.') !== -1) {
+      if (iter.indexOf('.') !== -1) {
         var paths = iter.split('.')
         return obj => {
           var val = obj

@@ -608,7 +608,7 @@ var test = {
       e: [{ 'user': 'fred',   'age': 40, 'active': false }]
     },
     {
-      i: [["abc","def"],"/ef/"],
+      i: [["abc","def"], /ef/],
       e: ["def"]
     }
   ],
