@@ -480,6 +480,7 @@ var sanvvv = {
     for (var [key, value] of Object.entries(collection)) {
       iteratee(value, key)
     }
+    return collection
   },
 
   groupBy: function (collection, iteratee = sanvvv.identity) {
@@ -502,8 +503,8 @@ var sanvvv = {
 
   map: function (collection, iteratee = sanvvv.identity) {
     var f = sanvvv.iteratee(iteratee)
-    return Object.values(collection).reduce((acc, cur) => {
-      acc.push(f(cur))
+    return Object.values(collection).reduce((acc, cur, index, array) => {
+      acc.push(f(cur, index, array))
       return acc
     }, [])
   },
@@ -530,19 +531,29 @@ var sanvvv = {
     return Object.prototype.toString.call(value) === '[object Array]'
   },
 
+  isObject: function (value) {
+    return typeof value !== null && typeof value === 'object' || typeof value === 'function'
+  },
+
+  isPlainObject: function (value) {
+    return Object.prototype.toString.call(value) === '[object Object]'
+  },
+
   isEqual: function (value, other) {
     if (value === other) return true
     if (value !== value && other !== other) return true
 
     // more...
 
-    if (typeof value === 'object') {
-      if (typeof other !== 'object') return false
+    if (Object.prototype.toString.call(value) !== Object.prototype.toString.call(other)) return false
+
+    if (sanvvv.isObject(value)) {
       for (var key in other) {
         if (!sanvvv.isEqual(value[key], other[key])) return false
       }
       return true
     }
+
     return false
   },
 
@@ -551,10 +562,10 @@ var sanvvv = {
   },
 
   iteratee: function (iter) {
-    // TODO: The predicate is invoked with three arguments: (value, index, array).
+    // TODO: a.b
 
     // isObject
-    if (Object.prototype.toString.call(iter) === '[object Object]') {
+    if (sanvvv.isPlainObject(iter)) {
       return obj => {
         for (var property in iter) {
           if (!sanvvv.isEqual(obj[property], iter[property])) return false
@@ -564,13 +575,22 @@ var sanvvv = {
     }
 
     // isArray
-    if (Object.prototype.toString.call(iter) === '[object Array]') {
+    if (sanvvv.isArray(iter)) {
       // !!! 只写了数组 length === 2 的情况
       return obj => sanvvv.isEqual(obj[iter[0]], iter[1])
     }
 
-    // isString
-    if (typeof iter === 'string') return obj => obj[iter]
+    // isString && reg
+    if (typeof iter === 'string') {
+      var reg = /(?<=\/).*?(?=\/)/
+      var isReg = reg.exec(iter)
+      if (isReg) {
+        var r = new RegExp(isReg[0])
+        return obj => r.exec(obj)
+      } else {
+        return obj => obj[iter]
+      }
+    }
     
     // isFunction
     if (typeof iter === 'function') return iter

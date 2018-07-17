@@ -606,6 +606,10 @@ var test = {
         { 'user': 'fred',   'age': 40, 'active': false }
       ], ['active', false]],
       e: [{ 'user': 'fred',   'age': 40, 'active': false }]
+    },
+    {
+      i: [["abc","def"],"/ef/"],
+      e: ["def"]
     }
   ],
 
@@ -651,13 +655,13 @@ var test = {
       i: [{ 'a': 1, 'b': 2 }, function(value, key) {
         // console.log(value);
       }],
-      e: undefined
+      e: { 'a': 1, 'b': 2 }
     },
     {
       i: [[1,2], function(value, key) {
         // console.log(value);
       }],
-      e: undefined
+      e: [1,2]
     }
   ],
 
@@ -703,6 +707,14 @@ var test = {
         return n * n;
       }],
       e: [16, 64]
+    },
+    {
+      i: [[{a: {b: 2}}, {a: {b: 1}}], 'a.b'],
+      e: [1,2]
+    },
+    {
+      i: [[1,2,3], function(v,i,o) {return v + i + o.length * 2}],
+      e: [7,9,11]
     }
   ],
 
