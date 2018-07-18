@@ -641,12 +641,16 @@ var sanvvv = {
     return Object.prototype.toString.call(value) === '[object Array]'
   },
 
+  isArrayBuffer: function (value) {
+    return Object.prototype.toString.call(value) === '[object ArrayBuffer]'
+  },
+
   isArrayLike: function (value) {
-    return value.hasOwnProperty('length') && typeof value !== 'function'
+    return !sanvvv.isNil(value) && value.hasOwnProperty('length') && typeof value !== 'function'
   },
 
   isBoolean: function (value) {
-    return typeof value === 'boolean'
+    return Object.prototype.toString.call(value) === '[object Boolean]'
   },
 
   isDate: function (value) {
@@ -654,9 +658,13 @@ var sanvvv = {
   },
 
   isElement: function (value) {
-    return typeof value === 'object' && value.nodeType === 1
+    return value !== null && typeof value === 'object' && value.nodeType === 1
   },
 
+  isEmpty: function (value) {
+    return sanvvv.isNil(value) || Object.values(value).length === 0
+  },
+  
   isError: function (value) {
     return Object.prototype.toString.call(value) === '[object Error]'
   },
@@ -673,8 +681,23 @@ var sanvvv = {
     return Number.isInteger(value)
   },
 
+  isLength: function (value) {
+    return sanvvv.isNumber(value) && value >= 0 && value < Number.MAX_SAFE_INTEGER && value === Math.floor(value)
+  },
+
   isMap: function (value) {
-    return Object.prototype.toString.call(value) === '[obejct Map]'
+    return Object.prototype.toString.call(value) === '[object Map]'
+  },
+
+  isMatch: function (object, source) {
+    for (var key in source) {
+      if (!sanvvv.isEqual(object[key], source[key])) return false
+    }
+    return true
+  },
+
+  isNaN: function (value) {
+    return Object.prototype.toString.call(value) === '[object Number]' && isNaN(value)
   },
 
   isNil: function (value) {
@@ -716,6 +739,26 @@ var sanvvv = {
     return Object.prototype.toString.call(value) === '[object Set]'
   },
 
+  isString: function (value) {
+    return Object.prototype.toString.call(value) === '[object String]'
+  },
+
+  isSymbol: function (value) {
+    return typeof value === 'symbol'
+  },
+
+  isUndefined: function (value) {
+    return value === 'undefined'
+  },
+
+  isWeakMap: function (value) {
+    Object.prototype.toString.call(value) === '[object WeakMap]'
+  },
+
+  isWeakSet: function (value) {
+    Object.prototype.toString.call(value) === '[object WeakSet]'
+  },
+
   isEqual: function (value, other) {
     if (value === other) return true
     if (value !== value && other !== other) return true
@@ -724,7 +767,11 @@ var sanvvv = {
     // more...
 
     if (sanvvv.isObject(value)) {
-      for (var key in other) {
+      var val = Object.keys(value)
+      var oth = Object.keys(other)
+      
+      if (val.length !== oth.length) return false
+      for (var key of val) {
         if (!sanvvv.isEqual(value[key], other[key])) return false
       }
       return true
@@ -734,9 +781,13 @@ var sanvvv = {
   },
 
   toArray: function (value) {
-    if (sanvvv.isArrayLike(value) || sanvvv.isObjectLike(value)) {
+    if (!sanvvv.isNil(value) && sanvvv.isArrayLike(value) || sanvvv.isObjectLike(value)) {
       return Object.values(value)
     } else return []
+  },
+
+  ceil: function (number, precision = 0) {
+
   },
 
   identity: function (value) {

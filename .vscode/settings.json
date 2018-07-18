@@ -1,3 +1,5 @@
 {
-  "liveServer.settings.multiRootWorkspaceName": "homework"
+  "liveServer.settings.multiRootWorkspaceName": "homework",
+  "background.enabled": false,
+  "background.useDefault": false,
 }

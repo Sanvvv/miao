@@ -733,7 +733,7 @@ var test = {
       e: { '1': ['a', 'c'], '2': ['b'] }
     },
     {
-      i: [[1,2,3,4,5,6,7], function (a,b) {return a + b}],
+      i: [[1, 2, 3, 4, 5, 6, 7], function (a, b) { return a + b }],
       e: 28
     }
   ],
@@ -848,10 +848,82 @@ var test = {
     }
   ],
 
+  isEmpty: [
+    {
+      i: [null],
+      e: true
+    },
+    {
+      i: [true],
+      e: true
+    },
+    {
+      i: [1],
+      e: true
+    },
+    {
+      i: [[1, 2, 3]],
+      e: false
+    },
+    {
+      i: [{ 'a': 1 }],
+      e: false
+    },
+  ],
+
+  isLength: [
+    {
+      i: [2],
+      e: true
+    },
+    {
+      i: [Number.MIN_VALUE],
+      e: false
+    },
+    {
+      i: [Infinity],
+      e: false
+    },
+    {
+      i: ['3'],
+      e: false
+    },
+  ],
+  
+  isNaN: [
+    {
+      i: [NaN],
+      e: true
+    },
+    {
+      i: [new Number(NaN)],
+      e: true
+    },
+    {
+      i: [undefined],
+      e: false
+    },
+    {
+      i: [{}],
+      e: false
+    }
+  ],
+
+  isMatch: [
+    {
+      i: [{ 'a': 1, 'b': 2 }, { 'b': 2 }],
+      e: true
+    },
+    {
+      i: [{ 'a': 1, 'b': 2 }, { 'b': 1 }],
+      e: false
+    }
+  ],
+
   toArray: [
     {
       i: [{ 'a': 1, 'b': 2 }],
-      e: [1,2]
+      e: [1, 2]
     },
     {
       i: ['abc'],
