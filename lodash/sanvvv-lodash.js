@@ -748,15 +748,15 @@ var sanvvv = {
   },
 
   isUndefined: function (value) {
-    return value === 'undefined'
+    return typeof value === 'undefined'
   },
 
   isWeakMap: function (value) {
-    Object.prototype.toString.call(value) === '[object WeakMap]'
+    return Object.prototype.toString.call(value) === '[object WeakMap]'
   },
 
   isWeakSet: function (value) {
-    Object.prototype.toString.call(value) === '[object WeakSet]'
+    return Object.prototype.toString.call(value) === '[object WeakSet]'
   },
 
   isEqual: function (value, other) {
@@ -769,7 +769,7 @@ var sanvvv = {
     if (sanvvv.isObject(value)) {
       var val = Object.keys(value)
       var oth = Object.keys(other)
-      
+
       if (val.length !== oth.length) return false
       for (var key of val) {
         if (!sanvvv.isEqual(value[key], other[key])) return false
@@ -786,9 +786,9 @@ var sanvvv = {
     } else return []
   },
 
-  ceil: function (number, precision = 0) {
-
-  },
+  // ceil: function (number, precision = 0) {
+    
+  // },
 
   identity: function (value) {
     return value
