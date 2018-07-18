@@ -780,21 +780,93 @@ var sanvvv = {
     return false
   },
 
-  toArray: function (value) {
+  /**
+   * @param  {*} value
+   * @return {Array} Returns the converted array
+   */
+  toArray: value => {
     if (!sanvvv.isNil(value) && sanvvv.isArrayLike(value) || sanvvv.isObjectLike(value)) {
       return Object.values(value)
     } else return []
   },
 
-  // ceil: function (number, precision = 0) {
-    
-  // },
+  /**
+   * @param  {number} number
+   * @param  {number} [precision=0]
+   * @return {number} Returns the rounded up number
+   */
+  ceil: (number, precision = 0) => Math.ceil(number * 10 ** precision) / 10 ** precision,
 
-  identity: function (value) {
-    return value
+  /**
+   * @param  {Array} array
+   * @return {*}
+   */
+  max: array => sanvvv.maxBy(array),
+
+  /**
+   * @param  {Array} array
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {*} Returns the maximum value or undefined
+   */
+  maxBy: (array, iteratee = sanvvv.identity) => {
+    if (!array.length) return undefined
+    var f = sanvvv.iteratee(iteratee)
+    return array.reduce((acc, cur) => f(acc) > f(cur) ? acc : cur)
   },
 
-  iteratee: function (iter) {
+  /**
+   * @param  {Array} array
+   * @return {*}
+   */
+  min: array => sanvvv.minBy(array),
+
+  /**
+   * @param  {Array} array
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {*} Returns the minimum value or undefined
+   */
+  minBy: (array, iteratee = sanvvv.identity) => {
+    if (!array.length) return undefined
+    var f = sanvvv.iteratee(iteratee)
+    return array.reduce((acc, cur) => f(acc) < f(cur) ? acc : cur)
+  },
+
+  /**
+   * @param  {number} number
+   * @param  {number} [precision=0]
+   * @return {number} Returns the rounded up number
+   */
+  round: (number, precision = 0) => Math.round(number * 10 ** precision) / 10 ** precision,
+  
+  /**
+   * @param  {Array} array
+   * @return {number}
+   */
+  sum: array => sanvvv.sumBy(array),
+
+  /**
+   * @param  {Array} array
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {number}
+   */
+  sumBy: (array, iteratee = sanvvv.identity) => {
+    var f = sanvvv.iteratee(iteratee)
+    return array.reduce((acc, cur) => acc += f(cur), 0)
+  },
+
+  /**
+   * @param  {number} [lower=0]
+   * @param  {number} [upper=1]
+   * @param  {boolean} floating
+   * @retrun {number}
+   */
+  // random: (lower = 0, upper = 1, floating) => {
+  //   return Math.random() * (upper - lower) + lower
+  // },
+
+  identity: value => value,
+
+  iteratee: iter => {
     // isObject
     if (Object.prototype.toString.call(iter) === '[object Object]') {
       return obj => {
