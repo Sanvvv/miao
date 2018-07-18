@@ -731,6 +731,10 @@ var test = {
         return result;
       }, {}],
       e: { '1': ['a', 'c'], '2': ['b'] }
+    },
+    {
+      i: [[1,2,3,4,5,6,7], function (a,b) {return a + b}],
+      e: 28
     }
   ],
 
@@ -826,6 +830,13 @@ var test = {
     }
   ],
 
+  isPlainObject: [
+    {
+      i: [document],
+      e: false
+    }
+  ],
+
   isEqual: [
     {
       i: [{ 'a': 1 }, { 'a': 1 }],
@@ -835,8 +846,29 @@ var test = {
       i: [[1, 2, 3], [1, 2, 3]],
       e: true
     }
+  ],
+
+  toArray: [
+    {
+      i: [{ 'a': 1, 'b': 2 }],
+      e: [1,2]
+    },
+    {
+      i: ['abc'],
+      e: ['a', 'b', 'c']
+    },
+    // {
+    //   i: 1,
+    //   e: []
+    // },
+    // {
+    //   i: null,
+    //   e: []
+    // }
   ]
 }
+
+
 
 for (let func in test) {
   for (let f of test[func]) {

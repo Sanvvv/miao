@@ -93,15 +93,7 @@ var sanvvv = {
   },
 
   flatten: function (array) {
-    var res = []
-
-    array.forEach(item => {
-      if (Array.isArray(item)) {
-        item.forEach(element => res.push(element))
-      } else res.push(item)
-    })
-
-    return res
+    return [].concat(...array)
   },
 
   findIndex: function (array, predicate = sanvvv.identity, fromIndex = 0) {
@@ -521,7 +513,7 @@ var sanvvv = {
   reduce: function (collection, iteratee, accumulator) {
     iteratee = iteratee || sanvvv.identity
     collection = Object.entries(collection)
-    acc = collection[0]
+    acc = collection[0][1]
     var f = sanvvv.iteratee(iteratee)
     var i = 1
 
@@ -649,16 +641,79 @@ var sanvvv = {
     return Object.prototype.toString.call(value) === '[object Array]'
   },
 
+  isArrayLike: function (value) {
+    return value.hasOwnProperty('length') && typeof value !== 'function'
+  },
+
+  isBoolean: function (value) {
+    return typeof value === 'boolean'
+  },
+
+  isDate: function (value) {
+    return Object.prototype.toString.call(value) === '[object Date]'
+  },
+
+  isElement: function (value) {
+    return typeof value === 'object' && value.nodeType === 1
+  },
+
+  isError: function (value) {
+    return Object.prototype.toString.call(value) === '[object Error]'
+  },
+
+  isFinite: function (value) {
+    return Number.isFinite(value)
+  },
+
+  isFunction: function (value) {
+    return typeof value === 'function'
+  },
+
+  isInteger: function (value) {
+    return Number.isInteger(value)
+  },
+
+  isMap: function (value) {
+    return Object.prototype.toString.call(value) === '[obejct Map]'
+  },
+
+  isNil: function (value) {
+    return value === null || value === undefined
+  },
+
+  isNull: function (value) {
+    return value === null 
+  },
+
+  isNumber: function (value) {
+    return Object.prototype.toString.call(value) === '[object Number]'
+  },
+
   isObject: function (value) {
     return value !== null && typeof value === 'object' || typeof value === 'function'
   },
 
+  isObjectLike: function (value) {
+    return typeof value === 'object' && value !== null
+  },
+
   isPlainObject: function (value) {
-    return Object.prototype.toString.call(value) === '[object Object]'
+    // !!!
+    if (!Object.prototype.toString.call(value) === '[object Object]') return false
+    if (value.constructor === Object) return true
+    return false
   },
 
   isRegExp: function (value) {
     return Object.prototype.toString.call(value) === '[object RegExp]'
+  },
+
+  isSafeInteger: function (value) {
+    return sanvvv.isInteger(value) && value >= Number.MIN_SAFE_INTEGER && value <= Number.MAX_SAFE_INTEGER
+  },
+
+  isSet: function (value) {
+    return Object.prototype.toString.call(value) === '[object Set]'
   },
 
   isEqual: function (value, other) {
@@ -678,13 +733,19 @@ var sanvvv = {
     return false
   },
 
-  identity: function (...value) {
-    return value[0]
+  toArray: function (value) {
+    if (sanvvv.isArrayLike(value) || sanvvv.isObjectLike(value)) {
+      return Object.values(value)
+    } else return []
+  },
+
+  identity: function (value) {
+    return value
   },
 
   iteratee: function (iter) {
     // isObject
-    if (sanvvv.isPlainObject(iter)) {
+    if (Object.prototype.toString.call(iter) === '[object Object]') {
       return obj => {
         for (var property in iter) {
           if (!sanvvv.isEqual(obj[property], iter[property])) return false
