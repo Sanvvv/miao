@@ -15,7 +15,7 @@ function reduce (arr, reducer, initialValue) {
     acc = initialValue
   }
   
-  for (; i < arr,length; i++) {
+  for (; i < arr.length; i++) {
     acc = reducer(acc, arr[i])
   }
 

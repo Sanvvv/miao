@@ -518,11 +518,129 @@ var sanvvv = {
     }, [[],[]])
   },
 
-  // reduce: function (collection, iteratee, accumulator) {
-  //   iteratee = iteratee || sanvvv.identity
-  //   var f = sanvvv.iteratee(predicate)
-  // },
+  reduce: function (collection, iteratee, accumulator) {
+    iteratee = iteratee || sanvvv.identity
+    collection = Object.entries(collection)
+    acc = collection[0]
+    var f = sanvvv.iteratee(iteratee)
+    var i = 1
+
+    if (accumulator !== undefined) {
+      acc = accumulator
+      i = 0
+    }
+
+    for (; i < collection.length; i++) {
+      acc = f(acc, collection[i][1], collection[i][0])
+    }
+
+    return acc
+  },
+
+  reduceRight: function (collection, iteratee, accumulator) {
+    iteratee = iteratee || sanvvv.identity
+    collection = Object.entries(collection)
+    var len = collection.length
+    var f = sanvvv.iteratee(iteratee)
+    var end = 1
+
+    if (accumulator !== undefined) {
+      acc = accumulator
+      end = 0
+    } else acc = collection[len - 1]
+
+    for (var i = len - 1; i >= end; i--) {
+      acc = f(acc, collection[i][1], collection[i][0])
+    }
+
+    return acc
+  },
   
+  /**
+   * @param  {Array|Object} collection
+   * @param  {Function} [predicate=sanvvv.identity]
+   * @return {Array} returns new array
+   */
+  reject: function (collection, predicate = sanvvv.identity) {
+    var f = sanvvv.iteratee(predicate)
+    return collection.reduce((acc, cur) => {
+      if (!f(cur)) acc.push(cur)
+      return acc
+    }, [])
+  },
+
+  /**
+   * @param  {Array|Object} collection
+   * @return {*}
+   */
+  sample: function (collection) {
+    var co = Object.entries(collection)
+    var samp = co[~~(Math.random() * co.length)]
+    if (sanvvv.isArray(collection)) return samp[1]
+    else return {[samp[0]]: samp[1]}
+  },
+
+  /**
+   * @param  {Array|Object} collection
+   * @return {Array} returns new array
+   */
+  shuffle: function (collection) {
+    // TODO: param Object
+    var res = collection.slice(0)
+    var len = collection.length
+
+    for (var i = 0; i < res.length; i++) {
+      var rdIndex = ~~(Math.random() * (len - i) + i)
+      var temp = res[i]
+      res[rdIndex] = temp
+      res[i] = res[rdIndex]
+    }
+
+    return res
+  },
+  
+  /**
+   * @param  {Array|Object|string} collection array-like values
+   * @return {number} the collection size
+   */
+  size: function (collection) {
+    return Object.keys(collection).length
+  },
+
+  /**
+   * @param  {Array|Object} collection
+   * @param  {Function} [predicate=sanvvv.identity]
+   * @return {boolean}
+   */
+  some: function (collection, predicate = sanvvv.identity) {
+    var f = sanvvv.iteratee(predicate)
+    for (var item of collection) {
+      if (f(item)) return true
+    }
+    return false
+  },
+
+  /**
+   * @param  {Array|Object} collection
+   * @param  {Function[]} [iteratees=sanvvv.identity]
+   * @return {Array} returns new array
+   */
+  sortBy: function (collection, iteratees = [sanvvv.identity]) {
+    // TODO: param Object
+    var iters = iteratees.map(x => sanvvv.iteratee(x))
+    var co = collection.slice(0)
+
+    for (var i = iters.length - 1; i >= 0; i--) {
+      co = collection.sort((a, b) => {
+        a = '' + iters[i](a)
+        b = '' + iters[i](b)
+        return a.localeCompare(b)
+      })
+    }
+
+    return co
+  },
+
   isArguments: function (value) {
     return Object.prototype.toString.call(value) === '[object Arguments]'
   },
@@ -546,10 +664,9 @@ var sanvvv = {
   isEqual: function (value, other) {
     if (value === other) return true
     if (value !== value && other !== other) return true
+    if (Object.prototype.toString.call(value) !== Object.prototype.toString.call(other)) return false
 
     // more...
-
-    if (Object.prototype.toString.call(value) !== Object.prototype.toString.call(other)) return false
 
     if (sanvvv.isObject(value)) {
       for (var key in other) {
@@ -566,8 +683,6 @@ var sanvvv = {
   },
 
   iteratee: function (iter) {
-    // TODO: a.b
-
     // isObject
     if (sanvvv.isPlainObject(iter)) {
       return obj => {

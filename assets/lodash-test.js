@@ -1,18 +1,18 @@
 var test = {
   chunk: [
     {
-      i:  [['a', 'b', 'c', 'd'], 3],
-      e:  [['a', 'b', 'c'], ['d']]
+      i: [['a', 'b', 'c', 'd'], 3],
+      e: [['a', 'b', 'c'], ['d']]
     }
   ],
 
   difference: [
     {
-      i: [[1,2,3,4], [1,2], [3]],
+      i: [[1, 2, 3, 4], [1, 2], [3]],
       e: [4]
     },
     {
-      i: [[1,2,3], [1, 2], [2]],
+      i: [[1, 2, 3], [1, 2], [2]],
       e: [3]
     }
   ],
@@ -37,30 +37,30 @@ var test = {
 
   drop: [
     {
-      i: [[1,2,3]],
-      e: [2,3]
+      i: [[1, 2, 3]],
+      e: [2, 3]
     },
     {
-      i: [[1,2,3], 5],
+      i: [[1, 2, 3], 5],
       e: []
     },
     {
-      i: [[1,2,3], 0],
-      e: [1,2,3]
+      i: [[1, 2, 3], 0],
+      e: [1, 2, 3]
     }
   ],
 
   dropRight: [
     {
-      i: [[1,2,3]],
-      e: [1,2]
+      i: [[1, 2, 3]],
+      e: [1, 2]
     },
     {
-      i: [[1,2,3], 2],
+      i: [[1, 2, 3], 2],
       e: [1]
     },
     {
-      i: [[1,2,3], 5],
+      i: [[1, 2, 3], 5],
       e: []
     }
   ],
@@ -68,37 +68,37 @@ var test = {
   dropRightWhile: [
     {
       i: [[
-        { 'user': 'barney',  'active': true },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': true },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': false }
       ], { 'user': 'pebbles', 'active': false }],
-      e: [{ 'user': 'barney',  'active': true }, { 'user': 'fred', 'active': false }]
+      e: [{ 'user': 'barney', 'active': true }, { 'user': 'fred', 'active': false }]
     },
     {
       i: [[
-        { 'user': 'barney',  'active': true },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': true },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': false }
-      ], function(o) { return !o.active; }],
-      e: [{ 'user': 'barney',  'active': true }]
+      ], function (o) { return !o.active; }],
+      e: [{ 'user': 'barney', 'active': true }]
     },
     {
       i: [[
-        { 'user': 'barney',  'active': true },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': true },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': false }
       ], ['active', false]],
-      e: [{ 'user': 'barney',  'active': true }]
+      e: [{ 'user': 'barney', 'active': true }]
     },
     {
       i: [[
-        { 'user': 'barney',  'active': true },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': true },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': false }
       ], 'active'],
       e: [
-        { 'user': 'barney',  'active': true },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': true },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': false }
       ]
     }
@@ -107,18 +107,18 @@ var test = {
   dropWhile: [
     {
       i: [[
-        { 'user': 'barney',  'active': false },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': false },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': true }
       ], ['active', false]],
       e: [{ 'user': 'pebbles', 'active': true }]
     },
     {
       i: [[
-        { 'user': 'barney',  'active': false },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': false },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': true }
-      ], function(o) { return !o.active; }],
+      ], function (o) { return !o.active; }],
       e: [{ 'user': 'pebbles', 'active': true }]
     }
   ],
@@ -130,13 +130,13 @@ var test = {
     },
     {
       i: [Array(3), 2],
-      e: [2,2,2]
+      e: [2, 2, 2]
     }
   ],
 
   head: [
     {
-      i: [[1,2,3]],
+      i: [[1, 2, 3]],
       e: 1
     }
   ],
@@ -151,16 +151,16 @@ var test = {
   findIndex: [
     {
       i: [[
-        { 'user': 'barney',  'active': false },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': false },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': true }
       ], { 'user': 'fred', 'active': false }],
       e: 1
     },
     {
       i: [[
-        { 'user': 'barney',  'active': false },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': false },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': true }
       ], 'active'],
       e: 2
@@ -170,18 +170,18 @@ var test = {
   findLastIndex: [
     {
       i: [[
-        { 'user': 'barney',  'active': true },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': true },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': false }
       ], 'active'],
       e: 0
     },
     {
       i: [[
-        { 'user': 'barney',  'active': true },
-        { 'user': 'fred',    'active': false },
+        { 'user': 'barney', 'active': true },
+        { 'user': 'fred', 'active': false },
         { 'user': 'pebbles', 'active': false }
-      ], function(o) { return o.user == 'pebbles'; }],
+      ], function (o) { return o.user == 'pebbles'; }],
       e: 2
     }
   ],
@@ -189,7 +189,7 @@ var test = {
   flattenDeep: [
     {
       i: [[1, [2, [3, [4]], 5]]],
-      e: [1,2,3,4,5]
+      e: [1, 2, 3, 4, 5]
     }
   ],
 
@@ -225,15 +225,15 @@ var test = {
       e: 1
     },
     {
-      i: [[1,2,3,4], 2, -2],
+      i: [[1, 2, 3, 4], 2, -2],
       e: -1
     }
   ],
 
   initial: [
     {
-      i: [[1,2,3]],
-      e: [1,2]
+      i: [[1, 2, 3]],
+      e: [1, 2]
     },
     {
       i: [[1]],
@@ -258,7 +258,7 @@ var test = {
       e: [2.1]
     },
     {
-      i: [[{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1}], 'x'],
+      i: [[{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x'],
       e: [{ 'x': 1 }]
     }
   ],
@@ -276,7 +276,7 @@ var test = {
       e: 'a~b~c'
     },
     {
-      i: [[1,2,3],4],
+      i: [[1, 2, 3], 4],
       e: '14243'
     }
   ],
@@ -324,8 +324,8 @@ var test = {
       e: ['b', 'b']
     },
     {
-      i: [[1,2,3,4,5],3,5],
-      e: [1,2,4]
+      i: [[1, 2, 3, 4, 5], 3, 5],
+      e: [1, 2, 4]
     }
   ],
 
@@ -345,7 +345,7 @@ var test = {
 
   slice: [
     {
-      i: [[1,2,3,4], -3, -2],
+      i: [[1, 2, 3, 4], -3, -2],
       e: [2]
     },
   ],
@@ -360,7 +360,7 @@ var test = {
       e: 1
     },
     {
-      i: [[1,1,1,1,1], 1],
+      i: [[1, 1, 1, 1, 1], 1],
       e: 0
     },
     {
@@ -379,11 +379,11 @@ var test = {
       e: 1
     },
     {
-      i: [[1,2,3,4], 5],
+      i: [[1, 2, 3, 4], 5],
       e: -1
     },
     {
-      i: [[1,2,3,4], 0],
+      i: [[1, 2, 3, 4], 0],
       e: -1
     },
     {
@@ -402,7 +402,7 @@ var test = {
       e: 4
     },
     {
-      i: [[1,3], 1],
+      i: [[1, 3], 1],
       e: 1
     }
   ],
@@ -413,7 +413,7 @@ var test = {
       e: 3
     },
     {
-      i: [[1,2,2,4], 2],
+      i: [[1, 2, 2, 4], 2],
       e: 2
     }
   ],
@@ -520,7 +520,7 @@ var test = {
       e: [3]
     },
     {
-      i: [[1,2], 1,2],
+      i: [[1, 2], 1, 2],
       e: []
     }
   ],
@@ -538,14 +538,14 @@ var test = {
       e: [['a', 1, true], ['b', 2, false]]
     }
   ],
-  
+
   unzip: [
     {
       i: [[['fred', 30, true], ['barney', 40, false]]],
       e: [['fred', 'barney'], [30, 40], [true, false]]
     }
   ],
-    
+
   zipObject: [
     {
       i: [['a', 'b'], [1, 2]],
@@ -575,7 +575,7 @@ var test = {
     {
       i: [[
         { 'user': 'barney', 'age': 36, 'active': false },
-        { 'user': 'fred',   'age': 40, 'active': false }
+        { 'user': 'fred', 'age': 40, 'active': false }
       ], { 'user': 'barney', 'active': false }],
       e: false
     },
@@ -589,26 +589,26 @@ var test = {
     {
       i: [[
         { 'user': 'barney', 'age': 36, 'active': true },
-        { 'user': 'fred',   'age': 40, 'active': false }
-      ], function(o) { return !o.active; }],
-      e: [{ 'user': 'fred',   'age': 40, 'active': false }]
+        { 'user': 'fred', 'age': 40, 'active': false }
+      ], function (o) { return !o.active; }],
+      e: [{ 'user': 'fred', 'age': 40, 'active': false }]
     },
     {
       i: [[
         { 'user': 'barney', 'age': 36, 'active': true },
-        { 'user': 'fred',   'age': 40, 'active': false }
+        { 'user': 'fred', 'age': 40, 'active': false }
       ], { 'age': 36, 'active': true }],
       e: [{ 'user': 'barney', 'age': 36, 'active': true }]
     },
     {
       i: [[
         { 'user': 'barney', 'age': 36, 'active': true },
-        { 'user': 'fred',   'age': 40, 'active': false }
+        { 'user': 'fred', 'age': 40, 'active': false }
       ], ['active', false]],
-      e: [{ 'user': 'fred',   'age': 40, 'active': false }]
+      e: [{ 'user': 'fred', 'age': 40, 'active': false }]
     },
     {
-      i: [["abc","def"], /ef/],
+      i: [["abc", "def"], /ef/],
       e: ["def"]
     }
   ],
@@ -616,28 +616,28 @@ var test = {
   find: [
     {
       i: [[
-        { 'user': 'barney',  'age': 36, 'active': true },
-        { 'user': 'fred',    'age': 40, 'active': false },
-        { 'user': 'pebbles', 'age': 1,  'active': true }
-      ], function(o) { return o.age < 40; }],
-      e: { 'user': 'barney',  'age': 36, 'active': true },
+        { 'user': 'barney', 'age': 36, 'active': true },
+        { 'user': 'fred', 'age': 40, 'active': false },
+        { 'user': 'pebbles', 'age': 1, 'active': true }
+      ], function (o) { return o.age < 40; }],
+      e: { 'user': 'barney', 'age': 36, 'active': true },
     },
     {
       i: [[
-        { 'user': 'barney',  'age': 36, 'active': true },
-        { 'user': 'fred',    'age': 40, 'active': false },
-        { 'user': 'pebbles', 'age': 1,  'active': true }
+        { 'user': 'barney', 'age': 36, 'active': true },
+        { 'user': 'fred', 'age': 40, 'active': false },
+        { 'user': 'pebbles', 'age': 1, 'active': true }
       ], { 'age': 1, 'active': true }],
-      e: { 'user': 'pebbles', 'age': 1,  'active': true }
+      e: { 'user': 'pebbles', 'age': 1, 'active': true }
     }
   ],
 
   flatMap: [
     {
-      i: [[1,2], function duplicate(n) {
+      i: [[1, 2], function duplicate(n) {
         return [n, n];
       }],
-      e: [1,1,2,2]
+      e: [1, 1, 2, 2]
     }
   ],
 
@@ -652,16 +652,16 @@ var test = {
 
   forEach: [
     {
-      i: [{ 'a': 1, 'b': 2 }, function(value, key) {
+      i: [{ 'a': 1, 'b': 2 }, function (value, key) {
         // console.log(value);
       }],
       e: { 'a': 1, 'b': 2 }
     },
     {
-      i: [[1,2], function(value, key) {
+      i: [[1, 2], function (value, key) {
         // console.log(value);
       }],
-      e: [1,2]
+      e: [1, 2]
     }
   ],
 
@@ -681,7 +681,7 @@ var test = {
       i: [[
         { 'dir': 'left', 'code': 97 },
         { 'dir': 'right', 'code': 100 }
-      ], function(o) {
+      ], function (o) {
         return String.fromCharCode(o.code);
       }],
       e: { 'a': { 'dir': 'left', 'code': 97 }, 'd': { 'dir': 'right', 'code': 100 } }
@@ -709,24 +709,119 @@ var test = {
       e: [16, 64]
     },
     {
-      i: [[{a: {b: 1}}, {a: {b: 2}}], 'a.b'],
-      e: [1,2]
+      i: [[{ a: { b: 1 } }, { a: { b: 2 } }], 'a.b'],
+      e: [1, 2]
     },
     {
-      i: [[1,2,3], function(v,i,o) {return v + i + o.length * 2}],
-      e: [7,9,11]
+      i: [[1, 2, 3], function (v, i, o) { return v + i + o.length * 2 }],
+      e: [7, 9, 11]
     }
   ],
 
-
-
-  isArguments: [
+  reduce: [
     {
-      i: [function() { return arguments; }()],
+      i: [[1, 2], function (sum, n) {
+        return sum + n;
+      }, 0],
+      e: 3
+    },
+    {
+      i: [{ 'a': 1, 'b': 2, 'c': 1 }, function (result, value, key) {
+        (result[value] || (result[value] = [])).push(key);
+        return result;
+      }, {}],
+      e: { '1': ['a', 'c'], '2': ['b'] }
+    }
+  ],
+
+  reduceRight: [
+    {
+      i: [[[0, 1], [2, 3], [4, 5]], function (flattened, other) {
+        return flattened.concat(other);
+      }, []],
+      e: [4, 5, 2, 3, 0, 1]
+    }
+  ],
+
+  reject: [
+    {
+      i: [[
+        { 'user': 'barney', 'age': 36, 'active': false },
+        { 'user': 'fred', 'age': 40, 'active': true }
+      ], function (o) { return !o.active; }],
+      e: [{ 'user': 'fred', 'age': 40, 'active': true }]
+    },
+    {
+      i: [[
+        { 'user': 'barney', 'age': 36, 'active': false },
+        { 'user': 'fred', 'age': 40, 'active': true }
+      ], ['active', false]],
+      e: [{ 'user': 'fred', 'age': 40, 'active': true }]
+    }
+  ],
+
+  size: [
+    {
+      i: [[1, 2, 3]],
+      e: 3
+    },
+    {
+      i: [{ 'a': 1, 'b': 2 }],
+      e: 2
+    },
+    {
+      i: ['pebbles'],
+      e: 7
+    }
+  ],
+
+  some: [
+    {
+      i: [[null, 0, 'yes', false], Boolean],
       e: true
     },
     {
-      i: [[1,2,3]],
+      i: [users = [
+        { 'user': 'barney', 'active': true },
+        { 'user': 'fred', 'active': false }
+      ], { 'user': 'barney', 'active': false }],
+      e: false
+    }
+  ],
+
+  sortBy: [
+    {
+      i: [[
+        { 'user': 'fred', 'age': 48 },
+        { 'user': 'barney', 'age': 36 },
+        { 'user': 'fred', 'age': 40 },
+        { 'user': 'barney', 'age': 34 }
+      ], [function (o) { return o.user; }]],
+      e: [{ 'user': 'barney', 'age': 36 },
+      { 'user': 'barney', 'age': 34 },
+      { 'user': 'fred', 'age': 48 },
+      { 'user': 'fred', 'age': 40 }]
+    },
+    {
+      i: [[{ 'user': 'fred', 'age': 48 },
+      { 'user': 'barney', 'age': 36 },
+      { 'user': 'fred', 'age': 40 },
+      { 'user': 'barney', 'age': 34 }
+      ], ['user', 'age']],
+      e: [{ 'user': 'barney', 'age': 34 },
+      { 'user': 'barney', 'age': 36 },
+      { 'user': 'fred', 'age': 40 },
+      { 'user': 'fred', 'age': 48 }]
+    }
+  ],
+
+  isArguments: [
+    {
+      i: [function () { return arguments; }()],
+      e: true
+    },
+    {
+      i: [[1, 2, 3]],
       e: false
     }
   ],
@@ -737,7 +832,7 @@ var test = {
       e: true
     },
     {
-      i: [[1,2,3], [1,2,3]],
+      i: [[1, 2, 3], [1, 2, 3]],
       e: true
     }
   ]
@@ -753,7 +848,7 @@ for (let func in test) {
       console.log(func)
       console.log('input : ' + JSON.stringify(f.i))
       console.log('expect: ' + expect)
-      console.log('result: ' + result )
+      console.log('result: ' + result)
     }
   }
 }
