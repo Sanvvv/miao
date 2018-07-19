@@ -889,7 +889,7 @@ var test = {
       e: false
     },
   ],
-  
+
   isNaN: [
     {
       i: [NaN],
@@ -967,7 +967,7 @@ var test = {
 
   maxBy: [
     {
-      i: [[{ 'n': 1 }, { 'n': 2 }], function(o) { return o.n; }],
+      i: [[{ 'n': 1 }, { 'n': 2 }], function (o) { return o.n; }],
       e: { 'n': 2 }
     },
     {
@@ -978,7 +978,7 @@ var test = {
 
   minBy: [
     {
-      i: [[{ 'n': 1 }, { 'n': 2 }], function(o) { return o.n; }],
+      i: [[{ 'n': 1 }, { 'n': 2 }], function (o) { return o.n; }],
       e: { 'n': 1 }
     },
     {
@@ -1004,7 +1004,7 @@ var test = {
 
   sumBy: [
     {
-      i: [[{ 'n': 4 }, { 'n': 2 }, { 'n': 8 }, { 'n': 6 }], function(o) { return o.n; }],
+      i: [[{ 'n': 4 }, { 'n': 2 }, { 'n': 8 }, { 'n': 6 }], function (o) { return o.n; }],
       e: 20
     },
     {
@@ -1034,7 +1034,134 @@ var test = {
   //     i: [1.2, 5.2],
   //     e: 1
   //   },
-  // ]
+  // ],
+
+  defaults: [
+    {
+      i: [{ 'a': 1 }, { 'b': 2 }, { 'a': 3 }],
+      e: { 'a': 1, 'b': 2 }
+    }
+  ],
+
+  findKey: [
+    {
+      i: [{
+        'barney': { 'age': 36, 'active': true },
+        'fred': { 'age': 40, 'active': false },
+        'pebbles': { 'age': 1, 'active': true }
+      }, function (o) { return o.age < 40; }],
+      e: { 'barney': { 'age': 36, 'active': true } }
+    },
+    {
+      i: [{
+        'barney': { 'age': 36, 'active': true },
+        'fred': { 'age': 40, 'active': false },
+        'pebbles': { 'age': 1, 'active': true }
+      }, { 'age': 1, 'active': true }],
+      e: { 'pebbles': { 'age': 1, 'active': true } }
+    }
+  ],
+
+  // get: [
+  //   {
+  //     i: [{ 'a': [{ 'b': { 'c': 3 } }] }, 'a[0].b.c'],
+  //     e: 3
+  //   },
+  //   {
+  //     i: [{ 'a': [{ 'b': { 'c': 3 } }] }, ['a', '0', 'b', 'c']],
+  //     e: 3
+  //   },
+  //   {
+  //     i: [{ 'a': [{ 'b': { 'c': 3 } }] }, 'a.b.c', 'default'],
+  //     e: 'default'
+  //   },
+  // ],
+
+  invert: [
+    {
+      i: [{ 'a': 1, 'b': 2, 'c': 1 }],
+      e: { '1': 'c', '2': 'b' }
+    }
+  ],
+
+  invertBy: [
+    {
+      i: [object = { 'a': 1, 'b': 2, 'c': 1 }],
+      e: { '1': ['a', 'c'], '2': ['b'] }
+    },
+    {
+      i: [object = { 'a': 1, 'b': 2, 'c': 1 }, function (value) {
+        return 'group' + value;
+      }],
+      e: { 'group1': ['a', 'c'], 'group2': ['b'] }
+    }
+  ],
+
+  // invoke: [
+  //   {
+  //     i: [{ 'a': [{ 'b': { 'c': [1, 2, 3, 4] } }] }, 'a[0].b.c.slice', 1, 3],
+  //     e: [2, 3]
+  //   }
+  // ],
+
+  mapKeys: [
+    {
+      i: [{ 'a': 1, 'b': 2 }, function (value, key) {
+        return key + value;
+      }],
+      e: { 'a1': 1, 'b2': 2 }
+    }
+  ],
+
+  mapValues: [
+    {
+      i: [{
+        'fred': { 'user': 'fred', 'age': 40 },
+        'pebbles': { 'user': 'pebbles', 'age': 1 }
+      }, function (o) { return o.age; }],
+      e: { 'fred': 40, 'pebbles': 1 }
+    },
+    {
+      i: [{
+        'fred': { 'user': 'fred', 'age': 40 },
+        'pebbles': { 'user': 'pebbles', 'age': 1 }
+      }, 'age'],
+      e: { 'fred': 40, 'pebbles': 1 }
+    }
+  ],
+
+  // merge: [
+  //   {
+  //     i: [{
+  //       'a': [{ 'b': 2 }, { 'd': 4 }]
+  //     }, {
+  //       'a': [{ 'c': 3 }, { 'e': 5 }]
+  //     }],
+  //     e: { 'a': [{ 'b': 2, 'c': 3 }, { 'd': 4, 'e': 5 }] }
+  //   }
+  // ],
+
+  omit: [
+    {
+      i: [{ 'a': 1, 'b': '2', 'c': 3 }, ['a', 'c']],
+      e: { 'b': '2' }
+    }
+  ],
+
+  pick: [
+    {
+      i: [{ 'a': 1, 'b': '2', 'c': 3 }, ['a', 'c']],
+      e: { 'a': 1, 'c': 3 }
+    }
+  ],
+
+  toPairs: [
+    {
+      i: [{a:1, b: 2}],
+      e: [[['a', 1], ['b', 2]]]
+    }
+  ],
+
 
 }
 
@@ -1074,6 +1201,57 @@ for (let func in test) {
 // console.log(users.map(x => it(x)), 'expect: ["barney", "fred"]')
 // **************************************************
 
+// ***************** assign *************************
+// console.log('-------------------------------')
+// console.log('assign')
+// function Foo() {
+//   this.a = 1;
+// }
+
+// function Bar() {
+//   this.c = 3;
+// }
+
+// Foo.prototype.b = 2;
+// Bar.prototype.d = 4;
+
+// console.log(sanvvv.assign({ 'a': 0 }, new Foo, new Bar))
+// console.log('expect: ', JSON.stringify({ 'a': 1, 'c': 3 }))
+// **************************************************
+
+// ***************** assignIn ***********************
+// console.log('-------------------------------')
+// console.log('assignIn')
+// function Foo() {
+//   this.a = 1;
+// }
+
+// function Bar() {
+//   this.c = 3;
+// }
+
+// Foo.prototype.b = 2;
+// Bar.prototype.d = 4;
+
+// console.log(sanvvv.assignIn({ 'a': 0 }, new Foo, new Bar))
+// console.log('expect: ', { 'a': 1, 'b': 2, 'c': 3, 'd': 4 })
+// **************************************************
+
+// ***************** forIn **************************
+// console.log('-------------------------------')
+// console.log('forIn')
+// function Foo() {
+//   this.a = 1;
+//   this.b = 2;
+// }
+
+// Foo.prototype.c = 3;
+
+// console.log(sanvvv.forIn(new Foo, function(value, key) {
+//   console.log(key);
+// }))
+// console.log('expect: ', 'a', 'b', 'c')
+// **************************************************
 console.log('-------------------------------')
 console.log('complete')
 console.log('-------------------------------')

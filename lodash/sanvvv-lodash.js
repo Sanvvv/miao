@@ -666,7 +666,7 @@ var sanvvv = {
   },
   
   isError: function (value) {
-    return Object.prototype.toString.call(value) === '[object Error]'
+    return value instanceof Error === true
   },
 
   isFinite: function (value) {
@@ -858,11 +858,301 @@ var sanvvv = {
    * @param  {number} [lower=0]
    * @param  {number} [upper=1]
    * @param  {boolean} floating
+   * @return {}
    * @retrun {number}
    */
   // random: (lower = 0, upper = 1, floating) => {
   //   return Math.random() * (upper - lower) + lower
   // },
+
+  /**
+   * @param  {Object} object
+   * @param  {...Object} ...sources
+   * @return {Object}
+   */
+  assign: (object, ...sources) => {
+    return sources.reduce((acc, cur) => {
+      for (var [key, value] of Object.entries(cur)) acc[key] = value
+      return acc
+    }, object)
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {...Object} ...sources
+   * @return {Object}
+   */
+  assignIn: (object, ...sources) => {
+    return sources.reduce((acc, cur, key) => {
+      for (var key in cur) acc[key] = cur[key]
+      return acc
+    }, object)
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {...Object} ...sources
+   * @return {Object}
+   */
+  defaults: (object, ...sources) => {
+    return sources.reduce((acc, cur, key) => {
+      for (var [key, value] of Object.entries(cur)) {
+        if (acc[key] === undefined) acc[key] = value
+      }
+      return acc
+    }, object)
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [predicate=sanvvv.identity]
+   * @return {*}
+   */
+  findKey: (object, predicate = sanvvv.identity) => {
+    predicate = sanvvv.iteratee(predicate)
+    for (var key in object) {
+     if (predicate(object[key])) return {[key]: object[key]}
+    }
+    return undefined
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {Object}
+   */
+  forIn: (object, iteratee = sanvvv.identity) => {
+    for (var key in object) {
+      var flag = iteratee(object[key], key, object)
+      if (flag === false) return object
+    }
+    return object
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {Object}
+   */
+  forInRight: (object, iteratee = sanvvv.identity) => {
+    var reg = []
+    for (var key in object) reg.push(key)
+    while (reg.length) {
+      var key = reg.pop()
+      var flag = iteratee(object[key], key, object)
+      if (flag === false) return object
+    }
+    return object
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {Object}
+   */
+  // forOwn: function (object, iteratee = sanvvv.identity) {
+  //   return Object.keys(object).sanvvv.forEach(object, iteratee)
+  // },
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {Object}
+   */
+  // forOwnRight: function (object, iteratee = sanvvv.identity) {
+  //   return Object.keys(object).sanvvv.forEachRight(object, iteratee)
+  // },
+
+  /**
+   * @param  {Object} object
+   * @return {Array} Returns the function names
+   */
+  functions: object => Object.keys(object),
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @param  {*} defaultValue
+   * @return {*}
+   */
+  // get: function (object, path, defaultValue) {
+  //   var iteratee = sanvvv.iteratee(path)
+  //   return iteratee(object)
+  // },
+
+  /**
+   * @param  {Object} object
+   * @return {Object}
+   */
+  invert: object => Object.entries(object).reduce((acc, cur) => (acc[cur[1]] = cur[0], acc), {}),
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} iteratee=sanvvv.identity
+   * @return {Object}
+   */
+  invertBy: (object, iteratee = sanvvv.identity) => {
+    iteratee = sanvvv.iteratee(iteratee)
+    return Object.entries(object).reduce((acc, cur) => {
+      var key = iteratee(cur[1])
+      if (acc[key]) acc[key].push(cur[0])
+      else acc[key] = [cur[0]]
+      return acc
+    }, {})
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @param  {...*} ...args
+   * @return *
+   */
+  // invoke: function (object, path, ...args) {
+
+  // },
+  
+  /**
+   * @param  {Object} object
+   * @return {Array} Returns the array of property names
+   */
+  keys: object => Object.keys(object),
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {Object}
+   */
+  mapKeys: (object, iteratee = sanvvv.identity) => {
+    iteratee = sanvvv.iteratee(iteratee)
+    return Object.entries(object).reduce((acc, cur) => {
+      var key = iteratee(cur[1], cur[0], object)
+      acc[key] = cur[1]
+      return acc
+    }, {})
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {Object}
+   */
+  mapValues: (object, iteratee = sanvvv.identity) => {
+    iteratee = sanvvv.iteratee(iteratee)
+    return Object.entries(object).reduce((acc, cur) => {
+      var value = iteratee(cur[1], cur[0], object)
+      acc[cur[0]] = value
+      return acc
+    }, {})
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {...Object} ...source
+   * @return {Object}
+   */
+  // merge: (object, ...source) => {
+  //   return source.reduce((acc, cur) => {
+
+  //   }, object)
+  // },
+
+  /**
+   * @param  {Object} object
+   * @param  {...(string|string[])} ...paths
+   * @return {Object}
+   */
+  omit: (object, ...paths) => {
+    var res = {}
+    paths = sanvvv.flatten(paths)
+    
+    for (var key in object) {
+      if (paths.indexOf(key) === -1) res[key] = object[key]
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {...(string|string[])} ...paths
+   * @return {Object}
+   */
+  pick: (object, ...paths) => {
+    return sanvvv.flatten(paths).reduce((acc, cur) => {
+      if (object[cur] !== undefined) acc[cur] = object[cur]
+      return acc
+    }, {})
+  },
+
+  /**
+   * @param  {Object} object
+   * @return {Array}
+   */
+  toPairs: object => [Object.entries(object)],
+
+  /**
+   * @param  {Object} object
+   * @return {Array}
+   */
+  values: object => Object.values(object),
+
+  /**
+   * @param  {Function} func
+   * @param  {...*} ...args
+   * @return {*}  Returns the func result or error object
+   */
+  attempt: (func, ...args) => {
+    try {
+      return func(...args)
+    } catch (e) {
+      return e
+    }
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {...(string|string[])} methodNames
+   * @return {Object}
+   */
+  // bindAll: (object, methodNames) => {
+
+  // }
+
+  /**
+   * @param  {Array} pairs
+   * @return {Function}
+   */
+  cond: pairs => match => {
+    // TODO: 并绑定 this ???
+    for (var func of pairs) {
+      if (func[0](match)) return func[1]()
+    }
+  },
+
+  /**
+   * @param  {Object} source
+   * @return {Function}
+   */
+  conforms: source => obj => Object.entries(source).every(src => src[1](obj[src[0]])),
+
+  /**
+   * @param  {*} value
+   * @return {Function}
+   */
+  constant: value => () => value,
+
+  /**
+   * @param  {...(Function|Function[])} ...funcs
+   * @return {Function}
+   */
+  flow: funcs => (...args) => funcs.reduce((acc, cur) => cur(acc), funcs.shift()(...args)),
+
+  /**
+   * @param  {*} value
+   * @param  {*} defaultValue
+   * @return {*}
+   */
+  defaultTo: (value, defaultValue) => sanvvv.isNil(value) || sanvvv.isNaN(value) ? defaultValue : value,
 
   identity: value => value,
 

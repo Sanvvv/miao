@@ -1,6 +1,13 @@
-var generateMatrix = function(n) {
+// function bind (f, ...fixedArgs) {
+//   return function (...args) {
+//     return f(...fixedArgs, ...args)
+//   }
+// }
+
+
+// var generateMatrix = function(n) {
   
-};
+// };
 
 // console.log(generateMatrix(5))
 
