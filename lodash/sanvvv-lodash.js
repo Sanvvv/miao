@@ -1142,29 +1142,43 @@ var sanvvv = {
   constant: value => () => value,
 
   /**
-   * @param  {...(Function|Function[])} ...funcs
-   * @return {Function}
-   */
-  flow: funcs => (...args) => funcs.reduce((acc, cur) => cur(acc), funcs.shift()(...args)),
-
-  /**
    * @param  {*} value
    * @param  {*} defaultValue
    * @return {*}
    */
   defaultTo: (value, defaultValue) => sanvvv.isNil(value) || sanvvv.isNaN(value) ? defaultValue : value,
 
+  /**
+   * @param  {...(Function|Function[])} ...funcs
+   * @return {Function}
+   */
+  flow: funcs => (...args) => funcs.reduce((acc, cur) => cur(acc), funcs.shift()(...args)),
+
+  /**
+   * @param  {...(Function|Function[])} ...funcs
+   * @return {Function}
+   */
+  // flowRight: funcs => (...args) => sanvvv.reduceRight(funcs, (acc, cur) => cur(acc), funcs.pop()(...args)),
+
+  
+  /**
+   * This method returns the first argument it receives
+   * 
+   * @param  {*} value
+   * @return {*}
+   */
   identity: value => value,
 
+  /**
+   * Creates a function that invokes func with the arguments of the created functions
+   *
+   * @param  {*} iter
+   * @return {Function}
+   */
   iteratee: iter => {
     // isObject
     if (Object.prototype.toString.call(iter) === '[object Object]') {
-      return obj => {
-        for (var property in iter) {
-          if (!sanvvv.isEqual(obj[property], iter[property])) return false
-        }
-        return true
-      }
+      return sanvvv.matches(iter)
     }
 
     // isArray
@@ -1181,26 +1195,54 @@ var sanvvv = {
 
     // isString
     if (typeof iter === 'string') {
-      // 'a.b'
-      if (iter.indexOf('.') !== -1) {
-        var paths = iter.split('.')
-        return obj => {
-          var val = obj
-          var i = 0
-          while (paths[i]) {
-            var path = paths[i]
-            val = val[path]
-            i++
-          }
-          return val
-        }
-      //'property'
-      } else {
-        return obj => obj[iter]
-      }
+      return sanvvv.method(iter)
     }
     
     // isFunction
     if (typeof iter === 'function') return iter
   },
+
+  /**
+   * Creates a function that performs a partial deep comparison 
+   * between a given object and source
+   * the function returns boolean
+   * 
+   * @param  {Object} source
+   * @return {Function}
+   */
+  matches: source => obj => {
+    for (var property in source) {
+      if (!sanvvv.isEqual(obj[property], source[property])) return false
+    }
+    return true
+  },
+
+  
+  /**
+   * Creates a function that performs a partial deep comparison 
+   * between the value at path of a given object to srcValue
+   * the function returns boolean
+   * 
+   * @param  {Array|string} path
+   * @param  {*} srcValue
+   * @return {Function}
+   */
+  matchesProperty: (path, srcValue) => obj => sanvvv.isEqual(sanvvv.method(path), srcValue),
+
+  /**
+   * Creates a function that invokes the method at path of a given object
+   * the function returns value
+   * 
+   * @param  {Array|string} path
+   * @param  {...*} args
+   * @return {Function}
+   */
+  method: (path, ...args) => obj => {
+    // TODO: args: The arguments to invoke the method with
+    var p = path.slice(0)
+    if (typeof path === 'string') p = path.split('.')
+    return p.reduce((acc, cur) => acc[cur], obj[p.shift()])
+  },
+
+  
 }

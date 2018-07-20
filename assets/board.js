@@ -1,3 +1,16 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
 // function bind (f, ...fixedArgs) {
 //   return function (...args) {
 //     return f(...fixedArgs, ...args)

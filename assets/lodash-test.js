@@ -1165,6 +1165,133 @@ var test = {
 
 }
 
+// ----------------------------------------------------------------------------------------
+
+var test2 = function () {
+
+  var iteratee = function () {
+    var users = [
+      { 'user': 'barney', 'age': 36, 'active': true },
+      { 'user': 'fred',   'age': 40, 'active': false }
+    ]
+
+    return [
+      {
+        i: sanvvv.filter(users, sanvvv.iteratee({ 'user': 'barney', 'active': true })),
+        e: [{ 'user': 'barney', 'age': 36, 'active': true }]
+      },
+      {
+        i: sanvvv.map(users, sanvvv.iteratee('user')),
+        e: ['barney', 'fred']
+      },
+      {
+        i: sanvvv.filter(['abc', 'def'], /ef/),
+        e: ['def']
+      }
+    ]
+  }()
+   
+  var assign = function () {
+    function Foo() {
+      this.a = 1;
+    }
+     
+    function Bar() {
+      this.c = 3;
+    }
+     
+    Foo.prototype.b = 2;
+    Bar.prototype.d = 4;
+
+    return [
+      {
+        i: sanvvv.assign({ 'a': 0 }, new Foo, new Bar),
+        e: { 'a': 1, 'c': 3 }
+      }
+    ]
+  }()
+
+  var assignIn = function () {
+    function Foo() {
+      this.a = 1;
+    }
+    
+    function Bar() {
+      this.c = 3;
+    }
+    
+    Foo.prototype.b = 2;
+    Bar.prototype.d = 4;
+
+    return [
+      {
+        i: sanvvv.assignIn({ 'a': 0 }, new Foo, new Bar),
+        e: { 'a': 1, 'b': 2, 'c': 3, 'd': 4 }
+      }
+    ]
+  }()
+
+  var forIn = function () {
+    function Foo() {
+      this.a = 1;
+      this.b = 2;
+    }
+
+    Foo.prototype.c = 3;
+
+    return [
+      {
+        i: sanvvv.forIn(new Foo, function(value, key) {
+          // console.log(key);
+        }),
+        e: {a:1, b:2}
+      }
+    ]
+  }()
+
+  var method = function () {
+    var objects = [
+      { 'a': { 'b': 2 } },
+      { 'a': { 'b': 1 } }
+    ];
+    
+    return [
+      {
+        i: sanvvv.map(objects, sanvvv.method('a.b')),
+        e: [2,1]
+      },
+      {
+        i: sanvvv.map(objects, sanvvv.method(['a', 'b'])),
+        e: [2,1]
+      }
+    ]
+  }()
+
+  var matches = function () {
+    var objects = [
+      { 'a': 1, 'b': 2, 'c': 3 },
+      { 'a': 4, 'b': 5, 'c': 6 }
+    ]
+
+    return [
+      {
+        i: sanvvv.filter(objects, sanvvv.matches({ 'a': 4, 'c': 6 })),
+        e: [{ 'a': 4, 'b': 5, 'c': 6 }]
+      }
+    ]
+  }()
+
+  return {
+    iteratee,
+    assign,
+    matches,
+    forIn,
+    assignIn,
+    method
+  }
+
+}()
+
 
 
 for (let func in test) {
@@ -1182,76 +1309,22 @@ for (let func in test) {
   }
 }
 
-// ***************** iteratee ************************
-// console.log('-------------------------------')
-// console.log('iteratee')
+// ------------------------------------------------------------------------------------------
 
-// var users = [
-//   { 'user': 'barney', 'age': 36, 'active': true },
-//   { 'user': 'fred',   'age': 40, 'active': false }
-// ];
+for (let func in test2) {
+  for (let f of test2[func]) {
+    let expect = JSON.stringify(f.e)
+    let result = JSON.stringify(f.i)
 
-// var it = sanvvv.iteratee({ 'user': 'barney', 'active': true })
-// console.log(users.filter(x => it(x)))
+    if (expect !== result) {
+      console.log('-------------------------------')
+      console.log(func)
+      console.log('expect: ' + expect)
+      console.log('result: ' + result)
+    }
+  }
+}
 
-// var it = sanvvv.iteratee(['user', 'fred'])
-// console.log(users.filter(x => it(x)))
-
-// var it = sanvvv.iteratee('user')
-// console.log(users.map(x => it(x)), 'expect: ["barney", "fred"]')
-// **************************************************
-
-// ***************** assign *************************
-// console.log('-------------------------------')
-// console.log('assign')
-// function Foo() {
-//   this.a = 1;
-// }
-
-// function Bar() {
-//   this.c = 3;
-// }
-
-// Foo.prototype.b = 2;
-// Bar.prototype.d = 4;
-
-// console.log(sanvvv.assign({ 'a': 0 }, new Foo, new Bar))
-// console.log('expect: ', JSON.stringify({ 'a': 1, 'c': 3 }))
-// **************************************************
-
-// ***************** assignIn ***********************
-// console.log('-------------------------------')
-// console.log('assignIn')
-// function Foo() {
-//   this.a = 1;
-// }
-
-// function Bar() {
-//   this.c = 3;
-// }
-
-// Foo.prototype.b = 2;
-// Bar.prototype.d = 4;
-
-// console.log(sanvvv.assignIn({ 'a': 0 }, new Foo, new Bar))
-// console.log('expect: ', { 'a': 1, 'b': 2, 'c': 3, 'd': 4 })
-// **************************************************
-
-// ***************** forIn **************************
-// console.log('-------------------------------')
-// console.log('forIn')
-// function Foo() {
-//   this.a = 1;
-//   this.b = 2;
-// }
-
-// Foo.prototype.c = 3;
-
-// console.log(sanvvv.forIn(new Foo, function(value, key) {
-//   console.log(key);
-// }))
-// console.log('expect: ', 'a', 'b', 'c')
-// **************************************************
 console.log('-------------------------------')
 console.log('complete')
 console.log('-------------------------------')
