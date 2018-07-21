@@ -336,6 +336,20 @@ var test = {
     }
   ],
 
+  pullAllBy: [
+    {
+      i: [[{ 'x': 1 }, { 'x': 2 }, { 'x': 3 }, { 'x': 1 }], [{ 'x': 1 }, { 'x': 3 }], 'x'],
+      e: [{ 'x': 2 }]
+    }
+  ],
+
+  pullAllWith: [
+    {
+      i: [[{ 'x': 1, 'y': 2 }, { 'x': 3, 'y': 4 }, { 'x': 5, 'y': 6 }], [{ 'x': 3, 'y': 4 }], sanvvv.isEqual],
+      e: [{ 'x': 1, 'y': 2 }, { 'x': 5, 'y': 6 }]
+    }
+  ],
+
   pullAt: [
     {
       i: [['a', 'b', 'c', 'd', 'e'], [1, 3]],
@@ -503,16 +517,23 @@ var test = {
     }
   ],
 
-  // unionBy: [
-  //   {
-  //     i: [[2.1], [1.2, 2.3], Math.floor],
-  //     e: [2.1, 1.2]
-  //   },
-  //   {
-  //     i: [[{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x'],
-  //     e: [{ 'x': 1 }, { 'x': 2 }]
-  //   }
-  // ],
+  unionBy: [
+    {
+      i: [[2.1], [1.2, 2.3], Math.floor],
+      e: [2.1, 1.2]
+    },
+    {
+      i: [[{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x'],
+      e: [{ 'x': 1 }, { 'x': 2 }]
+    }
+  ],
+
+  unionWith: [
+    {
+      i: [[{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }], [{ 'x': 1, 'y': 1 }, { 'x': 1, 'y': 2 }], sanvvv.isEqual],
+      e: [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }, { 'x': 1, 'y': 1 }]
+    }
+  ],
 
   without: [
     {
@@ -539,10 +560,27 @@ var test = {
     }
   ],
 
+  zipWith: [
+    {
+      i: [[1, 2], [10, 20], [100, 200], function(a, b, c) {
+        return a + b + c;
+      }],
+      e: [111, 222]
+    }
+  ],
+
   unzip: [
     {
       i: [[['fred', 30, true], ['barney', 40, false]]],
       e: [['fred', 'barney'], [30, 40], [true, false]]
+    }
+  ],
+
+  unzipWith: [
+    {
+      i: [[[1, 10, 100], [2, 20, 200]], function(a,b) {return a+b}],
+      e: [3, 30, 300]
+
     }
   ],
 
@@ -1162,6 +1200,55 @@ var test = {
     }
   ],
 
+  range: [
+    {
+      i: [4],
+      e: [0, 1, 2, 3]
+    },
+    {
+      i: [-4],
+      e: [0, -1, -2, -3]
+    },
+    {
+      i: [1, 5],
+      e: [1, 2, 3, 4]
+    },
+    {
+      i: [0, 20, 5],
+      e: [0, 5, 10, 15]
+    },
+    {
+      i: [0, -4, -1],
+      e: [0, -1, -2, -3]
+    },
+    {
+      i: [0],
+      e: []
+    }
+  ],
+
+  times: [
+    {
+      i: [3, String],
+      e: ['0', '1', '2']
+    },
+    {
+      i: [4, sanvvv.constant(0)],
+      e: [0, 0, 0, 0]
+    }
+  ],
+
+  toPath: [
+    {
+      i: ['a.b.c'],
+      e: ['a', 'b', 'c']
+    },
+    {
+      i: ['a[0].b.c'],
+      e: ['a', '0', 'b', 'c']
+    }
+  ]
+
 
 }
 
@@ -1267,6 +1354,22 @@ var test2 = function () {
     ]
   }()
 
+  var methodOf = function () {
+    var array = [0, 1, 2],
+    object = { 'a': array, 'b': array, 'c': array };
+
+    return [
+      // {
+      //   i: sanvvv.map(['a[2]', 'c[0]'], sanvvv.methodOf(object)),
+      //   e: [2, 0]
+      // },
+      {
+        i: sanvvv.map([['a', '2'], ['c', '0']], sanvvv.methodOf(object)),
+        e: [2, 0]
+      }
+    ]
+  }()
+
   var matches = function () {
     var objects = [
       { 'a': 1, 'b': 2, 'c': 3 },
@@ -1281,13 +1384,45 @@ var test2 = function () {
     ]
   }()
 
+  var mixin = function () {
+    function vowels(string) {
+      return string
+    }
+     
+    sanvvv.mixin({ 'vowels': vowels });
+
+    return [
+      {
+        i: sanvvv.vowels('fred'),
+        e: 'fred'
+      }
+    ]
+  }()
+
+  var property = function () {
+    var objects = [
+      { 'a': { 'b': 2 } },
+      { 'a': { 'b': 1 } }
+    ];
+
+    return [
+      {
+        i: objects.map(x => sanvvv.property('a.b')(x)),
+        e: [2, 1]
+      }
+    ]
+  }()
+
   return {
     iteratee,
     assign,
     matches,
     forIn,
     assignIn,
-    method
+    method,
+    methodOf,
+    mixin,
+    property
   }
 
 }()
