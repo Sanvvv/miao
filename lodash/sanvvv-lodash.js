@@ -37,13 +37,6 @@ var sanvvv = {
     return array.filter(item => differBy.indexOf(f(item)) === -1)
   },
 
-  // var tag = false
-  // values.forEach(el => {
-  //   if (comparator(item, el)) tag = true
-  // })
-  // if (tag) return false
-  // else return true
-
   differenceWith: function (array, values, comparator) {
     return array.filter(arr => values.every(value => !comparator(arr, value)))
   },
@@ -200,13 +193,21 @@ var sanvvv = {
   },
 
   pull: function (array, ...values) {
-    // TODO: this method mutates array
-    return values.reduce((acc, cur) => acc.filter(item => item !== cur), array)
+    return sanvvv.pullAllBy(array, values)
   },
 
   pullAll: function (array, values) {
-    // TODO: this method mutates array
-    return values.reduce((acc, cur) => acc.filter(item => item !== cur), array)
+    return sanvvv.pullAllBy(array, values)
+  },
+
+  pullAllBy: (array, values, iteratee = sanvvv.identity) => {
+    iteratee = sanvvv.iteratee(iteratee)
+    array = values.reduce((acc, cur) => acc.filter(item => iteratee(item) !== iteratee(cur)), array)
+    return array
+  },
+
+  pullAllWith: (array, values, comparator) => {
+    
   },
 
   pullAt: function (array, indexes) {
@@ -328,6 +329,16 @@ var sanvvv = {
     })
   },
 
+  uniqWith: (array, comparator) => {
+    return array.reduce((acc, cur) => { 
+      for (var obj of acc) {
+        if (comparator(obj, cur)) return acc
+      }
+      acc.push(cur)
+      return acc
+    }, [])
+  },
+
   tail: function (array) {
     return array.slice(1, array.length)
   },
@@ -341,11 +352,37 @@ var sanvvv = {
     return array.slice(array.length - n, array.length)
   },
 
+  takeRightWhile: (array, predicate = sanvvv.identity) => {
+    predicate = sanvvv.iteratee(predicate)
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (!predicate(array[i])) return sanvvv.takeRight(array, array.length - 1 - i)
+    }
+    return []
+  },
+
+  takeWhile: (array, predicate = sanvvv.identity) => {
+    predicate = sanvvv.iteratee(predicate)
+    for (var i = 0; i < array.length; i++) {
+      if (!predicate(array[i])) return sanvvv.take(array, i)
+    }
+    return []
+  },
+
   union: function (...arrays) {
     return sanvvv.uniq(arrays.reduce((acc, cur) => {
       acc.push(...cur)
       return acc
     }, []))
+  },
+
+  unionBy: (...arrays) => {
+    var iteratee = arrays.pop()
+    return sanvvv.uniqBy([].concat(...arrays), iteratee)
+  },
+
+  unionWith: (...arrays) => {
+    var comparator = arrays.pop()
+    return sanvvv.uniqWith([].concat(...arrays), comparator)
   },
 
   without: function (array, ...values) {
@@ -364,6 +401,7 @@ var sanvvv = {
   },
 
   zip: function (...arrays) {
+    // TODO: reduce
     var res = []
 
     arrays.forEach(array => {
@@ -382,8 +420,19 @@ var sanvvv = {
     return res
   },
 
+  zipWith: (...arrays) => {
+    var iteratee = sanvvv.identity
+    if (typeof arrays[arrays.length - 1] === 'function') iteratee = arrays.pop()
+    return sanvvv.zip(...arrays).reduce((acc, cur) => (acc.push(iteratee(...cur)), acc), [])
+  },
+
   unzip: function (array) {
     return sanvvv.zip(...array)
+  },
+
+  unzipWith: (arrays, iteratee = sanvvv.identity) => {
+    arrays.push(iteratee)
+    return sanvvv.zipWith(...arrays)
   },
 
   zipObject: function (props = [], values = []) {
@@ -1182,6 +1231,7 @@ var sanvvv = {
     }
 
     // isArray
+    // TODO: 不应该比较大小
     if (sanvvv.isArray(iter)) {
       // !!! 只写了数组 length === 2 的情况
       return obj => sanvvv.isEqual(obj[iter[0]], iter[1])
@@ -1244,5 +1294,81 @@ var sanvvv = {
     return p.reduce((acc, cur) => acc[cur], obj[p.shift()])
   },
 
+  methodOf: (object, ...args) => param => {
+    // The arguments to invoke the method with
+    if (typeof param === 'string') {
+      return 'TODO'
+    } else {
+      return object[param[0]][param[1]]
+    }
+  },
+
+  mixin: (object, source, options) => {
+    // TODO options 链式调用
+    var obj = typeof source === 'object' ? object : sanvvv
+    var src = object
+    var opt = options || {}
+
+    if (typeof object === 'function') obj = obj.prototype
+
+    for (var property in src) {
+      var val = src[property]
+      if (typeof val === 'function') obj[property] = val
+    }
+  },
+  
+  noop: () => undefined,
+
+  nthArg: (n = 0) => (...args) => {
+    return n >= 0 ? args[n] : args[args.length + n]
+  },
+  
+  property: path => sanvvv.method(path),
+
+  propertyOf: object => sanvvv.methodOf(object),
+
+  range: (start, end, step = 1) => {
+    var res = []
+
+    if (!end) {
+      end = start
+      start = 0 
+    }
+
+    if (end > 0) {
+      for (var i = start; i < end; i += step) res.push(i)
+    } else {
+      for (var i = start; i > end; i -= Math.abs(step)) res.push(i)
+    }
+
+    return res
+  },
+
+  rangeRight: (start, end, step = 1) => {
+    var res = []
+
+    if (!end) {
+      end = start
+      start = 0 
+    }
+
+    if (end > 0) {
+      for (var i = start; i < end; i += step) res.unshift(i)
+    } else {
+      for (var i = start; i > end; i -= Math.abs(step)) res.unshift(i)
+    }
+
+    return res
+  },
+
+  times: (n, iteratee = sanvvv.identity) => {
+    // TODO: iterate -> sanvvv.iteratee
+    var res = []
+    for (var i = 0; i < n; i++) res.push(iteratee(i))
+    return res
+  },
+
+  // TODO: 将使用到path的地方都更新使用函数toPath
+  toPath: value => value.replace('[', '.').replace(']', '').split('.'),
   
 }
