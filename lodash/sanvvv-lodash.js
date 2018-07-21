@@ -206,9 +206,9 @@ var sanvvv = {
     return array
   },
 
-  pullAllWith: (array, values, comparator) => {
+//   pullAllWith: (array, values, comparator) => {
     
-  },
+//   },
 
   pullAt: function (array, indexes) {
     var res = []
@@ -1294,81 +1294,81 @@ var sanvvv = {
     return p.reduce((acc, cur) => acc[cur], obj[p.shift()])
   },
 
-  methodOf: (object, ...args) => param => {
-    // The arguments to invoke the method with
-    if (typeof param === 'string') {
-      return 'TODO'
-    } else {
-      return object[param[0]][param[1]]
-    }
-  },
+//   methodOf: (object, ...args) => param => {
+//     // The arguments to invoke the method with
+//     if (typeof param === 'string') {
+//       return 'TODO'
+//     } else {
+//       return object[param[0]][param[1]]
+//     }
+//   },
 
-  mixin: (object, source, options) => {
-    // TODO options 链式调用
-    var obj = typeof source === 'object' ? object : sanvvv
-    var src = object
-    var opt = options || {}
+//   mixin: (object, source, options) => {
+//     // TODO options 链式调用
+//     var obj = typeof source === 'object' ? object : sanvvv
+//     var src = object
+//     var opt = options || {}
 
-    if (typeof object === 'function') obj = obj.prototype
+//     if (typeof object === 'function') obj = obj.prototype
 
-    for (var property in src) {
-      var val = src[property]
-      if (typeof val === 'function') obj[property] = val
-    }
-  },
+//     for (var property in src) {
+//       var val = src[property]
+//       if (typeof val === 'function') obj[property] = val
+//     }
+//   },
   
-  noop: () => undefined,
+//   noop: () => undefined,
 
-  nthArg: (n = 0) => (...args) => {
-    return n >= 0 ? args[n] : args[args.length + n]
-  },
+//   nthArg: (n = 0) => (...args) => {
+//     return n >= 0 ? args[n] : args[args.length + n]
+//   },
   
-  property: path => sanvvv.method(path),
+//   property: path => sanvvv.method(path),
 
-  propertyOf: object => sanvvv.methodOf(object),
+//   propertyOf: object => sanvvv.methodOf(object),
 
-  range: (start, end, step = 1) => {
-    var res = []
+//   range: (start, end, step = 1) => {
+//     var res = []
 
-    if (!end) {
-      end = start
-      start = 0 
-    }
+//     if (!end) {
+//       end = start
+//       start = 0 
+//     }
 
-    if (end > 0) {
-      for (var i = start; i < end; i += step) res.push(i)
-    } else {
-      for (var i = start; i > end; i -= Math.abs(step)) res.push(i)
-    }
+//     if (end > 0) {
+//       for (var i = start; i < end; i += step) res.push(i)
+//     } else {
+//       for (var i = start; i > end; i -= Math.abs(step)) res.push(i)
+//     }
 
-    return res
-  },
+//     return res
+//   },
 
-  rangeRight: (start, end, step = 1) => {
-    var res = []
+//   rangeRight: (start, end, step = 1) => {
+//     var res = []
 
-    if (!end) {
-      end = start
-      start = 0 
-    }
+//     if (!end) {
+//       end = start
+//       start = 0 
+//     }
 
-    if (end > 0) {
-      for (var i = start; i < end; i += step) res.unshift(i)
-    } else {
-      for (var i = start; i > end; i -= Math.abs(step)) res.unshift(i)
-    }
+//     if (end > 0) {
+//       for (var i = start; i < end; i += step) res.unshift(i)
+//     } else {
+//       for (var i = start; i > end; i -= Math.abs(step)) res.unshift(i)
+//     }
 
-    return res
-  },
+//     return res
+//   },
 
-  times: (n, iteratee = sanvvv.identity) => {
-    // TODO: iterate -> sanvvv.iteratee
-    var res = []
-    for (var i = 0; i < n; i++) res.push(iteratee(i))
-    return res
-  },
+//   times: (n, iteratee = sanvvv.identity) => {
+//     // TODO: iterate -> sanvvv.iteratee
+//     var res = []
+//     for (var i = 0; i < n; i++) res.push(iteratee(i))
+//     return res
+//   },
 
-  // TODO: 将使用到path的地方都更新使用函数toPath
-  toPath: value => value.replace('[', '.').replace(']', '').split('.'),
+//   // TODO: 将使用到path的地方都更新使用函数toPath
+//   toPath: value => value.replace('[', '.').replace(']', '').split('.'),
   
 }
