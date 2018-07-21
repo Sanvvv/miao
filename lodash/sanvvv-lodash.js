@@ -1327,39 +1327,43 @@ var sanvvv = {
 
   propertyOf: object => sanvvv.methodOf(object),
 
-  // range: (start, end, step = 1) => {
-  //   var res = []
+  range: (start, end, step = 1) => {
+    var res = []
 
-  //   if (!end) {
-  //     end = start
-  //     start = 0 
-  //   }
+    if (!end) {
+      end = start
+      start = 0 
+    }
 
-  //   if (end > 0) {
-  //     for (var i = start; i < end; i += step) res.push(i)
-  //   } else {
-  //     for (var i = start; i > end; i -= Math.abs(step)) res.push(i)
-  //   }
+    if (step === 0) return new Array(Math.abs(end) - 1).fill(start)
 
-  //   return res
-  // },
+    if (end > 0) {
+      for (var i = start; i < end; i += step) res.push(i)
+    } else {
+      for (var i = start; i > end; i -= Math.abs(step)) res.push(i)
+    }
 
-  // rangeRight: (start, end, step = 1) => {
-  //   var res = []
+    return res
+  },
 
-  //   if (!end) {
-  //     end = start
-  //     start = 0 
-  //   }
+  rangeRight: (start, end, step = 1) => {
+    var res = []
 
-  //   if (end > 0) {
-  //     for (var i = start; i < end; i += step) res.unshift(i)
-  //   } else {
-  //     for (var i = start; i > end; i -= Math.abs(step)) res.unshift(i)
-  //   }
+    if (!end) {
+      end = start
+      start = 0 
+    }
 
-  //   return res
-  // },
+    if (step === 0) return new Array(Math.abs(end) - 1).fill(start)
+
+    if (end > 0) {
+      for (var i = start; i < end; i += step) res.unshift(i)
+    } else {
+      for (var i = start; i > end; i -= Math.abs(step)) res.unshift(i)
+    }
+
+    return res
+  },
 
   times: (n, iteratee = sanvvv.identity) => {
     // TODO: iterate -> sanvvv.iteratee
