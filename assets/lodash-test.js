@@ -916,6 +916,13 @@ var test = {
     }
   ],
 
+  conformsTo: [
+    {
+      i: [{ 'a': 1, 'b': 2 }, { 'b': function(n) { return n > 1; }, 'a': function(n) { return n >= 1; }}],
+      e: true
+    }
+  ],
+
   isArguments: [
     {
       i: [function () { return arguments; }()],

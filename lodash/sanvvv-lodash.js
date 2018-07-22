@@ -797,6 +797,42 @@ var sanvvv = {
     return setTimeout(func, wait, ...args)
   },
 
+  /**
+   * @param  {*} value
+   * @return {Array}
+   */
+  castArray: (...value) => value,
+
+  /**
+   * @param  {Object} object
+   * @param  {Object} source
+   * @return {boolean} Returns true if object conforms, else false
+   */
+  conformsTo: (object, source) => {
+    return sanvvv.conforms(source)(object)
+  },
+
+  /**
+   * @param  {*} value
+   * @param  {*} other
+   * @return {boolean}
+   */
+  eq: (value, other) => value === other || (value !== value && other !== other),
+
+  /**
+   * @param  {*} value
+   * @param  {*} other
+   * @return {boolean}
+   */
+  gt: (value, other) => String(value).localeCompare(String(other)) === 1,
+
+  /**
+   * @param  {*} value
+   * @param  {*} other
+   * @return {boolean}
+   */
+  gte: (value, other) => String(value).localeCompare(String(other)) >= 0,
+
   isArguments: function (value) {
     return Object.prototype.toString.call(value) === '[object Arguments]'
   },
@@ -812,6 +848,8 @@ var sanvvv = {
   isArrayLike: function (value) {
     return !sanvvv.isNil(value) && value.hasOwnProperty('length') && typeof value !== 'function'
   },
+
+  isArrayLikeObject: value => !sanvvv.isNil(value) && typeof value === 'object' && value.hasOwnProperty('length'),
 
   isBoolean: function (value) {
     return Object.prototype.toString.call(value) === '[object Boolean]'
@@ -939,6 +977,21 @@ var sanvvv = {
         if (!sanvvv.isEqual(value[key], other[key])) return false
       }
       return true
+    }
+
+    return false
+  },
+
+  isEqualWith: (value, other, customizer = sanvvv.identity) => {
+    // TODO: The customizer is invoked with up to six arguments: 
+    // (objValue, othValue [, index|key, object, other, stack])
+    if (typeof value !== typeof other) return false
+    if (typeof value === 'string') return customizer(value, other)
+
+    if (typeof value === 'object') {
+      var val = Object.entries(value)
+      var oth = Object.entries(other)
+      return val.some((v, i) => customizer(val[i][1], oth[i][1], val[i][0], value, other))
     }
 
     return false
