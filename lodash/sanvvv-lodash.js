@@ -37,13 +37,6 @@ var sanvvv = {
     return array.filter(item => differBy.indexOf(f(item)) === -1)
   },
 
-  // var tag = false
-  // values.forEach(el => {
-  //   if (comparator(item, el)) tag = true
-  // })
-  // if (tag) return false
-  // else return true
-
   differenceWith: function (array, values, comparator) {
     return array.filter(arr => values.every(value => !comparator(arr, value)))
   },
@@ -200,13 +193,20 @@ var sanvvv = {
   },
 
   pull: function (array, ...values) {
-    // TODO: this method mutates array
-    return values.reduce((acc, cur) => acc.filter(item => item !== cur), array)
+    return sanvvv.pullAllBy(array, values)
   },
 
   pullAll: function (array, values) {
-    // TODO: this method mutates array
-    return values.reduce((acc, cur) => acc.filter(item => item !== cur), array)
+    return sanvvv.pullAllBy(array, values)
+  },
+
+  pullAllBy: (array, values, iteratee = sanvvv.identity) => {
+    iteratee = sanvvv.iteratee(iteratee)
+    return values.reduce((acc, cur) => acc.filter(item => iteratee(item) !== iteratee(cur)), array)
+  },
+
+  pullAllWith: (array, values, comparator) => {
+    return values.reduce((acc, cur) => acc.filter(item => !comparator(item, cur)), array)
   },
 
   pullAt: function (array, indexes) {
@@ -328,6 +328,16 @@ var sanvvv = {
     })
   },
 
+  uniqWith: (array, comparator) => {
+    return array.reduce((acc, cur) => { 
+      for (var obj of acc) {
+        if (comparator(obj, cur)) return acc
+      }
+      acc.push(cur)
+      return acc
+    }, [])
+  },
+
   tail: function (array) {
     return array.slice(1, array.length)
   },
@@ -341,11 +351,37 @@ var sanvvv = {
     return array.slice(array.length - n, array.length)
   },
 
+  takeRightWhile: (array, predicate = sanvvv.identity) => {
+    predicate = sanvvv.iteratee(predicate)
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (!predicate(array[i])) return sanvvv.takeRight(array, array.length - 1 - i)
+    }
+    return []
+  },
+
+  takeWhile: (array, predicate = sanvvv.identity) => {
+    predicate = sanvvv.iteratee(predicate)
+    for (var i = 0; i < array.length; i++) {
+      if (!predicate(array[i])) return sanvvv.take(array, i)
+    }
+    return []
+  },
+
   union: function (...arrays) {
     return sanvvv.uniq(arrays.reduce((acc, cur) => {
       acc.push(...cur)
       return acc
     }, []))
+  },
+
+  unionBy: (...arrays) => {
+    var iteratee = arrays.pop()
+    return sanvvv.uniqBy([].concat(...arrays), iteratee)
+  },
+
+  unionWith: (...arrays) => {
+    var comparator = arrays.pop()
+    return sanvvv.uniqWith([].concat(...arrays), comparator)
   },
 
   without: function (array, ...values) {
@@ -354,16 +390,41 @@ var sanvvv = {
 
   
   xor: function (...arrays) {
-    var arr =  arrays.reduce((acc, cur) => {
-      acc.push(...cur)
-      return acc
-    }, [])
-
-    // !!!
+    // TODO: map
+    var arr = [].concat(...arrays)
     return arr.filter(item => arr.indexOf(item) === arr.lastIndexOf(item))
   },
 
+  xorBy: (...arrays) => {
+    var iteratee = sanvvv.identity
+    if (!sanvvv.isArray(arrays[arrays.length - 1])) iteratee = sanvvv.iteratee(arrays.pop())
+    var arr = [].concat(...arrays)
+    var map = arr.reduce((acc, cur) => {
+      var val = iteratee(cur)
+      if (!acc[val]) acc[val] = 1
+      else acc[val]++
+      return acc
+    }, {})
+    return arr.filter(item => map[iteratee(item)] <= 1)
+  },
+
+  xorWith: (...arrays) => {
+    // !!! O(N2)
+    var comparator = arrays.pop()
+    var arr = [].concat(...arrays)
+    var res = []
+    for (var i = 0; i < arr.length; i++) {
+      var tag = false
+      for (var j = 0; j < arr.length; j++) {
+        if (i !== j && comparator(arr[i], arr[j])) tag = true
+      }
+      if (!tag) res.push(arr[i])
+    }
+    return res
+  },
+
   zip: function (...arrays) {
+    // TODO: reduce
     var res = []
 
     arrays.forEach(array => {
@@ -382,8 +443,19 @@ var sanvvv = {
     return res
   },
 
+  zipWith: (...arrays) => {
+    var iteratee = sanvvv.identity
+    if (typeof arrays[arrays.length - 1] === 'function') iteratee = arrays.pop()
+    return sanvvv.zip(...arrays).reduce((acc, cur) => (acc.push(iteratee(...cur)), acc), [])
+  },
+
   unzip: function (array) {
     return sanvvv.zip(...array)
+  },
+
+  unzipWith: (arrays, iteratee = sanvvv.identity) => {
+    arrays.push(iteratee)
+    return sanvvv.zipWith(...arrays)
   },
 
   zipObject: function (props = [], values = []) {
@@ -456,11 +528,25 @@ var sanvvv = {
     for (var item of collection) {
       if (f(item)) return item
     }
+    return undefined
+  },
+
+  findLast: (collection, predicate = sanvvv.identity, fromIndex = collection.length - 1) => {
+    predicate = sanvvv.iteratee(predicate)
+    for (var i = collection.length; i >= 0; i--) {
+      if (predicate(collection[i])) return collection[i]
+    }
+    return undefined
   },
 
   flatMap: function (collection, iteratee = sanvvv.identity) {
     var f = sanvvv.iteratee(iteratee)
     return sanvvv.flatten(collection.map(x => f(x)))
+  },
+
+  flatMapDeep: (collection, iteratee = sanvvv.identity) => {
+    var f = sanvvv.iteratee(iteratee)
+    return sanvvv.flattenDeep(collection.map(x => f(x)))
   },
 
   flatMapDepth: function (collection, iteratee = sanvvv.identity, depth = 1) {
@@ -470,7 +556,15 @@ var sanvvv = {
 
   forEach: function (collection, iteratee = sanvvv.identity) {
     for (var [key, value] of Object.entries(collection)) {
-      iteratee(value, key)
+      iteratee(value, key, collection)
+    }
+    return collection
+  },
+
+  forEachRight: (collection, iteratee = sanvvv.identity) => {
+    var co = Object.entries(collection)
+    for (var i = co.length - 1; i >= 0; i--) {
+      iteratee(co[i], i, collection)
     }
     return collection
   },
@@ -483,6 +577,16 @@ var sanvvv = {
       else acc[val].push(cur)
       return acc
     }, {})
+  },
+
+  includes: (collection, value, fromIndex = 0) => {
+    if (typeof collection === 'object') collection = Object.values(collection)
+    return collection.slice(fromIndex, collection.length).includes(value)
+  },
+
+  invokeMap: (collection, path, ...args) => {
+    if (typeof path === 'string') path = collection[0][path]
+    return collection.map(arr => path.apply(arr, args))
   },
 
   keyBy: function (collection, iteratee = sanvvv.identity) {
@@ -499,6 +603,28 @@ var sanvvv = {
       acc.push(f(cur, index, array))
       return acc
     }, [])
+  },
+
+  /**
+   * @param  {Array|Object} collection
+   * @param  {Array[]|Function[]|Object{}|string[]} [iteratee=sanvvv.identity]
+   * @param  {string[]} orders
+   * @return {Array} Returns the new sorted array
+   */
+  orderBy: (collection, iteratees = sanvvv.identity, orders) => {
+    var iters = iteratees.map(x => sanvvv.iteratee(x))
+    var co = collection.slice(0)
+
+    for (var i = iters.length - 1; i >= 0; i--) {
+      co = collection.sort((a, b) => {
+        a = '' + iters[i](a)
+        b = '' + iters[i](b)
+        if (orders[i] === 'asc') return a.localeCompare(b)
+        else return b.localeCompare(a)
+      })
+    }
+
+    return co
   },
 
   partition: function (collection, predicate = sanvvv.identity) {
@@ -574,6 +700,25 @@ var sanvvv = {
 
   /**
    * @param  {Array|Object} collection
+   * @param  {number} [n=1]
+   * @return {Array}
+   */
+  sampleSize: (collection, n = 1) => {
+    n = n > collection.length ? collection.length : n
+    var co = Object.entries(collection)
+    var res = []
+
+    for (var i = 0; i < n; i++) {
+      var samp = co[~~(Math.random() * co.length)]
+      if (sanvvv.isArray(collection)) res.push(samp[1])
+      else res.push({[samp[0]]: samp[1]})
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {Array|Object} collection
    * @return {Array} returns new array
    */
   shuffle: function (collection) {
@@ -631,6 +776,25 @@ var sanvvv = {
     }
 
     return co
+  },
+
+  /**
+   * @param  {Function} func
+   * @param  {...*} ...args
+   * @return {number} Returns the timer id
+   */
+  defer: (func, ...args) => {
+    return setTimeout(func, 0, ...args)
+  },
+
+  /**
+   * @param  {Function} func
+   * @param  {number} wait
+   * @param  {...*} ...args
+   * @return {number} Returns the timer id
+   */
+  delay: (func, wait, ...args) => {
+    return setTimeout(func, wait, ...args)
   },
 
   isArguments: function (value) {
@@ -911,7 +1075,7 @@ var sanvvv = {
   findKey: (object, predicate = sanvvv.identity) => {
     predicate = sanvvv.iteratee(predicate)
     for (var key in object) {
-     if (predicate(object[key])) return {[key]: object[key]}
+     if (predicate(object[key])) return key
     }
     return undefined
   },
@@ -1088,7 +1252,7 @@ var sanvvv = {
    * @param  {Object} object
    * @return {Array}
    */
-  toPairs: object => [Object.entries(object)],
+  toPairs: object => Object.entries(object),
 
   /**
    * @param  {Object} object
@@ -1182,6 +1346,7 @@ var sanvvv = {
     }
 
     // isArray
+    // TODO: 不应该比较大小
     if (sanvvv.isArray(iter)) {
       // !!! 只写了数组 length === 2 的情况
       return obj => sanvvv.isEqual(obj[iter[0]], iter[1])
@@ -1244,5 +1409,85 @@ var sanvvv = {
     return p.reduce((acc, cur) => acc[cur], obj[p.shift()])
   },
 
+  methodOf: (object, ...args) => param => {
+    // The arguments to invoke the method with
+    if (typeof param === 'string') {
+      return 'TODO'
+    } else {
+      return object[param[0]][param[1]]
+    }
+  },
+
+  mixin: (object, source, options) => {
+    // TODO options 链式调用
+    var obj = typeof source === 'object' ? object : sanvvv
+    var src = object
+    var opt = options || {}
+
+    if (typeof object === 'function') obj = obj.prototype
+
+    for (var property in src) {
+      var val = src[property]
+      if (typeof val === 'function') obj[property] = val
+    }
+  },
   
+  noop: () => undefined,
+
+  nthArg: (n = 0) => (...args) => {
+    return n >= 0 ? args[n] : args[args.length + n]
+  },
+  
+  property: path => sanvvv.method(path),
+
+  propertyOf: object => sanvvv.methodOf(object),
+
+  range: (start, end, step = 1) => {
+    var res = []
+
+    if (!end) {
+      end = start
+      start = 0 
+    }
+
+    if (step === 0) return new Array(Math.abs(end) - 1).fill(start)
+
+    if (end > 0) {
+      for (var i = start; i < end; i += step) res.push(i)
+    } else {
+      for (var i = start; i > end; i -= Math.abs(step)) res.push(i)
+    }
+
+    return res
+  },
+
+  rangeRight: (start, end, step = 1) => {
+    var res = []
+
+    if (!end) {
+      end = start
+      start = 0 
+    }
+
+    if (step === 0) return new Array(Math.abs(end) - 1).fill(start)
+
+    if (end > 0) {
+      for (var i = start; i < end; i += step) res.unshift(i)
+    } else {
+      for (var i = start; i > end; i -= Math.abs(step)) res.unshift(i)
+    }
+
+    return res
+  },
+
+  times: (n, iteratee = sanvvv.identity) => {
+    // TODO: iterate -> sanvvv.iteratee
+    var res = []
+    for (var i = 0; i < n; i++) res.push(iteratee(i))
+    return res
+  },
+
+  // TODO: 将使用到path的地方都更新使用函数toPath
+  toPath: value => value.replace('[', '.').replace(']', '').split('.'),
+
 }
