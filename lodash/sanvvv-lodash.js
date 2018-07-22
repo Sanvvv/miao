@@ -202,13 +202,12 @@ var sanvvv = {
 
   pullAllBy: (array, values, iteratee = sanvvv.identity) => {
     iteratee = sanvvv.iteratee(iteratee)
-    array = values.reduce((acc, cur) => acc.filter(item => iteratee(item) !== iteratee(cur)), array)
-    return array
+    return values.reduce((acc, cur) => acc.filter(item => iteratee(item) !== iteratee(cur)), array)
   },
 
-  // pullAllWith: (array, values, comparator) => {
-    
-  // },
+  pullAllWith: (array, values, comparator) => {
+    return values.reduce((acc, cur) => acc.filter(item => !comparator(item, cur)), array)
+  },
 
   pullAt: function (array, indexes) {
     var res = []
@@ -391,13 +390,37 @@ var sanvvv = {
 
   
   xor: function (...arrays) {
-    var arr =  arrays.reduce((acc, cur) => {
-      acc.push(...cur)
-      return acc
-    }, [])
-
-    // !!!
+    // TODO: map
+    var arr = [].concat(...arrays)
     return arr.filter(item => arr.indexOf(item) === arr.lastIndexOf(item))
+  },
+
+  xorBy: (...arrays) => {
+    var iteratee = sanvvv.identity
+    if (!sanvvv.isArray(arrays[arrays.length - 1])) iteratee = sanvvv.iteratee(arrays.pop())
+    var arr = [].concat(...arrays)
+    var map = arr.reduce((acc, cur) => {
+      var val = iteratee(cur)
+      if (!acc[val]) acc[val] = 1
+      else acc[val]++
+      return acc
+    }, {})
+    return arr.filter(item => map[iteratee(item)] <= 1)
+  },
+
+  xorWith: (...arrays) => {
+    // !!! O(N2)
+    var comparator = arrays.pop()
+    var arr = [].concat(...arrays)
+    var res = []
+    for (var i = 0; i < arr.length; i++) {
+      var tag = false
+      for (var j = 0; j < arr.length; j++) {
+        if (i !== j && comparator(arr[i], arr[j])) tag = true
+      }
+      if (!tag) res.push(arr[i])
+    }
+    return res
   },
 
   zip: function (...arrays) {
@@ -505,11 +528,25 @@ var sanvvv = {
     for (var item of collection) {
       if (f(item)) return item
     }
+    return undefined
+  },
+
+  findLast: (collection, predicate = sanvvv.identity, fromIndex = collection.length - 1) => {
+    predicate = sanvvv.iteratee(predicate)
+    for (var i = collection.length; i >= 0; i--) {
+      if (predicate(collection[i])) return collection[i]
+    }
+    return undefined
   },
 
   flatMap: function (collection, iteratee = sanvvv.identity) {
     var f = sanvvv.iteratee(iteratee)
     return sanvvv.flatten(collection.map(x => f(x)))
+  },
+
+  flatMapDeep: (collection, iteratee = sanvvv.identity) => {
+    var f = sanvvv.iteratee(iteratee)
+    return sanvvv.flattenDeep(collection.map(x => f(x)))
   },
 
   flatMapDepth: function (collection, iteratee = sanvvv.identity, depth = 1) {
@@ -519,7 +556,15 @@ var sanvvv = {
 
   forEach: function (collection, iteratee = sanvvv.identity) {
     for (var [key, value] of Object.entries(collection)) {
-      iteratee(value, key)
+      iteratee(value, key, collection)
+    }
+    return collection
+  },
+
+  forEachRight: (collection, iteratee = sanvvv.identity) => {
+    var co = Object.entries(collection)
+    for (var i = co.length - 1; i >= 0; i--) {
+      iteratee(co[i], i, collection)
     }
     return collection
   },
@@ -532,6 +577,16 @@ var sanvvv = {
       else acc[val].push(cur)
       return acc
     }, {})
+  },
+
+  includes: (collection, value, fromIndex = 0) => {
+    if (typeof collection === 'object') collection = Object.values(collection)
+    return collection.slice(fromIndex, collection.length).includes(value)
+  },
+
+  invokeMap: (collection, path, ...args) => {
+    if (typeof path === 'string') path = collection[0][path]
+    return collection.map(arr => path.apply(arr, args))
   },
 
   keyBy: function (collection, iteratee = sanvvv.identity) {
@@ -548,6 +603,28 @@ var sanvvv = {
       acc.push(f(cur, index, array))
       return acc
     }, [])
+  },
+
+  /**
+   * @param  {Array|Object} collection
+   * @param  {Array[]|Function[]|Object{}|string[]} [iteratee=sanvvv.identity]
+   * @param  {string[]} orders
+   * @return {Array} Returns the new sorted array
+   */
+  orderBy: (collection, iteratees = sanvvv.identity, orders) => {
+    var iters = iteratees.map(x => sanvvv.iteratee(x))
+    var co = collection.slice(0)
+
+    for (var i = iters.length - 1; i >= 0; i--) {
+      co = collection.sort((a, b) => {
+        a = '' + iters[i](a)
+        b = '' + iters[i](b)
+        if (orders[i] === 'asc') return a.localeCompare(b)
+        else return b.localeCompare(a)
+      })
+    }
+
+    return co
   },
 
   partition: function (collection, predicate = sanvvv.identity) {
@@ -623,6 +700,25 @@ var sanvvv = {
 
   /**
    * @param  {Array|Object} collection
+   * @param  {number} [n=1]
+   * @return {Array}
+   */
+  sampleSize: (collection, n = 1) => {
+    n = n > collection.length ? collection.length : n
+    var co = Object.entries(collection)
+    var res = []
+
+    for (var i = 0; i < n; i++) {
+      var samp = co[~~(Math.random() * co.length)]
+      if (sanvvv.isArray(collection)) res.push(samp[1])
+      else res.push({[samp[0]]: samp[1]})
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {Array|Object} collection
    * @return {Array} returns new array
    */
   shuffle: function (collection) {
@@ -682,6 +778,61 @@ var sanvvv = {
     return co
   },
 
+  /**
+   * @param  {Function} func
+   * @param  {...*} ...args
+   * @return {number} Returns the timer id
+   */
+  defer: (func, ...args) => {
+    return setTimeout(func, 0, ...args)
+  },
+
+  /**
+   * @param  {Function} func
+   * @param  {number} wait
+   * @param  {...*} ...args
+   * @return {number} Returns the timer id
+   */
+  delay: (func, wait, ...args) => {
+    return setTimeout(func, wait, ...args)
+  },
+
+  /**
+   * @param  {*} value
+   * @return {Array}
+   */
+  castArray: (...value) => value,
+
+  /**
+   * @param  {Object} object
+   * @param  {Object} source
+   * @return {boolean} Returns true if object conforms, else false
+   */
+  conformsTo: (object, source) => {
+    return sanvvv.conforms(source)(object)
+  },
+
+  /**
+   * @param  {*} value
+   * @param  {*} other
+   * @return {boolean}
+   */
+  eq: (value, other) => value === other || (value !== value && other !== other),
+
+  /**
+   * @param  {*} value
+   * @param  {*} other
+   * @return {boolean}
+   */
+  gt: (value, other) => String(value).localeCompare(String(other)) === 1,
+
+  /**
+   * @param  {*} value
+   * @param  {*} other
+   * @return {boolean}
+   */
+  gte: (value, other) => String(value).localeCompare(String(other)) >= 0,
+
   isArguments: function (value) {
     return Object.prototype.toString.call(value) === '[object Arguments]'
   },
@@ -697,6 +848,8 @@ var sanvvv = {
   isArrayLike: function (value) {
     return !sanvvv.isNil(value) && value.hasOwnProperty('length') && typeof value !== 'function'
   },
+
+  isArrayLikeObject: value => !sanvvv.isNil(value) && typeof value === 'object' && value.hasOwnProperty('length'),
 
   isBoolean: function (value) {
     return Object.prototype.toString.call(value) === '[object Boolean]'
@@ -824,6 +977,21 @@ var sanvvv = {
         if (!sanvvv.isEqual(value[key], other[key])) return false
       }
       return true
+    }
+
+    return false
+  },
+
+  isEqualWith: (value, other, customizer = sanvvv.identity) => {
+    // TODO: The customizer is invoked with up to six arguments: 
+    // (objValue, othValue [, index|key, object, other, stack])
+    if (typeof value !== typeof other) return false
+    if (typeof value === 'string') return customizer(value, other)
+
+    if (typeof value === 'object') {
+      var val = Object.entries(value)
+      var oth = Object.entries(other)
+      return val.some((v, i) => customizer(val[i][1], oth[i][1], val[i][0], value, other))
     }
 
     return false
