@@ -553,6 +553,20 @@ var test = {
     }
   ],
 
+  xorBy: [
+    {
+      i: [[2.1, 1.2], [2.3, 3.4], Math.floor],
+      e: [1.2, 3.4]
+    }
+  ],
+
+  xorWith: [
+    {
+      i: [[{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }], [{ 'x': 1, 'y': 1 }, { 'x': 1, 'y': 2 }], sanvvv.isEqual],
+      e: [{ 'x': 2, 'y': 1 }, { 'x': 1, 'y': 1 }]
+    }
+  ],
+
   zip: [
     {
       i: [['a', 'b'], [1, 2], [true, false]],
@@ -562,7 +576,7 @@ var test = {
 
   zipWith: [
     {
-      i: [[1, 2], [10, 20], [100, 200], function(a, b, c) {
+      i: [[1, 2], [10, 20], [100, 200], function (a, b, c) {
         return a + b + c;
       }],
       e: [111, 222]
@@ -578,7 +592,7 @@ var test = {
 
   unzipWith: [
     {
-      i: [[[1, 10, 100], [2, 20, 200]], function(a,b) {return a+b}],
+      i: [[[1, 10, 100], [2, 20, 200]], function (a, b) { return a + b }],
       e: [3, 30, 300]
 
     }
@@ -714,6 +728,36 @@ var test = {
     }
   ],
 
+  includes: [
+    {
+      i: [[1, 2, 3], 1],
+      e: true
+    },
+    {
+      i: [[1, 2, 3], 1, 2],
+      e: false
+    },
+    {
+      i: [{ 'a': 1, 'b': 2 }, 1],
+      e: true
+    },
+    {
+      i: ['abcd', 'bc'],
+      e: true
+    },
+  ],
+
+  invokeMap: [
+    {
+      i: [[[5, 1, 7], [3, 2, 1]], 'sort'],
+      e: [[1, 5, 7], [1, 2, 3]]
+    },
+    {
+      i: [[123, 456], String.prototype.split, ''],
+      e: [['1', '2', '3'], ['4', '5', '6']]
+    }
+  ],
+
   keyBy: [
     {
       i: [[
@@ -753,6 +797,21 @@ var test = {
     {
       i: [[1, 2, 3], function (v, i, o) { return v + i + o.length * 2 }],
       e: [7, 9, 11]
+    }
+  ],
+
+  orderBy: [
+    {
+      i: [[
+        { 'user': 'fred', 'age': 48 },
+        { 'user': 'barney', 'age': 34 },
+        { 'user': 'fred', 'age': 40 },
+        { 'user': 'barney', 'age': 36 }
+      ], ['user', 'age'], ['asc', 'desc']],
+      e: [{ 'user': 'barney', 'age': 36 },
+      { 'user': 'barney', 'age': 34 },
+      { 'user': 'fred', 'age': 48 },
+      { 'user': 'fred', 'age': 40 }]
     }
   ],
 
@@ -854,6 +913,13 @@ var test = {
       { 'user': 'barney', 'age': 36 },
       { 'user': 'fred', 'age': 40 },
       { 'user': 'fred', 'age': 48 }]
+    }
+  ],
+
+  conformsTo: [
+    {
+      i: [{ 'a': 1, 'b': 2 }, { 'b': function(n) { return n > 1; }, 'a': function(n) { return n >= 1; }}],
+      e: true
     }
   ],
 
@@ -1088,7 +1154,7 @@ var test = {
         'fred': { 'age': 40, 'active': false },
         'pebbles': { 'age': 1, 'active': true }
       }, function (o) { return o.age < 40; }],
-      e: { 'barney': { 'age': 36, 'active': true } }
+      e: 'barney'
     },
     {
       i: [{
@@ -1096,7 +1162,7 @@ var test = {
         'fred': { 'age': 40, 'active': false },
         'pebbles': { 'age': 1, 'active': true }
       }, { 'age': 1, 'active': true }],
-      e: { 'pebbles': { 'age': 1, 'active': true } }
+      e: 'pebbles'
     }
   ],
 
@@ -1195,8 +1261,8 @@ var test = {
 
   toPairs: [
     {
-      i: [{a:1, b: 2}],
-      e: [[['a', 1], ['b', 2]]]
+      i: [{ a: 1, b: 2 }],
+      e: [['a', 1], ['b', 2]]
     }
   ],
 
@@ -1259,7 +1325,7 @@ var test2 = function () {
   var iteratee = function () {
     var users = [
       { 'user': 'barney', 'age': 36, 'active': true },
-      { 'user': 'fred',   'age': 40, 'active': false }
+      { 'user': 'fred', 'age': 40, 'active': false }
     ]
 
     return [
@@ -1277,16 +1343,16 @@ var test2 = function () {
       }
     ]
   }()
-   
+
   var assign = function () {
     function Foo() {
       this.a = 1;
     }
-     
+
     function Bar() {
       this.c = 3;
     }
-     
+
     Foo.prototype.b = 2;
     Bar.prototype.d = 4;
 
@@ -1302,11 +1368,11 @@ var test2 = function () {
     function Foo() {
       this.a = 1;
     }
-    
+
     function Bar() {
       this.c = 3;
     }
-    
+
     Foo.prototype.b = 2;
     Bar.prototype.d = 4;
 
@@ -1328,10 +1394,10 @@ var test2 = function () {
 
     return [
       {
-        i: sanvvv.forIn(new Foo, function(value, key) {
+        i: sanvvv.forIn(new Foo, function (value, key) {
           // console.log(key);
         }),
-        e: {a:1, b:2}
+        e: { a: 1, b: 2 }
       }
     ]
   }()
@@ -1341,22 +1407,22 @@ var test2 = function () {
       { 'a': { 'b': 2 } },
       { 'a': { 'b': 1 } }
     ];
-    
+
     return [
       {
         i: sanvvv.map(objects, sanvvv.method('a.b')),
-        e: [2,1]
+        e: [2, 1]
       },
       {
         i: sanvvv.map(objects, sanvvv.method(['a', 'b'])),
-        e: [2,1]
+        e: [2, 1]
       }
     ]
   }()
 
   var methodOf = function () {
     var array = [0, 1, 2],
-    object = { 'a': array, 'b': array, 'c': array };
+      object = { 'a': array, 'b': array, 'c': array };
 
     return [
       // {
@@ -1388,7 +1454,7 @@ var test2 = function () {
     function vowels(string) {
       return string
     }
-     
+
     sanvvv.mixin({ 'vowels': vowels });
 
     return [
