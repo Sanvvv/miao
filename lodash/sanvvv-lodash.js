@@ -898,9 +898,19 @@ var sanvvv = {
     return true
   },
 
+  isMatchWith: (object, source, customizer) => {
+    for (var key in source) {
+      console.log(key)
+      if (!customizer(object[key], source[key])) return false
+    }
+    return true
+  },
+
   isNaN: function (value) {
     return Object.prototype.toString.call(value) === '[object Number]' && isNaN(value)
   },
+
+  isNative: value => value.toString().includes('[native code]'),
 
   isNil: function (value) {
     return value === null || value === undefined
@@ -949,6 +959,11 @@ var sanvvv = {
     return typeof value === 'symbol'
   },
 
+  isTypedArray: value => {
+    var str = Object.prototype.toString.call(value)
+    return str.includes('Array') && str.length > 14
+  },
+
   isUndefined: function (value) {
     return typeof value === 'undefined'
   },
@@ -960,6 +975,10 @@ var sanvvv = {
   isWeakSet: function (value) {
     return Object.prototype.toString.call(value) === '[object WeakSet]'
   },
+
+  lt: (value, other) => String(value).localeCompare(String(other)) === -1,
+
+  lte: (value, other) => String(value).localeCompare(String(other)) <= 0,
 
   isEqual: function (value, other) {
     if (value === other) return true
@@ -1008,11 +1027,66 @@ var sanvvv = {
   },
 
   /**
+   * @param  {*} value
+   * @return {number}
+   */
+  toFinite: value => {
+    var res = Number(value)
+    if (Number.isFinite(res)) return res
+    else if (sanvvv.isNaN(res)) return 0
+    else return res > 0 ? Number.MAX_VALUE : Number.MIN_VALUE
+  },
+
+  /**
+   * @param  {*} value
+   * @return {number}
+   */
+  toInteger: value => Math.floor(sanvvv.toFinite(value)),
+
+  /**
+   * @param  {*} value
+   * @return {number}
+   */
+  toLength: value => {
+    return value > 0 ? sanvvv.toInteger(value) > 2 ** 32 - 1 ? 2 ** 32 - 1 : sanvvv.toInteger(value) : 0
+  },
+
+  /**
+   * @param  {*} value
+   * @return {number}
+   */
+  toSafeInteger: value => {
+    if (value > 0) return value > Number.MAX_SAFE_INTEGER ? Number.MAX_SAFE_INTEGER : sanvvv.toInteger(value)
+    else return value < Number.MIN_SAFE_INTEGER ? Number.MIN_SAFE_INTEGER : sanvvv.toInteger(value) 
+  },
+
+  /**
+   * @param  {number} augend
+   * @param  {number} addend
+   * @return {number}
+   */
+  add: (augend, addend) => a + b,
+
+  /**
    * @param  {number} number
    * @param  {number} [precision=0]
    * @return {number} Returns the rounded up number
    */
   ceil: (number, precision = 0) => Math.ceil(number * 10 ** precision) / 10 ** precision,
+
+  /**
+   * @param  {number} dividend
+   * @param  {number} divisor
+   * @return {number}
+   */
+  divide: (dividend, divisor) => dividend / divisor,
+
+  /**
+   * @param  {number} number
+   * @param  {number} [precision=0]
+   * @return {number}
+   */
+  floor: (number, precision = 0) => Math.floor(number * 10 ** precision) / 10 ** precision,
 
   /**
    * @param  {Array} array
@@ -1029,6 +1103,22 @@ var sanvvv = {
     if (!array.length) return undefined
     var f = sanvvv.iteratee(iteratee)
     return array.reduce((acc, cur) => f(acc) > f(cur) ? acc : cur)
+  },
+
+   /**
+   * @param  {Array} array
+   * @return {number}
+   */
+  mean: array => sanvvv.meanBy(array),
+
+  /**
+   * @param  {Array} array
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @return {number}
+   */
+  meanBy: (array, iteratee = sanvvv.identity) => {
+    iteratee = sanvvv.iteratee(iteratee)
+    return array.map(item => iteratee(item)).reduce((acc, cur) => acc + cur) / array.length
   },
 
   /**
@@ -1049,11 +1139,25 @@ var sanvvv = {
   },
 
   /**
+   * @param  {number} multiplier
+   * @param  {number} multiplicand
+   * @return {number}
+   */
+  multiply: (multiplier, multiplicand) => multiplier * multiplicand,
+
+  /**
    * @param  {number} number
    * @param  {number} [precision=0]
    * @return {number} Returns the rounded up number
    */
   round: (number, precision = 0) => Math.round(number * 10 ** precision) / 10 ** precision,
+  
+  /**
+   * @param  {number} minuend
+   * @param  {number} subtrahend
+   * @return {number}
+   */
+  subtract: (minuend, subtrahend) => minuend % subtrahend,
   
   /**
    * @param  {Array} array
@@ -1069,6 +1173,36 @@ var sanvvv = {
   sumBy: (array, iteratee = sanvvv.identity) => {
     var f = sanvvv.iteratee(iteratee)
     return array.reduce((acc, cur) => acc += f(cur), 0)
+  },
+
+  /**
+   * @param  {number} number
+   * @param  {number} lower
+   * @param  {number} upper
+   * @return {number}
+   */
+  clamp: (number, lower, upper) => {
+    if (upper === undefined) {
+      upper = lower
+      lower = number
+    }
+    if (number > upper) return upper
+    if (number < lower) return lower
+    return number
+  },
+
+  /**
+   * @param  {number} number
+   * @param  {number} [start=0]
+   * @param  {number} end
+   * @return {boolean}
+   */
+  inRange: (number, start, end) => {
+    if (end === undefined) {
+      end = start
+      start = 0
+    }
+    return start <= number && number < end 
   },
 
   /**
@@ -1105,6 +1239,15 @@ var sanvvv = {
       return acc
     }, object)
   },
+
+  /**
+   * @param  {Object} object
+   * @param  {...(string|string[])} ...paths
+   * @return {Array}
+   */
+  // at: (object, ...paths) => {
+    
+  // },
 
   /**
    * @param  {Object} object
@@ -1312,6 +1455,294 @@ var sanvvv = {
    * @return {Array}
    */
   values: object => Object.values(object),
+
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  camelCase: (string = '') => {
+    var res = ''
+    var tag = false
+
+    for (var char of string) {
+      if (/[a-zA-Z]/.test(char)) {
+        if (tag) {
+          res += char.toUpperCase()
+          tag = false
+        }
+        else res += char.toLowerCase()
+      } else {
+        if (!tag && res.length) tag = true
+      }
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  capitalize: (string = '') => string[0].toUpperCase() + string.toLowerCase().slice(1),
+
+  /**
+   * @param  {string} [string='']
+   * @param  {string} target
+   * @param  {number} [position=string.length]
+   * @return {boolean}
+   */
+  endsWith: (string = '', target, position = string.length) => string[position - 1] === target,
+  
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  escape: (string = '') => {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }
+    var res = []
+    
+    for (var char of string) {
+      if (map[char]) res += map[char]
+      else res += char
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  escapeRegExp: (string = '') => {
+    var table = ["^", "$", "", ".", "*", "+", "?", "(", ")", "[", "]", "{", "}", "|"]
+    var res = []
+
+    for (var char of string) {
+      if (table.includes(char)) res += '\\' + char
+      else res += char
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  kebabCase: (string = '') => {
+    var res = []
+    var tag = false
+
+    for (var char of string) {
+      if (/[a-zA-Z]/.test(char)) {
+        if (tag) {
+          res += '-'
+          tag = false
+        }
+        res += char.toLowerCase()
+      } else {
+        if (!tag && res.length) tag = true
+      }
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  lowerCase: (string = '') => {
+    var res = []
+    var tag = false
+
+    for (var char of string) {
+      if (/[a-zA-Z]/.test(char)) {
+        if (tag) {
+          res += ' '
+          tag = false
+        }
+        res += char.toLowerCase()
+      } else {
+        if (!tag && res.length) tag = true
+      }
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  lowerFirst: (string = '') => string[0].toLowerCase() + string.slice(1),
+
+  /**
+   * @param  {string} [string='']
+   * @param  {number} [length=0]
+   * @param  {string} [chars='']
+   * @return {string}
+   */
+  pad: (string = '', length = 0, chars = ' ') => string.padStart(string.length + Math.floor((length - string.length) / 2), chars).padEnd(length, chars),
+
+  /**
+   * @param  {string} [string='']
+   * @param  {number} [length=0]
+   * @param  {string} [chars='']
+   * @return {string}
+   */
+  padEnd: (string = '', length = 0, chars = ' ') => string + sanvvv.repeat(chars, length - string.length).slice(0, length - string.length),
+
+  /**
+   * @param  {string} [string='']
+   * @param  {number} [length=0]
+   * @param  {string} [chars='']
+   * @return {string}
+   */
+  padStart: (string = '', length = 0, chars = ' ') => sanvvv.repeat(chars, length - string.length).slice(0, length - string.length) + string,
+
+  /**
+   * @param  {string} string
+   * @param  {number} [radix=10]
+   * @return {number}
+   */
+  parseInt: (string, radix = 10) => {
+    if (radix <= 1) return NaN
+    var res = ''
+    var val = string - 0
+
+    while (val > 0) {
+      res = val % radix + res
+      val = Math.floor(val / radix)
+    }
+
+    return res - 0
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @param  {number} [n=1]
+   * @return {string}
+   */
+  repeat: (string = '', n = 1) => {
+    var res = ''
+    for (var i = 0; i < n; i++) {
+      res += string
+    }
+    return res
+  },
+
+  replace: (string = '', pattern, replacement) => string.replace(pattern, replacement),
+
+  split: (string = '', seperator, limit) => string.split(seperator, limit),
+
+  /**
+   * @param  {string} [string='']
+   * @param  {string} target
+   * @param  {number} [position=0]
+   * @return {boolean}
+   */
+  startsWith: (string = '', target, position = 0) => string[position] === target,
+
+  toLower: (string = '') => string.toLowerCase(),
+
+  toUpper: (string = '') => string.toUpperCase(),
+
+  /**
+   * @param  {string} [string='']
+   * @param  {string} [chars=' ']
+   * @return {string}
+   */
+  trim: (string = '', chars = ' ') => {
+    var start = -1
+    var end = -1
+
+    for (var i = 0; i < string.length; i++) {
+      if (!chars.includes(string[i])) {
+        if (start === -1) start = i
+        end = i
+      }
+    }
+
+    return string.slice(start, end + 1)
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @param  {string} [chars=' ']
+   * @return {string}
+   */
+  trimEnd: (string = '', chars = ' ') => {
+    var end = -1
+
+    for (var i = 0; i < string.length; i++) {
+      if (!chars.includes(string[i])) end = i
+    }
+
+    return string.slice(0, end + 1)
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @param  {string} [chars=' ']
+   * @return {string}
+   */
+  trimStart: (string = '', chars = ' ') => {
+    var start = -1
+
+    for (var i = 0; i < string.length; i++) {
+      if (!chars.includes(string[i])) {
+        if (start === -1) start = i
+      }
+    }
+
+    return string.slice(start, string.length)
+  },
+
+  /**
+   * @param  {stirng} [string='']
+   * @param  {Object} [options={}]
+   * @param  {number} [options.length=30]
+   * @param  {string} [options.omission='...']
+   * @param  {RegExp|string} [options.separator]
+   * @return {string}
+   */
+  truncate: (string = '', options = {}) => {
+    var len = string.length
+    var oLen = options.length || 30
+    var omission = options.omission || '...'
+    var separator = options.separator
+
+    if (len < oLen) return string
+    else {
+      var truncateStart
+      var truncateEnd = oLen - omission.length
+      var str = string.slice(0, truncateEnd) + omission
+
+      if (separator === undefined) return str
+      if (typeof separator === 'string') {
+         truncateStart = str.lastIndexOf(separator)
+      } else {
+        if (separator.test(str)) {
+          // 不知道怎么用正则从后面开始匹配只能绕一大圈
+          var reg = new RegExp(separator, 'g')
+          var result = str.match(reg)
+          truncateStart = str.lastIndexOf(result[result.length - 1])
+        } else {
+          truncateStart = -1
+        }
+      }
+
+      if (truncateStart === -1) return str
+      else return str.slice(0, truncateStart) + str.slice(truncateEnd)
+    }
+  },
 
   /**
    * @param  {Function} func
@@ -1542,5 +1973,28 @@ var sanvvv = {
 
   // TODO: 将使用到path的地方都更新使用函数toPath
   toPath: value => value.replace('[', '.').replace(']', '').split('.'),
+
+  cloneDeep: value => {
+    if (value === null || typeof value !== 'object') return value
+
+    var ctor = value.constructor
+    var obj
+
+    switch (ctor) {
+      case RegExp:
+        obj = new ctor(value)
+        break
+      default:
+        obj = new ctor()
+    }
+
+    for (var key in value) {
+      if (value.hasOwnProperty(key)) {
+        obj[key] = sanvvv.cloneDeep(value[key])
+      }
+    }
+
+    return obj
+  }
 
 }

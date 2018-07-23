@@ -1080,6 +1080,17 @@ var test = {
     }
   ],
 
+  meanBy: [
+    {
+      i: [[{ 'n': 4 }, { 'n': 2 }, { 'n': 8 }, { 'n': 6 }], function(o) { return o.n; }],
+      e: 5
+    },
+    {
+      i: [[{ 'n': 4 }, { 'n': 2 }, { 'n': 8 }, { 'n': 6 }], 'n'],
+      e: 5
+    }
+  ],
+
   minBy: [
     {
       i: [[{ 'n': 1 }, { 'n': 2 }], function (o) { return o.n; }],
@@ -1138,6 +1149,13 @@ var test = {
   //     i: [1.2, 5.2],
   //     e: 1
   //   },
+  // ],
+
+  // at: [
+  //   {
+  //     i: [{ 'a': [{ 'b': { 'c': 3 } }, 4] }, ['a[0].b.c', 'a[1]']],
+  //     e: [3, 4]
+  //   }
   // ],
 
   defaults: [
@@ -1264,6 +1282,179 @@ var test = {
       i: [{ a: 1, b: 2 }],
       e: [['a', 1], ['b', 2]]
     }
+  ],
+
+  camelCase: [
+    {
+      i: ['Foo Bar'],
+      e: 'fooBar'
+    },
+    {
+      i: ['--foo-bar--'],
+      e: 'fooBar'
+    },
+    {
+      i: ['__FOO_BAR__'],
+      e: 'fooBar'
+    }
+  ],
+
+  capitalize: [
+    {
+      i: ['fred-123aSd'],
+      e: 'Fred-123asd'
+    }
+  ],
+
+  endsWith: [
+    {
+      i: ['abc', 'c'],
+      e: true
+    },
+    {
+      i: ['abc', 'b'],
+      e: false
+    },
+    {
+      i: ['abc', 'b', 2],
+      e: true
+    },
+  ],
+
+  escape: [
+    {
+      i: [`!@#$%^&*()<>"'`],
+      e: "!@#$%^&amp;*()&lt;&gt;&quot;&#39;"
+    }
+  ],
+
+  kebabCase: [
+    {
+      i: ['Foo Bar'],
+      e: 'foo-bar'
+    },
+    // {
+    //   i: ['fooBar'],
+    //   e: 'foo-bar'
+    // },
+    {
+      i: ['__FOO_BAR__'],
+      e: 'foo-bar'
+    },
+  ],
+
+  lowerCase: [
+    {
+      i: ['--Foo-Bar--'],
+      e: 'foo bar'
+    },
+    // {
+    //   i: ['fooBar'],
+    //   e: 'foo bar'
+    // },
+    {
+      i: ['__FOO_BAR__'],
+      e: 'foo bar'
+    },
+  ],
+
+  pad: [
+    {
+      i: ['abc', 8],
+      e: '  abc   '
+    },
+    {
+      i: ['abc', 8, '_-'],
+      e: '_-abc_-_'
+    },
+    {
+      i: ['abc', 3],
+      e: 'abc'
+    },
+  ],
+
+  padEnd: [
+    {
+      i: ['abc', 6, '_-'],
+      e: 'abc_-_'
+    }
+  ],
+
+  padStart: [
+    {
+      i: ['abc', 6, '_-'],
+      e: '_-_abc'
+    }
+  ],
+
+  repeat: [
+    {
+      i: ['*', 3],
+      e: '***'
+    },
+    {
+      i: ['abc', 2],
+      e: 'abcabc'
+    },
+    {
+      i: ['abc', 0],
+      e: ''
+    },
+  ],
+
+  replace: [
+    {
+      i: ['Hi Fred', 'Fred', 'Barney'],
+      e: 'Hi Barney'
+    }
+  ],
+
+  trim: [
+    {
+      i: ['-_2-ab_c-dddd_-', '_-'],
+      e: '2-ab_c-dddd'
+    }
+  ],
+
+  trimEnd: [
+    {
+      i: ['-_-abc-_-', '_-'],
+      e: '-_-abc'
+    }
+  ],
+
+  trimStart: [
+    {
+      i: ['-_-abc-_-', '_-'],
+      e: 'abc-_-'
+    }
+  ],
+
+  truncate: [
+    {
+      i: ['hi-diddly-ho there, neighborino'],
+      e: 'hi-diddly-ho there, neighbo...'
+    },
+    {
+      i: ['hi-diddly-ho there, neighborino', {
+        'length': 24,
+        'separator': ' '
+      }],
+      e: 'hi-diddly-ho there,...'
+    },
+    {
+      i: ['hi-diddly-ho there, neighborino', {
+        'length': 24,
+        'separator': /,? +/
+      }],
+      e: 'hi-diddly-ho there...'
+    },
+    {
+      i: ['hi-diddly-ho there, neighborino', {
+        'omission': ' [...]'
+      }],
+      e: 'hi-diddly-ho there, neig [...]'
+    },
   ],
 
   range: [
@@ -1404,8 +1595,8 @@ var test2 = function () {
 
   var method = function () {
     var objects = [
-      { 'a': { 'b': 2 } },
-      { 'a': { 'b': 1 } }
+      { 'a': { 'b': sanvvv.constant(2) } },
+      { 'a': { 'b': sanvvv.constant(1) } }
     ];
 
     return [
@@ -1485,7 +1676,7 @@ var test2 = function () {
     matches,
     forIn,
     assignIn,
-    method,
+    // method,
     methodOf,
     mixin,
     property
