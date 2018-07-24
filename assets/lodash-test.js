@@ -1184,20 +1184,20 @@ var test = {
     }
   ],
 
-  // get: [
-  //   {
-  //     i: [{ 'a': [{ 'b': { 'c': 3 } }] }, 'a[0].b.c'],
-  //     e: 3
-  //   },
-  //   {
-  //     i: [{ 'a': [{ 'b': { 'c': 3 } }] }, ['a', '0', 'b', 'c']],
-  //     e: 3
-  //   },
-  //   {
-  //     i: [{ 'a': [{ 'b': { 'c': 3 } }] }, 'a.b.c', 'default'],
-  //     e: 'default'
-  //   },
-  // ],
+  get: [
+    {
+      i: [{ 'a': [{ 'b': { 'c': 3 } }] }, 'a[0].b.c'],
+      e: 3
+    },
+    {
+      i: [{ 'a': [{ 'b': { 'c': 3 } }] }, ['a', '0', 'b', 'c']],
+      e: 3
+    },
+    {
+      i: [{ 'a': [{ 'b': { 'c': 3 } }] }, 'a.b.c', 'default'],
+      e: 'default'
+    },
+  ],
 
   invert: [
     {
@@ -1612,18 +1612,18 @@ var test2 = function () {
   }()
 
   var methodOf = function () {
-    var array = [0, 1, 2],
-      object = { 'a': array, 'b': array, 'c': array };
+    var array = sanvvv.times(3, sanvvv.constant),
+    object = { 'a': array, 'b': array, 'c': array };
 
     return [
-      // {
-      //   i: sanvvv.map(['a[2]', 'c[0]'], sanvvv.methodOf(object)),
-      //   e: [2, 0]
-      // },
       {
-        i: sanvvv.map([['a', '2'], ['c', '0']], sanvvv.methodOf(object)),
+        i: sanvvv.map(['a[2]', 'c[0]'], sanvvv.methodOf(object)),
         e: [2, 0]
-      }
+      },
+      // {
+      //   i: sanvvv.map([['a', '2'], ['c', '0']], sanvvv.methodOf(object)),
+      //   e: [2, 0]
+      // }
     ]
   }()
 
@@ -1670,16 +1670,33 @@ var test2 = function () {
     ]
   }()
 
+  var propertyOf = function () {
+    var array = [0, 1, 2],
+    object = { 'a': array, 'b': array, 'c': array };
+
+    return [
+      {
+        i: sanvvv.map(['a[2]', 'c[0]'], sanvvv.propertyOf(object)),
+        e: [2, 0]
+      },
+      {
+        i: sanvvv.map([['a', '2'], ['c', '0']], sanvvv.propertyOf(object)),
+        e: [2, 0]
+      }
+    ]
+  }()
+
   return {
     iteratee,
     assign,
     matches,
     forIn,
     assignIn,
-    // method,
+    method,
     methodOf,
     mixin,
-    property
+    property,
+    propertyOf
   }
 
 }()

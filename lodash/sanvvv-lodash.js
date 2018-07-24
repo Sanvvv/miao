@@ -1335,10 +1335,17 @@ var sanvvv = {
    * @param  {*} defaultValue
    * @return {*}
    */
-  // get: function (object, path, defaultValue) {
-  //   var iteratee = sanvvv.iteratee(path)
-  //   return iteratee(object)
-  // },
+  get: function (object, path, defaultValue) {
+    var res = object
+    path = sanvvv.toPath(path)
+
+    for (var key of path) {
+      if (res) res = res[key]
+    }
+
+    if (res === undefined) return defaultValue || undefined
+    else return res
+  },
 
   /**
    * @param  {Object} object
@@ -1730,7 +1737,6 @@ var sanvvv = {
          truncateStart = str.lastIndexOf(separator)
       } else {
         if (separator.test(str)) {
-          // 不知道怎么用正则从后面开始匹配只能绕一大圈
           var reg = new RegExp(separator, 'g')
           var result = str.match(reg)
           truncateStart = str.lastIndexOf(result[result.length - 1])
@@ -1742,6 +1748,54 @@ var sanvvv = {
       if (truncateStart === -1) return str
       else return str.slice(0, truncateStart) + str.slice(truncateEnd)
     }
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  unescape: (string = '') => {
+    var map = {
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>' ,
+      '&quot;': '"',
+      '&#39;': "'" 
+    }
+    var res = ''
+    var temp = ''
+    var tag = false
+
+    for (var char of string) {
+      if (char === '&') tag = true
+
+      if (tag) temp += char
+      else res += char
+
+      if (char === ';') {
+        tag = false
+        if (map[temp]) res += map[temp]
+        else res += temp
+      }
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  upperFirst: (string = '') => string[0].toUpperCase() + string.slice(1),
+  
+  /**
+   * @param  {string} [string='']
+   * @param  {RegExp|string} pattern
+   * @return {Array}
+   */
+  words: (string = '', pattern) => {
+    if (pattern === undefined) return string.split(/[^a-z]+/i)
+    else return string.match(pattern)
   },
 
   /**
@@ -1844,7 +1898,7 @@ var sanvvv = {
 
     // isString
     if (typeof iter === 'string') {
-      return sanvvv.method(iter)
+      return sanvvv.property(iter)
     }
     
     // isFunction
@@ -1886,21 +1940,9 @@ var sanvvv = {
    * @param  {...*} args
    * @return {Function}
    */
-  method: (path, ...args) => obj => {
-    // TODO: args: The arguments to invoke the method with
-    var p = path.slice(0)
-    if (typeof path === 'string') p = path.split('.')
-    return p.reduce((acc, cur) => acc[cur], obj[p.shift()])
-  },
+  method: (path, ...args) => obj => sanvvv.get(obj, path)(...args),
 
-  methodOf: (object, ...args) => param => {
-    // The arguments to invoke the method with
-    if (typeof param === 'string') {
-      return 'TODO'
-    } else {
-      return object[param[0]][param[1]]
-    }
-  },
+  methodOf: (object, ...args) => path => sanvvv.get(object, path)(...args),
 
   mixin: (object, source, options) => {
     // TODO options 链式调用
@@ -1922,9 +1964,9 @@ var sanvvv = {
     return n >= 0 ? args[n] : args[args.length + n]
   },
   
-  property: path => sanvvv.method(path),
+  property: path => obj => sanvvv.get(obj, path),
 
-  propertyOf: object => sanvvv.methodOf(object),
+  propertyOf: object => path => sanvvv.get(object, path),
 
   range: (start, end, step = 1) => {
     var res = []
@@ -1971,8 +2013,13 @@ var sanvvv = {
     return res
   },
 
-  // TODO: 将使用到path的地方都更新使用函数toPath
-  toPath: value => value.replace('[', '.').replace(']', '').split('.'),
+  toPath: value => {
+    if (typeof value === 'string') {
+      return value.replace('[', '.').replace(']', '').split('.')
+    } else {
+      return value
+    }
+  },
 
   cloneDeep: value => {
     if (value === null || typeof value !== 'object') return value
@@ -1995,6 +2042,55 @@ var sanvvv = {
     }
 
     return obj
-  }
+  },
+
+  /**
+   * @param  {Function} func
+   * @param  {number} [n=func.length]
+   * @return {Function}
+   */
+  ary: (func, n = func.length) => (...args) => func(...args.slice(0, n)),
+
+  /**
+   * @param  {Function} func
+   * @return {Function}
+   */
+  unary: func => arg => func(arg),
+
+  /**
+   * @param  {Function} predicate
+   * @return {Function}
+   */
+  negate: predicate => (...args) => {
+    // !!! The func predicate is invoked with the this binding and arguments of the created function
+    return !predicate(...args)
+  },
+
+  /**
+   * @param  {Function} func
+   * @return {Function}
+   */
+  once: func => {
+    var count = 0
+    return (...args) => {
+      count++
+      if (count === 1) return func(...args)
+    }
+  },
+
+  /**
+   * @param  {Function} func
+   * @param  {number} [start=0]
+   * @return {Function}
+   */
+  spread: (func, start = 0) => args => func(...args.slice(start)),
+
+  /**
+   * Creates a function that invokes func with arguments reversed.
+   * 
+   * @param  {Function} func
+   * @return {Function}
+   */
+  flip: func => (...args) => func(...args.reverse()),
 
 }
