@@ -1055,6 +1055,12 @@ var sanvvv = {
    * @param  {*} value
    * @return {number}
    */
+  toNumber: value => Number(value), 
+
+  /**
+   * @param  {*} value
+   * @return {number}
+   */
   toSafeInteger: value => {
     if (value > 0) return value > Number.MAX_SAFE_INTEGER ? Number.MAX_SAFE_INTEGER : sanvvv.toInteger(value)
     else return value < Number.MIN_SAFE_INTEGER ? Number.MIN_SAFE_INTEGER : sanvvv.toInteger(value) 
@@ -1065,7 +1071,7 @@ var sanvvv = {
    * @param  {number} addend
    * @return {number}
    */
-  add: (augend, addend) => a + b,
+  add: (augend, addend) => augend + addend,
 
   /**
    * @param  {number} number
@@ -1812,15 +1818,6 @@ var sanvvv = {
   },
 
   /**
-   * @param  {Object} object
-   * @param  {...(string|string[])} methodNames
-   * @return {Object}
-   */
-  // bindAll: (object, methodNames) => {
-
-  // }
-
-  /**
    * @param  {Array} pairs
    * @return {Function}
    */
@@ -1956,6 +1953,8 @@ var sanvvv = {
       var val = src[property]
       if (typeof val === 'function') obj[property] = val
     }
+
+    return object
   },
   
   noop: () => undefined,
@@ -2014,11 +2013,8 @@ var sanvvv = {
   },
 
   toPath: value => {
-    if (typeof value === 'string') {
-      return value.replace('[', '.').replace(']', '').split('.')
-    } else {
-      return value
-    }
+    if (typeof value === 'object') return value
+    else return String(value).replace(/\[/g, '.').replace(/\]/g, '').split('.')
   },
 
   cloneDeep: value => {
@@ -2071,10 +2067,14 @@ var sanvvv = {
    * @return {Function}
    */
   once: func => {
-    var count = 0
+    var tag = true
+    var res
     return (...args) => {
-      count++
-      if (count === 1) return func(...args)
+      if (tag) {
+        res = func(...args)
+        tag = false
+      }
+      return res
     }
   },
 
