@@ -918,7 +918,7 @@ var test = {
 
   conformsTo: [
     {
-      i: [{ 'a': 1, 'b': 2 }, { 'b': function(n) { return n > 1; }, 'a': function(n) { return n >= 1; }}],
+      i: [{ 'a': 1, 'b': 2 }, { 'b': function (n) { return n > 1; }, 'a': function (n) { return n >= 1; } }],
       e: true
     }
   ],
@@ -1082,7 +1082,7 @@ var test = {
 
   meanBy: [
     {
-      i: [[{ 'n': 4 }, { 'n': 2 }, { 'n': 8 }, { 'n': 6 }], function(o) { return o.n; }],
+      i: [[{ 'n': 4 }, { 'n': 2 }, { 'n': 8 }, { 'n': 6 }], function (o) { return o.n; }],
       e: 5
     },
     {
@@ -1219,12 +1219,12 @@ var test = {
     }
   ],
 
-  // invoke: [
-  //   {
-  //     i: [{ 'a': [{ 'b': { 'c': [1, 2, 3, 4] } }] }, 'a[0].b.c.slice', 1, 3],
-  //     e: [2, 3]
-  //   }
-  // ],
+  invoke: [
+    {
+      i: [{ 'a': [{ 'b': { 'c': [1, 2, 3, 4] } }] }, 'a[0].b.c.slice', 1, 3],
+      e: [2, 3]
+    }
+  ],
 
   mapKeys: [
     {
@@ -1252,16 +1252,16 @@ var test = {
     }
   ],
 
-  // merge: [
-  //   {
-  //     i: [{
-  //       'a': [{ 'b': 2 }, { 'd': 4 }]
-  //     }, {
-  //       'a': [{ 'c': 3 }, { 'e': 5 }]
-  //     }],
-  //     e: { 'a': [{ 'b': 2, 'c': 3 }, { 'd': 4, 'e': 5 }] }
-  //   }
-  // ],
+  merge: [
+    {
+      i: [{
+        'a': [{ 'b': 2 }, { 'd': 4 }]
+      }, {
+        'a': [{ 'c': 3 }, { 'd': 5 }]
+      }],
+      e: { 'a': [{ 'b': 2, 'c': 3 }, { 'd': 5 }] }
+    }
+  ],
 
   omit: [
     {
@@ -1270,9 +1270,23 @@ var test = {
     }
   ],
 
+  omitBy: [
+    {
+      i: [{ 'a': 1, 'b': '2', 'c': 3 }, sanvvv.isNumber],
+      e: { 'b': '2' }
+    }
+  ],
+
   pick: [
     {
       i: [{ 'a': 1, 'b': '2', 'c': 3 }, ['a', 'c']],
+      e: { 'a': 1, 'c': 3 }
+    }
+  ],
+
+  pickBy: [
+    {
+      i: [{ 'a': 1, 'b': '2', 'c': 3 }, sanvvv.isNumber],
       e: { 'a': 1, 'c': 3 }
     }
   ],
@@ -1510,6 +1524,7 @@ var test = {
 }
 
 // ----------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------
 
 var test2 = function () {
 
@@ -1613,17 +1628,17 @@ var test2 = function () {
 
   var methodOf = function () {
     var array = sanvvv.times(3, sanvvv.constant),
-    object = { 'a': array, 'b': array, 'c': array };
+      object = { 'a': array, 'b': array, 'c': array };
 
     return [
       {
         i: sanvvv.map(['a[2]', 'c[0]'], sanvvv.methodOf(object)),
         e: [2, 0]
       },
-      // {
-      //   i: sanvvv.map([['a', '2'], ['c', '0']], sanvvv.methodOf(object)),
-      //   e: [2, 0]
-      // }
+      {
+        i: sanvvv.map([['a', '2'], ['c', '0']], sanvvv.methodOf(object)),
+        e: [2, 0]
+      }
     ]
   }()
 
@@ -1672,7 +1687,7 @@ var test2 = function () {
 
   var propertyOf = function () {
     var array = [0, 1, 2],
-    object = { 'a': array, 'b': array, 'c': array };
+      object = { 'a': array, 'b': array, 'c': array };
 
     return [
       {
@@ -1686,6 +1701,178 @@ var test2 = function () {
     ]
   }()
 
+  var at = function () {
+    var object = { 'a': [{ 'b': { 'c': 3 } }, 4] };
+
+    return [
+      {
+        i: sanvvv.at(object, ['a[0].b.c', 'a[1]']),
+        e: [3, 4]
+      }
+    ]
+  }()
+
+  var findLastKey = function () {
+    var users = {
+      'barney': { 'age': 36, 'active': true },
+      'fred': { 'age': 40, 'active': false },
+      'pebbles': { 'age': 1, 'active': true }
+    };
+
+    return [
+      {
+        i: sanvvv.findLastKey(users, function (o) { return o.age < 40; }),
+        e: 'pebbles'
+      },
+      {
+        i: sanvvv.findLastKey(users, { 'age': 36, 'active': true }),
+        e: 'barney'
+      },
+      {
+        i: sanvvv.findLastKey(users, ['active', false]),
+        e: 'fred'
+      },
+      {
+        i: sanvvv.findLastKey(users, 'active'),
+        e: 'pebbles'
+      }
+    ]
+  }()
+
+  var functionsIn = function () {
+    function Foo() {
+      this.a = sanvvv.constant('a');
+      this.b = sanvvv.constant('b');
+    }
+
+    Foo.prototype.c = sanvvv.constant('c');
+
+    return [
+      {
+        i: sanvvv.functionsIn(new Foo),
+        e: ['a', 'b', 'c']
+      }
+    ]
+  }()
+
+  var has = function () {
+    var object = { 'a': { 'b': 2 } };
+
+    return [
+      {
+        i: sanvvv.has(object, 'a.b'),
+        e: true
+      },
+      {
+        i: sanvvv.has(object, ['a', 'b']),
+        e: true
+      },
+      {
+        i: sanvvv.has(object, 'r.r.t.y.u.i'),
+        e: false
+      }
+    ]
+  }()
+
+  var has = function () {
+    var A = function (val) {
+      this.val = 1
+    }
+
+    A.prototype.b = 2
+
+    var c = new A(3)
+    c.d = 0
+
+    return [
+      {
+        i: sanvvv.has(c, 'b'),
+        e: false
+      },
+      {
+        i: sanvvv.has(c, 'd'),
+        e: true
+      }
+    ]
+  }()
+
+  var keysIn = function () {
+    function Foo() {
+      this.a = 1;
+      this.b = 2;
+    }
+
+    Foo.prototype.c = 3;
+
+    return [
+      {
+        i: sanvvv.keysIn(new Foo),
+        e: ['a', 'b', 'c']
+      }
+    ]
+  }()
+
+  var mergeWith = function () {
+    function customizer(objValue, srcValue) {
+      if (sanvvv.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      }
+    }
+     
+    var object = { 'a': [1], 'b': [2] };
+    var other = { 'a': [3], 'b': [4] };
+     
+    return [
+      {
+        i: sanvvv.mergeWith(object, other, customizer),
+        e: { 'a': [1, 3], 'b': [2, 4] }
+      }
+    ]
+  }()
+
+  var result = function () {
+    var object = { 'a': [{ 'b': { 'c1': 3, 'c2': sanvvv.constant(4) } }] };
+ 
+    return [
+      {
+        i: sanvvv.result(object, 'a[0].b.c1'),
+        e: 3
+      },
+      {
+        i: sanvvv.result(object, 'a[0].b.c2'),
+        e: 4
+      },
+      {
+        i: sanvvv.result(object, 'a[0].b.c3', 'default'),
+        e: 'default'
+      },
+      {
+        i: sanvvv.result(object, 'a[0].b.c3', sanvvv.constant('default')),
+        e: 'default'
+      },
+    ]
+  }()
+
+  var set = function () {
+    var object = { 'a': [{ 'b': { 'c': 3 } }] };
+    
+    sanvvv.set(object, 'a[0].b.c', 4);
+    
+    sanvvv.set(object, ['x', '0', 'y', 'z'], 5);
+
+    return [
+      {
+        i: object.a[0].b.c,
+        e: 4
+      },
+      {
+        i: object.x[0].y.z,
+        e: 5
+      }
+    ]
+  }()
+
+
   return {
     iteratee,
     assign,
@@ -1696,7 +1883,15 @@ var test2 = function () {
     methodOf,
     mixin,
     property,
-    propertyOf
+    propertyOf,
+    at,
+    findLastKey,
+    functionsIn,
+    has,
+    keysIn,
+    mergeWith,
+    result,
+    set,
   }
 
 }()

@@ -564,7 +564,7 @@ var sanvvv = {
   forEachRight: (collection, iteratee = sanvvv.identity) => {
     var co = Object.entries(collection)
     for (var i = co.length - 1; i >= 0; i--) {
-      iteratee(co[i], i, collection)
+      iteratee(co[i][1], co[i][0], collection)
     }
     return collection
   },
@@ -1251,9 +1251,9 @@ var sanvvv = {
    * @param  {...(string|string[])} ...paths
    * @return {Array}
    */
-  // at: (object, ...paths) => {
-    
-  // },
+  at: (object, paths) => {
+    return paths.map(path => sanvvv.get(object, path))
+  },
 
   /**
    * @param  {Object} object
@@ -1261,12 +1261,39 @@ var sanvvv = {
    * @return {Object}
    */
   defaults: (object, ...sources) => {
-    return sources.reduce((acc, cur, key) => {
+    return sources.reduce((acc, cur) => {
       for (var [key, value] of Object.entries(cur)) {
         if (acc[key] === undefined) acc[key] = value
       }
       return acc
     }, object)
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {...Object} sources
+   * @return {Object}
+   */
+  defaultsDeep: (object, ...sources) => {
+    return sources.reduce((acc, cur) => {
+      changeDeep(acc, cur)
+      return acc
+    }, object)
+
+    function changeDeep (obj, src) {
+      for (var prop in src) {
+        if (src.hasOwnProperty(prop)) {
+          if (typeof src[prop] === 'object') {
+            if (obj[prop] === undefined) {
+              obj[prop] = new src[prop].constructor()
+            }
+            changeDeep(obj[prop], src[prop])
+          } else if (obj[prop] === undefined) {
+            obj[prop] = src[prop]
+          }
+        }
+      }
+    }
   },
 
   /**
@@ -1278,6 +1305,20 @@ var sanvvv = {
     predicate = sanvvv.iteratee(predicate)
     for (var key in object) {
      if (predicate(object[key])) return key
+    }
+    return undefined
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [predicate=sanvvv.identity]
+   * @return {*}
+   */
+  findLastKey: (object, predicate = sanvvv.identity) => {
+    predicate = sanvvv.iteratee(predicate)
+    object = Object.entries(object)
+    for (var i = object.length - 1; i >= 0; i--) {
+      if (predicate(object[i][1])) return object[i][0]
     }
     return undefined
   },
@@ -1316,18 +1357,14 @@ var sanvvv = {
    * @param  {Function} [iteratee=sanvvv.identity]
    * @return {Object}
    */
-  // forOwn: function (object, iteratee = sanvvv.identity) {
-  //   return Object.keys(object).sanvvv.forEach(object, iteratee)
-  // },
+  forOwn: (object, iteratee = sanvvv.identity) => sanvvv.forEach(object, iteratee),
 
   /**
    * @param  {Object} object
    * @param  {Function} [iteratee=sanvvv.identity]
    * @return {Object}
    */
-  // forOwnRight: function (object, iteratee = sanvvv.identity) {
-  //   return Object.keys(object).sanvvv.forEachRight(object, iteratee)
-  // },
+  forOwnRight: (object, iteratee = sanvvv.identity) => sanvvv.forEachRight(object, iteratee),
 
   /**
    * @param  {Object} object
@@ -1337,11 +1374,17 @@ var sanvvv = {
 
   /**
    * @param  {Object} object
+   * @return {Array} Returns the function names
+   */
+  functionsIn: object => sanvvv.keysIn(object),
+
+  /**
+   * @param  {Object} object
    * @param  {Array|string} path
    * @param  {*} defaultValue
    * @return {*}
    */
-  get: function (object, path, defaultValue) {
+  get: (object, path, defaultValue) => {
     var res = object
     path = sanvvv.toPath(path)
 
@@ -1349,9 +1392,32 @@ var sanvvv = {
       if (res) res = res[key]
     }
 
-    if (res === undefined) return defaultValue || undefined
-    else return res
+    return res === undefined ? defaultValue : res
   },
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @return {boolean}
+   */
+  has: (object, path) => {
+    var obj = object
+    path = sanvvv.toPath(path)
+
+    for (var key of path) {
+      if (!obj.hasOwnProperty(key)) return false
+      obj = obj[key]
+    }
+
+    if (obj !== undefined) return true
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @return {boolean}
+   */
+  hasIn: (object, path) => sanvvv.get(object, path) !== undefined,
 
   /**
    * @param  {Object} object
@@ -1380,15 +1446,27 @@ var sanvvv = {
    * @param  {...*} ...args
    * @return *
    */
-  // invoke: function (object, path, ...args) {
-
-  // },
+  invoke: function (object, path, ...args) {
+    path = sanvvv.toPath(path)
+    var func = path.pop()
+    return sanvvv.get(object, path)[func](...args)
+  },
   
   /**
    * @param  {Object} object
    * @return {Array} Returns the array of property names
    */
   keys: object => Object.keys(object),
+
+  /**
+   * @param  {Object} object
+   * @return {Array} Returns the array of property names
+   */
+  keysIn: object => {
+    var res = []
+    for (var key in object) res.push(key)
+    return res
+  },
 
   /**
    * @param  {Object} object
@@ -1423,11 +1501,38 @@ var sanvvv = {
    * @param  {...Object} ...source
    * @return {Object}
    */
-  // merge: (object, ...source) => {
-  //   return source.reduce((acc, cur) => {
+  merge: (object, ...sources) => sanvvv.mergeWith(object, ...sources, () => false),
 
-  //   }, object)
-  // },
+  /**
+   * @param  {Object} object
+   * @param  {...Object} sources
+   * @param  {Function} customizer
+   * @return {Object}
+   */
+  mergeWith: (object, ...sources) => {
+    // arguments: source, stack
+    var customizer = sources.pop()
+
+    return sources.reduce((acc, cur) => {
+      changeDeep(acc, cur)
+      return acc
+    }, object)
+
+    function changeDeep (obj, src) {
+      for (var prop in src) {
+        var tag = customizer(obj[prop], src[prop], prop, object)
+        if (tag) obj[prop] = tag
+        else if (typeof src[prop] === 'object') {
+          if (obj[prop] === undefined) {
+            obj[prop] = new src[prop].constructor()
+          }
+          changeDeep(obj[prop], src[prop])
+        } else {
+          obj[prop] = src[prop]
+        }
+      }
+    }
+  },
 
   /**
    * @param  {Object} object
@@ -1447,6 +1552,19 @@ var sanvvv = {
 
   /**
    * @param  {Object} object
+   * @param  {Function} [predicate=sanvvv.identity]
+   * @return {Object}
+   */
+  omitBy: (object, predicate = sanvvv.identity) => {
+    var res = {}
+    for (var key in object) {
+      if (!predicate(object[key])) res[key] = object[key]
+    }
+    return res
+  },
+
+  /**
+   * @param  {Object} object
    * @param  {...(string|string[])} ...paths
    * @return {Object}
    */
@@ -1456,6 +1574,81 @@ var sanvvv = {
       return acc
     }, {})
   },
+
+  /**
+   * @param  {Object} object
+   * @param  {Function} [predicate=sanvvv.identity]
+   * @return {Object}
+   */
+  pickBy: (object, predicate = sanvvv.identity) => {
+    var res = {}
+    for (var key in object) {
+      if (predicate(object[key])) res[key] = object[key]
+    }
+    return res
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @param  {*} defaultValue
+   * @return {*}
+   */
+  result: function (object, path, defaultValue) {
+    // 因为要传递 this 所以没有使用箭头函数
+    var res = sanvvv.get(object, path, defaultValue)
+    return typeof res === 'function' ? res.call(this) : res
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @param  {*} value
+   * @return {Object}
+   */
+  set: (object, path, value) => {
+    path = sanvvv.toPath(path)
+    var node = object
+    var lastPath = path.pop()
+
+    for (var key of path) {
+      if (node[key] === undefined) {
+        if (/[a-z]/i.test(key))  node[key] = {}
+        else node[key] = []
+      }
+      node = node[key]
+    }
+    
+    node[lastPath] = value
+    return object
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @param  {*} value
+   * @param  {Function} [customizer=()=>undefined]
+   * @return {Object}
+   */
+  // setWith: (object, path, value, customizer = () => undefined) => {
+  //   path = sanvvv.toPath(path)
+  //   var node = object
+  //   var lastPath = path.pop()
+
+  //   for (var key of path) {
+  //     console.log(key)
+  //     var tag = customizer(key, key, node)
+  //     if (tag !== undefined) node[key] = tag
+  //     else if (node[key] === undefined) {
+  //       if (/[a-z]/i.test(key))  node[key] = {}
+  //       else node[key] = []
+  //     }
+  //     node = node[key]
+  //   }
+    
+  //   node[lastPath] = value
+  //   return object
+  // },
 
   /**
    * @param  {Object} object
@@ -1799,10 +1992,7 @@ var sanvvv = {
    * @param  {RegExp|string} pattern
    * @return {Array}
    */
-  words: (string = '', pattern) => {
-    if (pattern === undefined) return string.split(/[^a-z]+/i)
-    else return string.match(pattern)
-  },
+  words: (string = '', pattern) => pattern === undefined ? string.split(/[^a-z]+/i) : string.match(pattern),
 
   /**
    * @param  {Function} func
@@ -1953,15 +2143,11 @@ var sanvvv = {
       var val = src[property]
       if (typeof val === 'function') obj[property] = val
     }
-
-    return object
   },
   
   noop: () => undefined,
 
-  nthArg: (n = 0) => (...args) => {
-    return n >= 0 ? args[n] : args[args.length + n]
-  },
+  nthArg: (n = 0) => (...args) => n >= 0 ? args[n] : args[args.length + n],
   
   property: path => obj => sanvvv.get(obj, path),
 
@@ -2012,10 +2198,7 @@ var sanvvv = {
     return res
   },
 
-  toPath: value => {
-    if (typeof value === 'object') return value
-    else return String(value).replace(/\[/g, '.').replace(/\]/g, '').split('.')
-  },
+  toPath: value => typeof value === 'object' ? value : String(value).replace(/\[/g, '.').replace(/\]/g, '').split('.'),
 
   cloneDeep: value => {
     if (value === null || typeof value !== 'object') return value
