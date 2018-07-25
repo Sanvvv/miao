@@ -1872,6 +1872,40 @@ var test2 = function () {
     ]
   }()
 
+  var toPairsIn = function () {
+    function Foo() {
+      this.a = 1;
+      this.b = 2;
+    }
+     
+    Foo.prototype.c = 3;
+     
+    return [
+      {
+        i: sanvvv.toPairsIn(new Foo),
+        e: [['a', 1], ['b', 2], ['c', 3]]
+      }
+    ]
+  }()
+
+  var transform = function () {
+    return [
+      {
+        i: sanvvv.transform([2, 3, 4], function(result, n) {
+          result.push(n *= n);
+          return n % 2 == 0;
+        }, []),
+        e: [4, 9]
+      },
+      {
+        i: sanvvv.transform({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
+          (result[value] || (result[value] = [])).push(key);
+        }, {}),
+        e: { '1': ['a', 'c'], '2': ['b'] }
+      }
+    ]
+  }()
+
 
   return {
     iteratee,
@@ -1892,6 +1926,8 @@ var test2 = function () {
     mergeWith,
     result,
     set,
+    toPairsIn,
+    transform,
   }
 
 }()

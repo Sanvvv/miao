@@ -1654,13 +1654,92 @@ var sanvvv = {
    * @param  {Object} object
    * @return {Array}
    */
-  toPairs: object => Object.entries(object),
+  toPairs: Object.entries,
 
   /**
    * @param  {Object} object
    * @return {Array}
    */
-  values: object => Object.values(object),
+  toPairsIn: object => {
+    // If object is a map or set, its entries are returned
+    var res = []
+
+    for (var key in object) {
+      res.push([key, object[key]])
+    }
+
+    return res
+  },
+
+  /**
+   * @param  {Object|Array} object
+   * @param  {Function} [iteratee=sanvvv.identity]
+   * @param  {*} accumulator
+   * @return {*}
+   */
+  transform: (object, iteratee = sanvvv.identity, accumulator = new object.constructor()) => {
+    for (var key in object) {
+      if (object.hasOwnProperty(key)) {
+        var tag = iteratee(accumulator, object[key], key, object)
+        if (tag === false) return accumulator
+      }
+    }
+    return accumulator
+  },
+
+  /**
+   * Removes the property at path of object.
+   *
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @return {boolean} Returns true if the property is deleted, else false
+   */
+  unset: (object, path) => {  
+    if (sanvvv.get(object, path) === undefined) return false
+
+    path = sanvvv.toPath(path)
+    var lastPath = path.pop()
+    return delete path.reduce((acc, cur) => acc[cur], object)[lastPath]
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @param  {Function} updater
+   * @return {Object}
+   */
+  update: (object, path, updater) => {
+    path = sanvvv.toPath(path)
+    var lastPath = path.pop()
+
+    var obj = path.reduce((acc, cur) => {
+      if (acc[cur] === undefined) {
+        if (/[a-z]/i.test(cur))  acc[cur] = {}
+        else acc[cur] = []
+      }
+      return acc[cur]
+    }, object)
+
+    obj[lastPath] = updater(obj[lastPath])
+    return object
+  },
+
+  /**
+   * @param  {Object} object
+   * @param  {Array|string} path
+   * @param  {Function} updater
+   * @param  {Function} customizer
+   * @return {Object}
+   */
+  // updateWith: (object, path, updater, customizer) => {
+
+  // },
+
+  /**
+   * @param  {Object} object
+   * @return {Array}
+   */
+  values: Object.values,
 
   /**
    * @param  {string} [string='']

@@ -1,12 +1,22 @@
 
 
+// function f (val) {
+//   var self = {
+//     sum: val
+//   }
+//   return function calc (v) {
+//     self.sum += v
+//     console.log(this)
+//     return calc.bind(self)
+//   }
+// }
 
+// Object.prototype.valueOf = function () {
+//   return this.sum
+// }
 
-
-
-
-
-// function bind (f, ...fixedArgs) {
+// funct
+// f.protion bind (f, ...fixedArgs) {
 //   return function (...args) {
 //     return f(...fixedArgs, ...args)
 //   }
