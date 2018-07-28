@@ -1,4 +1,6 @@
 var sanvvv = {
+  isFloat: num => num % 1 !== 0,
+
   chunk: function (array, size = 1) {
     var res = []
      
@@ -30,11 +32,14 @@ var sanvvv = {
     return values.reduce((acc, cur) => acc.filter(item => cur.indexOf(item) === -1), array)
   },
 
-  differenceBy: function (array, values, iteratee = sanvvv.identity) {
-    var f = sanvvv.iteratee(iteratee)
-    var differBy = values.map(x => f(x))
-
-    return array.filter(item => differBy.indexOf(f(item)) === -1)
+  differenceBy: function (array, ...values) {
+    var f = sanvvv.identity
+    if (typeof values[values.length - 1] !== 'object') f = sanvvv.iteratee(values.pop())
+    var differBy = values.reduce((acc, arr) => {
+      acc.push(arr.map(x => f(x)))
+      return acc
+    }, [])
+    return array.filter(item => !differBy.some(arr => arr.includes(f(item))))
   },
 
   differenceWith: function (array, values, comparator) {
@@ -246,6 +251,13 @@ var sanvvv = {
   },
 
   sortedIndex: function (array, value) {
+    return sanvvv.sortedIndexBy(array, value)
+  },
+
+  sortedIndexBy: (array, value, iteratee = sanvvv.identity) => {
+    iteratee = sanvvv.iteratee(iteratee)
+    array = array.map(item => iteratee(item))
+    value = iteratee(value)
     var left = 0
     var right = array.length
     var mid = Math.floor((left + right) / 2)
@@ -257,7 +269,7 @@ var sanvvv = {
     }
 
     if (array[mid] < value) mid++
-    return mid
+    return mid 
   },
 
   sortedIndexOf: function (array, value) {
@@ -277,6 +289,13 @@ var sanvvv = {
   },
 
   sortedLastIndex: function (array, value) {
+    return sanvvv.sortedLastIndexBy(array, value)
+  },
+
+  sortedLastIndexBy: (array, value, iteratee = sanvvv.identity) => {
+    iteratee = sanvvv.iteratee(iteratee)
+    array = array.map(item => iteratee(item))
+    value = iteratee(value)
     var left = 0
     var right = array.length
     var mid = Math.floor((left + right) / 2)
@@ -308,7 +327,11 @@ var sanvvv = {
   },
 
   sortedUniq: function (array) {
-    return array.filter((item, index) => item !== array[index - 1])
+    return sanvvv.sortedUniqBy(array)
+  },
+
+  sortedUniqBy: (array, iteratee = sanvvv.identity) => {
+    return array.filter((item, index) => iteratee(item) !== iteratee(array[index - 1]))
   },
 
   uniq: function (array) {
@@ -1208,6 +1231,7 @@ var sanvvv = {
       end = start
       start = 0
     }
+    if (start > end) [start, end] = [end, start]
     return start <= number && number < end 
   },
 
@@ -1218,9 +1242,16 @@ var sanvvv = {
    * @return {}
    * @retrun {number}
    */
-  // random: (lower = 0, upper = 1, floating) => {
-  //   return Math.random() * (upper - lower) + lower
-  // },
+  random: (lower, upper, floating) => {
+    if (upper === undefined) {
+      if (lower === undefined) upper = 1
+      else upper = lower
+      lower = 0
+    }
+    var res = Math.random() * (upper - lower) + lower
+    if (floating || sanvvv.isFloat(lower) || sanvvv.isFloat(upper)) return res
+    else return Math.floor(res)
+  },
 
   /**
    * @param  {Object} object

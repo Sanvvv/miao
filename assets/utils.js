@@ -140,3 +140,92 @@ function appendRight(root, tree) {
 
 // var tree = createTree()
 // console.log(lowestCommonAncestor(tree))
+
+
+// ----------------console table--------------------------
+
+// function consoleTable (list) {
+//   var config = getConfig(list)
+//   var widthMap = getWidth(config)
+//   drawRow(config, widthMap)
+// }
+
+// function getConfig (list) {
+//   var config = {}
+//   var count = 0
+
+//   list.forEach((obj, index) => {
+//     for (var key in obj) {
+//       if (!config[key]) config[key] = []
+//       config[key][index] = obj[key]
+//     }
+//     count++
+//   })
+  
+//   for (var key in config) {
+//     config[key].length = count
+//   }
+
+//   return config
+// }
+
+// function getWidth(config) {
+//   var map = {}
+//   for (var key in config) {
+//     map[key] = getWidthByCol(key, config[key])
+//   }
+//   return map
+// }
+
+// function getWidthByCol (prop, valueArr) {
+//   valueArr = valueArr.map(x => String(x))
+//   return width = getMaxWidth(valueArr)
+  
+// }
+
+// function getMaxWidth (arr) {
+//   return arr.reduce((acc, cur) => acc > cur.length ? acc : cur.length, 0) + 1
+// }
+
+// function drawRow (config, map) {
+//   var rows = []
+//   var propRow = ''
+//   var line = ''
+
+//   for (var key in config) {
+//     propRow += '|' + key + repeat(' ', map[key] - key.length - 1)
+//     line += repeat('-', map[key])
+
+//     var count = 0
+
+//     for (var value of config[key]) {
+//       if (rows[count] === undefined) rows[count] = ''
+//       if (value !== undefined) rows[count] += '|' + value + repeat(' ', map[key] - String(value).length - 1) 
+//       else rows[count] += '|' + repeat(' ', map[key] - 1)
+//       count++
+//     }
+//   }
+
+//   rows.unshift(propRow)
+
+//   console.log(line + '-')
+//   rows.forEach(row => {
+//     row += '|'
+//     console.log(row)
+//     console.log(line + '-')
+//   })
+// }
+
+// function repeat (char, count) {
+//   var res = ''
+//   for (var i = 0; i < count; i++) res += char
+//   return res
+// }
+
+
+
+// var list = [{a:'start', c: 'ye'}, {b: 4}, {c: 5}, {a: 3, d: 4}]
+// consoleTable(list)
+// console.table(list)
+
+// ----------------console table--------------------------

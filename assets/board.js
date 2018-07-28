@@ -1,55 +1,202 @@
+function A () {
 
-
-// function f (val) {
-//   var self = {
-//     sum: val
-//   }
-//   return function calc (v) {
-//     self.sum += v
-//     console.log(this)
-//     return calc.bind(self)
-//   }
-// }
-
-// Object.prototype.valueOf = function () {
-//   return this.sum
-// }
-
-// funct
-// f.protion bind (f, ...fixedArgs) {
-//   return function (...args) {
-//     return f(...fixedArgs, ...args)
-//   }
-// }
-
-
-// var generateMatrix = function(n) {
-  
-// };
-
-// console.log(generateMatrix(5))
-
-
-
-function reduce (arr, reducer, initialValue) {
-  let i = 1
-  let acc = arr[0]
-
-  if (initialValue !== undefined) {
-    i--
-    acc = initialValue
-  }
-  
-  for (; i < arr.length; i++) {
-    acc = reducer(acc, arr[i])
-  }
-
-  return acc
 }
 
+A.prototype = null
+
+
+var a = new A()
 
 
 
+
+
+
+function swap(arr, a, b) {
+  var temp = arr[a]
+  arr[a] = arr[b]
+  arr[b] = temp
+}
+
+function personSort (ary, prop, prop2, start = 0 ,end = ary.length - 1) {
+  if (end <= start) return
+
+  var pivotIndex = Math.floor((end - start + 1) * Math.random()) + start
+  var pivot = ary[pivotIndex]
+
+  swap(ary, pivotIndex, end)
+
+  for (var i = start - 1, j = start; j <= end; j++) {
+    if (ary[j][prop] >= pivot[prop]) {
+      if (ary[j][prop] === pivot[prop] && ary[j][prop2] < pivot[prop2]) continue
+      i++
+      swap(ary, i, j)
+    }
+  }
+
+  personSort(ary, prop, prop2, start, i - 1)
+  personSort(ary, prop, prop2, i + 1, end)
+
+  return ary
+}
+
+var o = [
+  {
+    a: 1,
+    b: 5
+  },
+  {
+    a: 2,
+    b: 8
+  },
+  {
+    a: 2,
+    b: 6
+  },
+  {
+    a: 4,
+    b: 8
+  },
+]
+
+// console.log(personSort(o, 'a', 'b'))
+
+ 
+
+function rowHeights (rows) {
+  return rows.map(row => row.reduce((max, cell) => Math.max(max, cell.minHeight()), 0))
+}
+
+// map 只是用来创建一个长度为 rows[0].length 的数组
+function colWidths (rows) {
+  return rows[0].map((_, i) => rows.reduce((max, row) => Math.max(max, row[i].minWidth()), 0))
+}
+
+function drawTable (rows) {
+  var heights = rowHeights(rows)
+  var widths = colWidths(rows)
+
+  function drawLine (blocks, lineNo) {
+    return blocks.map(block => block[lineNo]).join(' ')
+  }
+
+  function drawRow (row, rowNum) {
+    var blocks = row.map((cell, colNum) => cell.draw(widths[colNum], heights[rowNum]))
+    return blocks[0].map((_, lineNo) => drawLine(blocks, lineNo)).join('\n')
+  }
+
+  return rows.map(drawRow).join('\n')
+}
+
+function repeat (str, times) {
+  var res = ''
+  for (var i = 0; i < times; i++) res += str
+  return res
+}
+
+function TextCell (text) {
+  this.text = text.split('\n')
+}
+
+TextCell.prototype.minWidth = function () {
+  return this.text.reduce((width, line) => Math.max(width, line.length), 0)
+}
+
+TextCell.prototype.minHeight = function () {
+  return this.text.length
+}
+
+TextCell.prototype.draw = function (width, height) {
+  var res = []
+  for (var i = 0; i < height; i++) {
+    var line = this.text[i] || ''
+    res.push(line + repeat(' ', width - line.length))
+  }
+  return res
+}
+
+function objectToText (ary) {
+  var rows = []
+  var map = new Map()
+  var len = getLenth(ary)
+
+  ary.forEach(obj => {
+    var row = Array(len + 1).fill(new TextCell(''))
+    for (var key in obj) {
+      var i = getIndex(key)
+      row[i] = new TextCell(String(obj[key]))
+    }
+    rows.push(row)
+  })
+
+  function getLenth (ary) {
+    return ary.reduce((max, obj) => Math.max(max, Object.keys(obj).length), 0)
+  }
+
+  function getIndex (key) {
+    if (map.has(key)) {
+      return map.get(key)
+    }
+    else {
+      var i = map.size
+      map.set(key, i)
+      return i
+    }
+  }
+
+  return rows
+}
+
+function StretchCell (inner, width, height) {
+  this.inner = inner
+  this.width = width
+  this.height = height
+}
+
+StretchCell.prototype.minWidth = function () {
+  return Math.max(this.inner.minWidth(), this.width)
+}
+
+StretchCell.prototype.minHeight = function () {
+  return Math.max(this.inner.minHeight(), this.height)
+}
+
+// var rows = []
+// for (var i = 0; i < 5; i++) {
+//   var row = []
+//   for (var j = 0; j < 5; j++) {
+//     if ((j + i) % 2 == 0) {
+//       row.push(new TextCell('##'))
+//     } else {
+//       row.push(new TextCell('  '))
+//     }
+//   }
+//   rows.push(row)
+// }
+
+// console.log(drawTable(rows))
+// console.log(objectToText([{a:1}, {b: 2, c: 3}]))
+// console.log(drawTable(objectToText([{a:'dasdasd'}, {b: 'rea', c: 3}])))
+// console.table([{a:1}, {b: 2, c: 3}])
+
+// function Vector (x, y) {
+//   this.x = x
+//   this.y = y
+// }
+
+// Vector.prototype.plus = function (other) {
+//   return new Vector(this.x + other.x, this.y + other.y)
+// }
+
+// Vector.prototype.minus = function (other) {
+//   return new Vector(this.x - other.x, this.y - other.y)
+// }
+
+// Object.defineProperty(Vector.prototype, 'length', {
+//   get: function () {
+//     return Math.sqrt(this.x ** 2 + this.y ** 2).toFixed(2)
+//   }
+// })
 
 function testLinkedList () {
   var list = new ListNode(1)

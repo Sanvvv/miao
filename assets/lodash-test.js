@@ -25,6 +25,10 @@ var test = {
     {
       i: [[2.1, 1.2], [2.3, 3.4], Math.floor],
       e: [1.2]
+    },
+    {
+      i: [[1, 2, 3, 4], [1, 3], [4]],
+      e: [2]
     }
   ],
 
@@ -384,6 +388,13 @@ var test = {
     {
       i: [[], 2],
       e: 0
+    }
+  ],
+
+  sortedIndexBy: [
+    {
+      i: [[{ 'x': 4 }, { 'x': 5 }], { 'x': 5 }, function (o) { return o.x; }],
+      e: 1
     }
   ],
 
@@ -1818,10 +1829,10 @@ var test2 = function () {
         return objValue.concat(srcValue);
       }
     }
-     
+
     var object = { 'a': [1], 'b': [2] };
     var other = { 'a': [3], 'b': [4] };
-     
+
     return [
       {
         i: sanvvv.mergeWith(object, other, customizer),
@@ -1832,7 +1843,7 @@ var test2 = function () {
 
   var result = function () {
     var object = { 'a': [{ 'b': { 'c1': 3, 'c2': sanvvv.constant(4) } }] };
- 
+
     return [
       {
         i: sanvvv.result(object, 'a[0].b.c1'),
@@ -1855,10 +1866,12 @@ var test2 = function () {
 
   var set = function () {
     var object = { 'a': [{ 'b': { 'c': 3 } }] };
-    
+    var object2 = { "a": [{ "b": { "c": 3 } }] }
+
     sanvvv.set(object, 'a[0].b.c', 4);
-    
+
     sanvvv.set(object, ['x', '0', 'y', 'z'], 5);
+    console.log(object)
 
     return [
       {
@@ -1877,9 +1890,9 @@ var test2 = function () {
       this.a = 1;
       this.b = 2;
     }
-     
+
     Foo.prototype.c = 3;
-     
+
     return [
       {
         i: sanvvv.toPairsIn(new Foo),
@@ -1891,14 +1904,14 @@ var test2 = function () {
   var transform = function () {
     return [
       {
-        i: sanvvv.transform([2, 3, 4], function(result, n) {
+        i: sanvvv.transform([2, 3, 4], function (result, n) {
           result.push(n *= n);
           return n % 2 == 0;
         }, []),
         e: [4, 9]
       },
       {
-        i: sanvvv.transform({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
+        i: sanvvv.transform({ 'a': 1, 'b': 2, 'c': 1 }, function (result, value, key) {
           (result[value] || (result[value] = [])).push(key);
         }, {}),
         e: { '1': ['a', 'c'], '2': ['b'] }
