@@ -2386,4 +2386,5 @@ var sanvvv = {
    */
   flip: func => (...args) => func(...args.reverse()),
 
+  //.
 }
