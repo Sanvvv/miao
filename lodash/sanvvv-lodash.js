@@ -1737,7 +1737,7 @@ var sanvvv = {
       node = node[key]
     }
 
-    if (typeof value === 'function') {
+    if (typeof updater === 'function') {
       // for updateWith
       node[path[len - 1]] = updater(node[path[len - 1]])
     } else {
@@ -1771,7 +1771,7 @@ var sanvvv = {
    */
   valuesIn: object => {
     var res = []
-    for (var key in object) res.push(key)
+    for (var key in object) res.push(object[key])
     return res
   },
 
@@ -1780,22 +1780,8 @@ var sanvvv = {
    * @return {string}
    */
   camelCase: (string = '') => {
-    var res = ''
-    var tag = false
-
-    for (var char of string) {
-      if (/[a-zA-Z]/.test(char)) {
-        if (tag) {
-          res += char.toUpperCase()
-          tag = false
-        }
-        else res += char.toLowerCase()
-      } else {
-        if (!tag && res.length) tag = true
-      }
-    }
-
-    return res
+    var words = sanvvv.words(string)
+    return words.reduce((acc, cur) => acc + sanvvv.capitalize(cur), words.shift().toLowerCase())
   },
 
   /**
@@ -1854,47 +1840,31 @@ var sanvvv = {
    * @param  {string} [string='']
    * @return {string}
    */
-  kebabCase: (string = '') => {
-    var res = []
-    var tag = false
-
-    for (var char of string) {
-      if (/[a-zA-Z]/.test(char)) {
-        if (tag) {
-          res += '-'
-          tag = false
-        }
-        res += char.toLowerCase()
-      } else {
-        if (!tag && res.length) tag = true
-      }
-    }
-
-    return res
-  },
+  kebabCase: (string = '') => sanvvv.words(string).map(str => str.toLowerCase()).join('-'),
 
   /**
    * @param  {string} [string='']
    * @return {string}
    */
-  lowerCase: (string = '') => {
-    var res = []
-    var tag = false
+  lowerCase: (string = '') => sanvvv.words(string).map(str => str.toLowerCase()).join(' '),
 
-    for (var char of string) {
-      if (/[a-zA-Z]/.test(char)) {
-        if (tag) {
-          res += ' '
-          tag = false
-        }
-        res += char.toLowerCase()
-      } else {
-        if (!tag && res.length) tag = true
-      }
-    }
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  snakeCase: (string = '') => sanvvv.words(string).map(str => str.toLowerCase()).join('_'),
 
-    return res
-  },
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  startCase: (string = '') => sanvvv.words(string).map(str => sanvvv.upperFirst(str)).join(' '),
+  
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+  upperCase: (string = '') => sanvvv.words(string).map(str => str.toUpperCase()).join(' '),
 
   /**
    * @param  {string} [string='']
@@ -1959,6 +1929,11 @@ var sanvvv = {
 
   replace: (string = '', pattern, replacement) => string.replace(pattern, replacement),
 
+  /**
+   * @param  {string} [string='']
+   * @return {string}
+   */
+
   split: (string = '', seperator, limit) => string.split(seperator, limit),
 
   /**
@@ -1978,19 +1953,7 @@ var sanvvv = {
    * @param  {string} [chars=' ']
    * @return {string}
    */
-  trim: (string = '', chars = ' ') => {
-    var start = -1
-    var end = -1
-
-    for (var i = 0; i < string.length; i++) {
-      if (!chars.includes(string[i])) {
-        if (start === -1) start = i
-        end = i
-      }
-    }
-
-    return string.slice(start, end + 1)
-  },
+  trim: (string = '', chars = ' ') => sanvvv.trimStart(sanvvv.trimEnd(string, chars), chars),
 
   /**
    * @param  {string} [string='']
@@ -1998,6 +1961,7 @@ var sanvvv = {
    * @return {string}
    */
   trimEnd: (string = '', chars = ' ') => {
+    if (chars === ' ') return string.trimEnd()
     var end = -1
 
     for (var i = 0; i < string.length; i++) {
@@ -2013,6 +1977,7 @@ var sanvvv = {
    * @return {string}
    */
   trimStart: (string = '', chars = ' ') => {
+    if (chars === ' ') return string.trimStart()
     var start = -1
 
     for (var i = 0; i < string.length; i++) {
@@ -2105,7 +2070,7 @@ var sanvvv = {
    * @param  {RegExp|string} pattern
    * @return {Array}
    */
-  words: (string = '', pattern) => pattern === undefined ? string.split(/[^a-z]+/i) : string.match(pattern),
+  words: (string = '', pattern) => pattern === undefined ? string.match(/[A-Z]{1}[a-z]+|([A-Z]+)(?=[A-Z][a-z])|[a-z]+|[A-Z]+/g) : string.match(pattern),
 
   /**
    * @param  {Function} func
