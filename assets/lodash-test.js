@@ -1869,9 +1869,7 @@ var test2 = function () {
     var object2 = { "a": [{ "b": { "c": 3 } }] }
 
     sanvvv.set(object, 'a[0].b.c', 4);
-
     sanvvv.set(object, ['x', '0', 'y', 'z'], 5);
-    console.log(object)
 
     return [
       {

@@ -1,6 +1,19 @@
 var sanvvv = {
   isFloat: num => num % 1 !== 0,
 
+  init2Param: (first, second, i_f, i_s) => {
+    if (second === undefined) {
+      if (first === undefined) second = i_s
+      else second = first
+      first = i_f
+    }
+    return [first, second]
+  },
+
+  getRandom: (lower = 0, upper = 1) => {
+    return Math.random() * (upper - lower) + lower
+  },
+
   chunk: function (array, size = 1) {
     var res = []
      
@@ -1242,13 +1255,11 @@ var sanvvv = {
    * @return {}
    * @retrun {number}
    */
-  random: (lower, upper, floating) => {
-    if (upper === undefined) {
-      if (lower === undefined) upper = 1
-      else upper = lower
-      lower = 0
-    }
-    var res = Math.random() * (upper - lower) + lower
+  random: (...args) => {
+    var floating = false
+    if (sanvvv.isBoolean(args[args.length - 1])) floating = args.pop()
+    var [lower, upper] = sanvvv.init2Param(args[0], args[1], 0, 1)
+    var res = sanvvv.getRandom(lower, upper)
     if (floating || sanvvv.isFloat(lower) || sanvvv.isFloat(upper)) return res
     else return Math.floor(res)
   },
@@ -1637,22 +1648,7 @@ var sanvvv = {
    * @param  {*} value
    * @return {Object}
    */
-  set: (object, path, value) => {
-    path = sanvvv.toPath(path)
-    var node = object
-    var lastPath = path.pop()
-
-    for (var key of path) {
-      if (node[key] === undefined) {
-        if (/[a-z]/i.test(key))  node[key] = {}
-        else node[key] = []
-      }
-      node = node[key]
-    }
-    
-    node[lastPath] = value
-    return object
-  },
+  set: (object, path, value) => sanvvv.updateWith(object, path, value),
 
   /**
    * @param  {Object} object
@@ -1661,25 +1657,7 @@ var sanvvv = {
    * @param  {Function} [customizer=()=>undefined]
    * @return {Object}
    */
-  // setWith: (object, path, value, customizer = () => undefined) => {
-  //   path = sanvvv.toPath(path)
-  //   var node = object
-  //   var lastPath = path.pop()
-
-  //   for (var key of path) {
-  //     console.log(key)
-  //     var tag = customizer(key, key, node)
-  //     if (tag !== undefined) node[key] = tag
-  //     else if (node[key] === undefined) {
-  //       if (/[a-z]/i.test(key))  node[key] = {}
-  //       else node[key] = []
-  //     }
-  //     node = node[key]
-  //   }
-    
-  //   node[lastPath] = value
-  //   return object
-  // },
+  setWith: (object, path, value, customizer) => sanvvv.updateWith(object, path, value, customizer),
 
   /**
    * @param  {Object} object
@@ -1739,19 +1717,34 @@ var sanvvv = {
    * @param  {Function} updater
    * @return {Object}
    */
-  update: (object, path, updater) => {
+  update: (object, path, updater) => sanvvv.updateWith(object, path, updater),
+
+  updateWith: (object, path, updater, customizer = (...args) => args[0]) => {
     path = sanvvv.toPath(path)
-    var lastPath = path.pop()
+    var node = object
+    var len = path.length
 
-    var obj = path.reduce((acc, cur) => {
-      if (acc[cur] === undefined) {
-        if (/[a-z]/i.test(cur))  acc[cur] = {}
-        else acc[cur] = []
+    for (var i = 0; i < len - 1; i++) {
+      var key = path[i]
+      // customizer(nsValue, key, nsObject)
+      var nextKey = path[i + 1] === undefined ? undefined : customizer(path[i + 1], i + 1, node)
+      if (node[key] === undefined) {
+        if (nextKey !== undefined) {
+          if (/[a-z]/i.test(nextKey) || typeof nextKey === 'object')  node[key] = {}
+          else node[key] = []
+        }
       }
-      return acc[cur]
-    }, object)
+      node = node[key]
+    }
 
-    obj[lastPath] = updater(obj[lastPath])
+    if (typeof value === 'function') {
+      // for updateWith
+      node[path[len - 1]] = updater(node[path[len - 1]])
+    } else {
+      // for setWith
+      node[path[len - 1]] = updater
+    }
+
     return object
   },
 
@@ -1771,6 +1764,16 @@ var sanvvv = {
    * @return {Array}
    */
   values: Object.values,
+
+  /**
+   * @param  {Object} object
+   * @return {Array}
+   */
+  valuesIn: object => {
+    var res = []
+    for (var key in object) res.push(key)
+    return res
+  },
 
   /**
    * @param  {string} [string='']
@@ -2308,7 +2311,7 @@ var sanvvv = {
     return res
   },
 
-  toPath: value => typeof value === 'object' ? value : String(value).replace(/\[/g, '.').replace(/\]/g, '').split('.'),
+  toPath: value => typeof value === 'object' ? value : value.match(/[a-z0-9]+/gi),
 
   cloneDeep: value => {
     if (value === null || typeof value !== 'object') return value
@@ -2369,6 +2372,38 @@ var sanvvv = {
       }
       return res
     }
+  },
+
+  /**
+   * @param  {Function} func
+   * @param  {number} [arity=func.length]
+   * @return {Function}
+   */
+  curry: (func, arity = func.length) => {
+    return function curried (...args) {
+      if (args.length < arity) {
+        return curried.bind(null, ...args)
+      } else {
+        return func(...args)
+      }
+    }
+  },
+
+  /**
+   * @param  {Function} func
+   * @param  {Function} resolver
+   * @return {Function}
+   */
+  memoize: (func, resolver = (...args) => args[0]) => {
+    var memo = function (...args) {
+      var cache = memo.cache
+      var key = resolver(...args)
+      if (cache.has(key)) return cache.get(key)
+      else cache.set(key, func(...args))
+    }
+
+    memo.cache = new Map()
+    return memo
   },
 
   /**

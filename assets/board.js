@@ -1,16 +1,11 @@
-function A () {
-
+function initParamBy2 (first, second, i_f, i_s) {
+  if (second === undefined) {
+    if (first === undefined) second = i_s
+    else second = first
+    first = i_f
+  }
+  return [f, s]
 }
-
-A.prototype = null
-
-
-var a = new A()
-
-
-
-
-
 
 function swap(arr, a, b) {
   var temp = arr[a]
