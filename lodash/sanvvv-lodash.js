@@ -1750,17 +1750,6 @@ var sanvvv = {
 
   /**
    * @param  {Object} object
-   * @param  {Array|string} path
-   * @param  {Function} updater
-   * @param  {Function} customizer
-   * @return {Object}
-   */
-  // updateWith: (object, path, updater, customizer) => {
-
-  // },
-
-  /**
-   * @param  {Object} object
    * @return {Array}
    */
   values: Object.values,
@@ -2386,5 +2375,4 @@ var sanvvv = {
    */
   flip: func => (...args) => func(...args.reverse()),
 
-  //.
 }
