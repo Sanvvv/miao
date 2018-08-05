@@ -398,6 +398,19 @@ const args = Array.from(arguments);
   }
   ```
 
+33. 模拟 call 和 apply
+
+  ```js
+  var context = context || window;
+  context.fn = this;
+  context.fn()
+  delete context.fn
+  ```
+
+33. 排序 series
+
+  - https://www.cnblogs.com/wangfupeng1988/archive/2011/12/26/2302216.html
+
 34. quickSort 快速排序
 
   ```js
@@ -469,10 +482,6 @@ const args = Array.from(arguments);
   }
   ```
 
-36. 排序的稳定性
-
-  - 
-
 38. dense array && sparse array
 
   - 创建 sparse array：给超出 length 的 index 设置值、设置一个比 array 大的length
@@ -510,6 +519,7 @@ const args = Array.from(arguments);
 
 45. 作用域
 
+  - 规定了如何查找变量，也就是确定当前执行代码对变量的访问权限
   - 词法作用域：函数内部变量的可见性取决于函数在代码当中的位置，函数可以访问到定义这个函数的代码块中的所有变量和函数内部变量
 
 46. 调用栈
@@ -520,7 +530,12 @@ const args = Array.from(arguments);
 
 47. 闭包
 
-  - 包装了一些局部变量的函数，因此不需要担心变量的生命周期问题
+  - MDN：闭包是指那些能够访问自由变量的函数（自由变量是指在函数中使用的，但既不是函数参数也不是函数的局部变量的变量）
+    - 由于函数访问全局变量也相当于在访问自由变量，所以技术角度上可以认为所有函数都是闭包（权威指南就这么说）
+    - 实践角度：即使创建它的上下文已经销毁，它仍然存在；在代码中引用了自由变量
+  <!-- - 由于词法作用域 -->
+  <!-- - 可以访问另一个函数作用域中变量的函数 -->
+  - 即使父级函数的执行上下文已经在调用栈中被弹出了，闭包函数还是可以访问到父级函数的变量对象，是因为内部函数的作用域链中包含父级函数的变量对象
 
 48. 高阶函数
 
@@ -534,7 +549,7 @@ const args = Array.from(arguments);
 
 50. 继承
 
-  - RTextCell.prototype = Object.create(TextCell.prototype)
+  - B.prototype = Object.create(A.prototype)
   - `B.prototype.__proto__ = A.prototype`
   - Object.setPrototypeof(B.prototype, A.prototype)
   - B.prototype = new A()
@@ -544,7 +559,12 @@ const args = Array.from(arguments);
 
 51. 原型
 
+  - prototype
+  - 只有函数有 prototype 属性，该属性指向一个对象，对象具有一个 constructor 属性指向函数本身
+
 52. 原型链
+
+  - js 对象有一个指向原型对象的链，试图访问对象的属性时，如果在对象上找不到就会搜寻该对象的原型（顺着 `__proto__`），直到找到名字匹配的属性为止
 
 53. 无原型对象
 
@@ -620,21 +640,44 @@ const args = Array.from(arguments);
 
   - 对于调用栈中的每个方法调用，都会形成（进入）自己的执行上下文（Execution Context）
 
-58. Execution Context
-
-  - 执行上下文会确定这个函数执行期间用到的诸如 this，变量，对象以及定义的方法等
-
-  - 执行环境：全局代码、函数代码、Eval 代码
+58. 执行上下文 Execution Context
 
   - 执行函数代码之前，会先创建执行上下文
-  - 创建阶段
-    - 创建作用域链 scope chain
-    - JS 解析器扫描一遍代码，创建 variables，functions 和 arguments（三个称之为 variable Object， 变量对象）
-      - 对于声明的函数，会创建对应变量名指向该函数，如果已经存在用新的引用值覆盖
-      - 对于变量，同样会创建对应变量名，但这个时候值还是 undefined
+  - 执行上下文包含：变量对象、作用域链、this
+  - 执行环境：全局代码、函数代码、Eval 代码
+
+  - 函数创建阶段
+    - 会预先创建包含全局变量对象的作用域链，并保存在 [[Scope]] 属性中（这时候还和执行上下文无关）
+
+  - 找到调用函数的代码并在执行代码之前的执行上下文创建阶段
+    - 复制函数中的 [[Scope]] 对象，并在活动对象创建完后将其推入作用域前端
+    - 创建变量对象（包括 arguments、变量、函数）
+      - 创建 arguments，检查上下文，初始化参数名称和值并创建引用的复制（有值）
+        - 一开始 AO 只包含 arguments，之后才加入形参、函数、变量（是这个顺序）
+      - 扫描函数声明，会创建对应变量名指向该函数，如果已经存在用新的引用值覆盖
+      - 扫描变量声明，同样会创建对应变量名，但这个时候值还是 undefined，如果已经存在不会进行任何操作（所以其实也不会声明两次，第二次直接忽略）
     - 决定 this 指向
-  - 执行阶段
+
+  - 执行代码阶段
+    - 执行环境是函数的话，变量对象会变成活动对象
     - 重新扫描一遍代码，执行代码（在这个时候给变量赋值）
+
+  - 执行完毕
+    - 上下文会被销毁，保存在其中的所有变量和函数定义也随之销毁（全局执行环境只有关闭网页才会销毁）
+    
+  ```js
+  // 进入执行上下文时的 AO
+  AO = {
+    arguments: {
+        a: 1,
+        length: 1
+    },
+    a: 1,
+    b: undefined,
+    c: reference to function c(){},
+    d: undefined
+  }
+  ```
 
 58. 变量的生命周期
 
@@ -659,9 +702,27 @@ const args = Array.from(arguments);
 
 59. 作用域链（scope chain）
 
+  - 在创建函数时会创建一个预先包含全局变量对象的作用域链，这个作用域链被保存在函数内部的 [[Scope]] 属性中
+  - 执行函数的时候，会继续补充这个作用域链
+  - 作用域链只引用变量对象（活动对象），从内至外，最外层是全局变量对象，保证对执行上下文有权访问的所有变量和函数的有序访问
+  - 查找变量的时候，会首先从当前执行上下文的变量对象中查找，如果没有找到就会从父级执行上下文的变量对象中查找，一直向上至全局上下文的变量对象。由多个执行上下文的变量对象构成的链表就叫做作用域链
+  - 本来的话，函数执行完毕之后活动对象就会被销毁，但是闭包会让内部函数的作用域链中包含外部函数的活动对象，由于仍存在引用，外部函数执行完毕后它的活动对象也不会被销毁（当然执行环境的其他东西都会被销毁）
+ 
+  - 高程图 7-1
 
+59. [[scope]]
 
-60. Web Worker 提供多线程?
+  - 函数有一个内部属性 [[scope]]，当函数创建的时候就会保存所有父变量对象（非自己部分）到其中
+  - 当执行函数时， [[scope]] 中的对象会参与到作用域的构建（添加到作用域中），并把当前执行环境中的活动对象添加到作用域链前端
+
+59. 活动对象与变量对象
+
+  - 变量对象 Variable Object，在执行上下文中创建（进入阶段），用于存放上下文中定义的形参、变量和函数（这个对象是规范上实现的，不可在 JS 环境中访问到）
+  - 活动对象（激活对象） Activation Object，在执行函数（上下文执行阶段）的时候，使用函数上下文中的活动对象来表示变量对象
+  - 未进入执行阶段之前，变量对象本来是不可访问的，但是进入执行阶段之后，变量对象转变为了活动对象，里面的属性都能被访问了
+  - 变量对象和活动对象其实都是同一个对象, 只是处于执行上下文的不同生命周期
+
+60. Web Worker
 
 61. 垃圾回收
 
@@ -717,6 +778,244 @@ const args = Array.from(arguments);
   ```
 
   - es6 的 class 调用时必须要有 new
+
+66. class
+
+  - constructor
+  - static
+  - super
+
+  ```js
+  class A extends Array {}
+  A.prototype.__proto__ === Array.prototype
+  // 继承之后子类在 constructor 的中需要调用 super()
+  ```
+
+67. try catch error
+
+  - catch 时最好先判断一下 Error 的类型，以免是其他错误被 catch（比如拼写错误）
+
+  ```js
+  function multiply (a, b) {
+    while (true) {
+      try {
+        return primitiveMultiply(a, b)
+      } catch (e) {
+        if (e instanceof xxxxxFailure) {
+          continue
+        } else {
+          throw e
+        }
+      }
+    }
+  }
+  ```
+
+68. WeakMap WeakSet
+
+  - 只能存放对象
+  - 使用 WeakMap 在构造函数里实现私有变量（保存 this 为键，通过 this 获取值）
+    - Map 其实也行，但是 Map 不会回收，会导致内存泄漏（用数组实现的 Map 也是同样会有泄漏问题）
+  - 在 WeakMap 中每个键对自己所引用的对象是 '弱引用' ，如果没有其他引用和该键引用同一个对象，这个对象就会被垃圾回收
+    - 所以它的 key 是非枚举的（没有办法给出所有的 key），另外也没有 size 属性
+
+69. 异步
+
+  - promise
+    - 语法
+      - resolve reject then all race
+      - 如果then有多步骤的操作，那么前面步骤return的值会被当做参数传递给后面步骤的函数
+      - 对于Promise中的异常处理，我们建议用catch方法，而不是then的第二个参数
+
+    - 规范
+      - 状态：pending、fulfilled、rejected，不可逆
+      - Promise 必须实现 then 方法，且返回的也是 Promise
+
+    - promise库：Q
+
+  - Generator
+    - 语法
+      - 需要使用 function* 定义，生成一个 Iterator 对象
+      - 生成的 Iterator 对象不会立即执行，需要用 next() 调用，但是执行完一个 yield 之后又会暂停，并返回  yield 表达式里的结果（到 value 中），最终遇到 return 结束，done 变为 true
+      - next 中的参数是传给指向 '上一个已经执行完了的 yield 语句' 的变量
+      - yield*：后面接一个 Generator
+
+    - 库：配合 co（处理 callback） 实现异步
+    - TODO：实现 thinkify、co
+
+  - async await
+    - 语法
+      - 使用 async function 代替 function*
+      - 使用 await 代替 yield，后面必须跟 Promise 对象（异步）、其他数据类型（同步）
+      - 执行 async function 之后返回的也是 Promise ，并且 return 的值可以被之后的 .then() 接收到
+  
+
+69. thunk
+
+  - 将异步函数需要的其他参数封装，返回一个只需要传入 callback 的异步函数
+  - thunkify
+
+70. 模块
+
+  - 规范
+    - AMD（Asyncchronous Module Definition）
+      - 是 RequireJS 在推广过程中对模块定义的规范化的产出
+      - 异步加载（适合浏览器环境），通过回调，在加载完模块后执行依赖它的语句  
+
+    - CMD（Common Module Definition）
+      - 是 SeaJS 在推广过程中对模块定义的规范化产出
+
+    - CommonJS
+      - 每个模块内部，module变量代表当前模块
+      - module 的 exports 属性是对外的接口，加载某个模块，其实是加载该模块的 module.exports 属性
+      - require：该方法读取一个文件并执行，最后返回文件内部的 exports 对象
+      - 模块可以多次加载，但是只会在第一次加载时运行一次，之后结果就缓存了（即使在其他模块中再次 require 也只会返回第一次加载的缓存）
+      - 所有模块都是 Module 的实例
+      - 如果发生模块的循环加载，即A加载B，B又加载A，则B将加载A的不完整版本（只输出已经执行的部分）
+      - require 的值是值拷贝，影响不到模块内部
+
+    - ES2015 Module
+      - 模块中的代码自动运行在严格模式下，其中的顶级变量不会添加到全局作用域中
+      - import 会在编译期间提升到模块头部
+      - 由于引擎需要静态决定 import 和 export 的内容，两者只能在顶级作用域下使用
+      - import 语句只创建了只读变量（是引用的），但是 import 而来的函数可以修改与其同一个模块中定义的变量
+      - 关于在浏览器中引入：使用 script 标签（type="module"，总是 defer）的 src 属性或者在 script 内联代码中 import
+      - 循环加载：遇到模块加载命令 import 时，不会去执行模块，而是只生成一个引用，等到真的需要用到时，再到模块里面去取值（因为是动态引用，没有缓存值）
+
+      ```js
+      /* 模块语法 */
+      export let name = 'neko'
+
+      export function sum (a, b) {
+        return a + b
+      }
+
+      function multiply (a, b) {
+        return a * b
+      }
+      export { multiply }
+
+      /* 重命名，import 同样可以 */
+      export { sum as add }
+
+      /* 输出默认值，只能给模块设定一个默认值，不必须命名 */
+      export default function (a, b) {
+        return a + b
+      }
+      export default sum
+      export { sum as default }
+
+      /* 类似于 const ，不可再次定义同名变量 */
+      import { identifier1, identifier2 } from './example.js'
+
+      /* 将整个模块引入，所有的输出可以以变量的形式访问 */
+      import * as example from './example.js'
+
+      /* 多次 import 同样的模块，该模块也只会执行一次，第一次 import 之后，其实例化的模块会驻留在内存中并随时可由另一个 import 语句引用 */
+
+      /* 引入默认值，需要注意的是没有使用花括号 */
+      import sum from './example.js'
+
+      /* 同时引入 */
+      import sum, { color } from "./example.js"
+      import { default as sum, color} from "./example.js"
+
+      /* 再输出 */
+      export { sum } from "./example.js"
+
+      /* 全局引入 */
+      /* 一些模块可能并不输出任何内容，相反，他们只是修改全局作用域内的对象（他们是可以访问到全局作用域的） */
+      Array.prototype.pushAll = function (items) {
+        return this.push(...items)
+      }
+      /* 然后引入即可 */
+      import "./example.js"
+
+      ```
+
+  - AMD 和 CMD 的区别
+    - 对于依赖的模块，AMD 是提前执行，CMD 是延迟执行（lazy loading?）
+      - AMD 直接加载完依赖再执行回调，CMD 是在执行需要依赖的代码前再加载这个依赖
+
+  - CommonJS 与 ES2015 Modules 的区别
+    - https://www.zhihu.com/question/56820346
+    - http://es6.ruanyifeng.com/#docs/module-loader
+    - https://github.com/olifer655/commonJS/issues/6
+    - CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用
+    - CommonJS 模块是运行时加载，ES6 模块是编译时（静态编译）输出接口（ES6 入门）
+
+  - 为什么在 webpack 中 import 和 require 都可以使用? 
+    - CommonJS 由 webpack 默认支持，而 import 由 babel 支持
+
+  - 循环依赖
+
+  ```js
+  // a.js
+  console.log('a starting');
+  exports.done = false;
+  const b = require('./b');
+  console.log('in a, b.done =', b.done);
+  exports.done = true;
+  console.log('a done');
+
+  // b.js
+  console.log('b starting');
+  exports.done = false;
+  const a = require('./a');
+  console.log('in b, a.done =', a.done);
+  exports.done = true;
+  console.log('b done');
+
+  // node a.js
+  // 执行结果：
+  // a starting
+  // b starting
+  // in b, a.done = false
+  // b done
+  // in a, b.done = true
+  // a done
+
+  // a.js
+  console.log('a starting')
+  import {foo} from './b';
+  console.log('in b, foo:', foo);
+  export const bar = 2;
+  console.log('a done');
+
+  // b.js
+  console.log('b starting');
+  import {bar} from './a';
+  export const foo = 'foo';
+  console.log('in a, bar:', bar);
+  setTimeout(() => {
+    console.log('in a, setTimeout bar:', bar);
+  })
+  console.log('b done');
+
+  // babel-node a.js
+  // 执行结果：
+  // b starting
+  // in a, bar: undefined
+  // b done
+  // a starting
+  // in b, foo: foo
+  // a done
+  // in a, setTimeout bar: 2
+  ```
+
+71. iterator
+
+  - Iterator对象是一个指针对象，实现类似于单项链表的数据结构，通过next()将指针指向下一个节点
+  - [Symbol.iterator]
+    - 拥有
+      - Array
+      - 类数组对象：arguments、NodeList
+      - Set、Map
+    - 可以生成 Iterator 对象，可以被 for-of 取值
+
+72. Symbol
+
+  - 
 
 # review
 
