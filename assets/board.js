@@ -1,40 +1,133 @@
+var parseJson = string => {
+  let at = 0
+  let ch = string[at]
 
+  return typeParse()
 
-const isUSDFormat = (str) => {
-  return /(^\$[1-9])(\.[0-9]{2}$)/.test(str)
+  function typeParse () {
+    if (ch === 't' || ch === 'f' || ch === 'n') return parseBN()
+    else if (ch === '{') return parseObject()
+    else if (ch === '[') return parseArray()
+    else if (ch === '"') return parseString()
+    else if (isNumber(ch)) return parseNumber()
+    error()
+  }
+
+  function parseObject () {
+    let obj = {}
+    do {
+      let key = typeParse(next())
+      if (!(next() === ':')) error()
+      let value = typeParse(next())
+      obj[key] = value
+    } while (next() === ',')
+    return obj
+  }
+
+  function parseArray () {
+    let arr = []
+    do {
+      arr.push(typeParse(next()))
+    } while (next() === ',')
+    return arr
+  }
+
+  function parseString () {
+    let str = ''
+    while (next() !== '"') {
+      str += ch
+    }
+    return str
+  }
+
+  function parseNumber () {
+    let num = ''
+    while (1) {
+      if (isNumber(ch)) num += ch
+      else error()
+      if (isNextEnd()) return +num
+      else next()
+    }
+  }
+
+  function parseBN () {
+    switch (ch) {
+      case 't':
+        isNext('r')
+        isNext('u')
+        isNext('e')
+        return true
+      case 'f':
+        isNext('a')
+        isNext('l')
+        isNext('s')
+        isNext('e')
+        return false
+      case 'n':
+        isNext('u')
+        isNext('l')
+        isNext('l')
+        return null
+    }
+    error('error in parseBoolean at ' + at)
+  }
+
+  function next () {
+    ch = string[++at]
+    if (ch === ' ') return next()
+    return ch
+  }
+
+  function isNext (expect) {
+    if (next() === expect) return true
+    else error()
+  }
+
+  function isNextEnd () {
+    let c = string[at + 1]
+    return c === undefined || c === ',' || c === '}' || c === ']' || c === ':'
+  }
+
+  function isNumber (c) {
+    return !isNaN(c)
+  }
+
+  function error (message) {
+    if (message) throw new Error(message)
+    else throw new SyntaxError('Unexpected token ' + ch + ' in JSON at position ' + at)
+  }
 }
 
+var json = '12323 123'
+var json1 = '{"a":{"b":[1,2], "c": [1,2,3, [2]]},"b":2}'
+var json2 = '[[1,2], [1,2]]'
 
-console.log(isUSDFormat('$100,000.00'))
+console.log(parseJson(json1))
 
+let tree = createTree()
+// console.log(BSTIterator(tree))
 
-
-
-
-
-var tree = createTree()
-// console.log(invertTree(tree))
-// console.log(findDisappearedNumbers([4,3,2,7,8,2,3,1]))
+// console.log(restoreIpAddresses('25525511135'))
 
 function createTree() {
-  var tree1 = new TreeNode(1)
-  var tree2 = new TreeNode(2)
-  var tree3 = new TreeNode(3)
-  var tree4 = new TreeNode(5)
-  // var tree5 = new TreeLinkNode(4)
-  // var tree6 = new TreeLinkNode(6)
-  // var tree7 = new TreeLinkNode(7)
-  // var tree8 = new TreeNode(7)
-  // var tree9 = new TreeNode(2)
+  var tree1 = new TreeNode(6)
+  var tree2 = new TreeNode(4)
+  var tree3 = new TreeNode(8)
+  var tree4 = new TreeNode(3)
+  var tree5 = new TreeNode(6)
+  var tree6 = new TreeNode(7)
+  var tree7 = new TreeNode(9)
+  var tree8 = new TreeNode(8)
+  var tree9 = new TreeNode(9)
 
   appendLeft(tree1, tree2)
   appendRight(tree1, tree3)
   appendLeft(tree2, tree4)
-  // appendRight(tree2, tree5)
-  // appendLeft(tree3, tree6)
-  // appendRight(tree3, tree7)
+  appendRight(tree2, tree5)
+  appendLeft(tree3, tree6)
+  appendRight(tree3, tree7)
   // appendLeft(tree4, tree8)
-  // appendLeft(tree4, tree9)
+  // appendRight(tree4, tree9)
 
   return tree1
 }
@@ -214,4 +307,26 @@ var list = testLinkedList()
 // };
 
 // // console.log(zigzagLevelOrder([''], 3))
+
+// function isMatch(str, wildcard) {
+//   if (!wildcard && !str) return true
+//   if (wildcard[0] === '?') {
+//     if (!str) return false
+//     return isMatch(str.slice(1), wildcard.slice(1))
+//   } else if (wildcard[0] === '*') {
+//     let i = 0
+//     while (wildcard[i] === '*') i++
+
+//     for(var j = str.length; j >= 0; j--) {
+//       if (isMatch(str.slice(j), wildcard.slice(i))) {
+//         return true
+//       }
+//     }
+//     return false
+//   } else if (wildcard[0] === str[0]) {
+//     return isMatch(str.slice(1), wildcard.slice(1))
+//   } else {
+//     return false
+//   }
+// }
 

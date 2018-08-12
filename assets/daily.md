@@ -4,11 +4,10 @@
 Invert Binary Tree
 Find All Numbers Disappeared in an Array
 
-## others
+## note
 
 weakmap weakset
 event loop
-promise
 
 # 8.4
 ## scriptoj
@@ -16,10 +15,17 @@ promise
 记忆化斐波那契函数（Memoization）
 数组拍平
 
-## others
+## note
 
 generator
 async await
+
+# 8.5
+## note
+
+CMD / AMD
+CommonJS
+ES6 Module
 
 
 

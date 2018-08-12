@@ -1,43 +1,11 @@
-# 数组方法
 
-- 没有注明的是 Array.prototype.function
-- 大部分新提供的数组遍历方法都有包括 index
-
-## filter
-
-`var new_array = arr.filter(callback[, thisArg])`
-
-callback：返回true表示保留该元素（通过测试），false则不保留。
-
-纯函数。
-
-ep: `array.filter(value => value)`
-
-## forEach
-
-```js
-array.forEach(callback(currentValue, index, array){
-    //do something
-}, this)
-```
-
-效果类似 for of，但是它的 callback 有三个参数：currentValue, index, array
-
-## map
-
-使用函数处理一个数组内的项
-
-## indexOf && includes
-
-...
-
+# 判断类型
 ## 判断数组
 
 - Array.isArray() （由 es5 提供）
 - [] instanceof Array （在多 window 的情况下(跨iframe)会出现问题）
 - Object.prototype.toStirng.call([1,2,3]) === '[object Array]' （最佳）
 
-# 判断类型
 ## base
 
 - typeof：只能识别基本类型值（number、string、boolean、undefined），对于复杂类型只能识别 Function
@@ -58,7 +26,7 @@ function type(o){
 - 类数组，除 length 和索引元素之外没有任何 Array 属性，但是可以被转换成一个真正的 Array
 - 对 arguments 使用 slice 会阻止引擎对其优化
 
-```
+```js
 var args = Array.prototype.slice.call(arguments);
 var args = [].slice.call(arguments);
 
@@ -71,6 +39,54 @@ const args = Array.from(arguments);
 [http://deerchao.net/tutorials/regex/regex.htm]
 
 ## 语法
+### 声明
+
+```js
+let reg = /\d{4, 6}/
+
+// 遇到 '\' 需要转义
+let reg = new RegExp('\\d{4, 6}')
+let reg = new RegExp(String.raw `\d{4, 6}`)
+
+// 第二个参数可以覆盖 reg.flags
+new RegExp(/abc/ig, 'i').flags  // 'i'
+```
+
+### 修饰符
+
+- g
+- i
+- u：支持 utf-16
+- y：黏连符，每次匹配必须在当前 index（lastIndex） 的开头
+  - exec，replace?，split?
+- m
+- s：dotAll
+  - . 可以匹配行终止符：换行符、回车符、行分隔符、段分隔符
+
+### 方法
+
+- reg.test：return true of false
+- reg.exec：找到正则匹配到的项以及每个括号匹配到的项，括号如果没匹配到内容会是 - undefined（在这个括号内 {0, n} 时）
+- reg.escape：转义字符串为正则构造函数可用
+
+- str.match：基本类似 exec ，但是在正则后加上 g 可以匹配到所有的项
+- str.split：
+  - 'foo bar'.split(/(.)\1/) 的时候，分组捕获到的内容也会插入到结果中 -> 'f' 'o' ' bar'，这种时候可以选择非捕获分组：/(?:.)\1/
+- str.replace：
+  - 'AB'.replace(/(.)(.)/g, '$2$1($&)')
+  - 还可以是 function
+- str.search
+
+### 属性
+
+- reg.lastIndex
+  - exec 执行一次之后，lastIndex 就会变成匹配到的 index 值
+  - 可以改变 exec 开始的位置（有 g 的时候总是从 0 开始）
+  - test 也会受影响
+- reg.source
+- reg.global
+- reg.flags
+
 ### \b 匹配单词的边界
 
 - `/\bhi\b/`.test('a, hi')
@@ -118,16 +134,18 @@ const args = Array.from(arguments);
 ### 分组/子表达式 (xy) 
 
 - 可以用于重复多个字符
+- 获取：(.)(.)\2\1 （abba）
 
-### 后向引用
+### 非捕获分组
 
-- 用于重复搜索前面某个分组匹配的文本（以小括号分组）
+- `(?:exp)`
+  - exec 的结果中不包含括号中的内容
 
 ### 零宽断言
 
-- `(?=exp)`：匹配exp前面的位置
-- `(?<exp)`：匹配exp后面的位置
+- `(?=exp)`：匹配exp后面的位置
 - `(?!exp)`：匹配后面不是exp的位置
+- `(?<=exp)`：匹配exp前面的位置
 - `(?<!exp)`：匹配前面不是exp的位置
 
 ### 贪婪与懒惰
@@ -143,6 +161,108 @@ const args = Array.from(arguments);
 ### .* 匹配任意数量的不换行字符
 
 - `/\bhi\b.*\bLucy\b/`
+
+## 例子
+
+- [https://alf.nu/RegexGolf#accesstoken=Bf7caGITVXKeGVbsp79l]
+- [^] 表示任意符号（包括换行）
+- ^(?!.*(.)(.)\2\1) 不匹配 abba
+
+```js
+// 判断是否是 4 或 6 位数字
+/^(\d{4}(\d{2})?$)/.test(pin);
+
+// 替换 'dasdwddwadxdhkjw' 为 '############hkjw'
+cc.replace(/.(?!.{0,3}?$)/g, '#')
+cc.replace(/.(?=....)/g, '#')
+
+// 去除一句话末尾的 '!!'
+s.replace(/\b!+/g, '')
+s.replace(/(\w)!+/g, '$1')
+s.split(' ').map(char => char.replace(/!+$/, '')).join(' ')
+
+// 去除 C 旁边的字母（大写的不能去除），和 c
+organism.replace(/[a-z]?C[a-z]?|c/g, '') // 主要是 ? 的用法
+
+// trim
+String.prototype.trim = function(c = ' '){
+  return this.replace(new RegExp(`^${c}+|${c}+$`, 'gi'), '')
+}
+
+// 简单的 markdown to html
+// aaaawawwawwaaaaaaaaooooooeee
+function format(string) {
+  return (/^(\*[^*])|#/.test(string) ? string : `< p>${string}< /p>`)
+  .replace(/\*\*(.+?)\*\*/g, (_, content) => 
+    `< strong>${content}< /strong>`)
+  .replace(/(#{1,6})(.+)/g, (_, hash, content) =>
+    `< h${hash.length}>${content.trim()}< /h${hash.length}>`)
+  .replace(/^\* (.+)/g, (_, content) => 
+    `< li>${content}< /li>`);
+}
+
+// header 的处理很好
+function format(s) {
+  if (s[0] == '#') {
+    let header = Math.min(s.match(/^#+/)[0].length, 6)
+    s = s.slice(header).trim()
+    s = `< h${header}>${s}< /h${header}>`
+  }
+  else if (s.slice(0, 2) == '* ') {
+    s = `< li>${s.slice(2).trim()}< /li>`
+  }
+  else s = `< p>${s.trim()}< /p>`
+  s = s.replace(/\*\*(.+?)\*\*/g, (_, x) => `< strong>${x}< /strong>`)
+  return s
+}
+
+// 不包含某字串
+/^(?!.*bug)/.test('aaabugaaa')
+
+// string incrementer
+function incrementString (string) {
+  return string.replace(/[0-9]+$/, char => {
+    let i = char.length - 1
+    while (char[i]) {
+      if (char[i] !== '9') return char.slice(0, i) + (char[i] - -1) + char.slice(i + 1)
+      else {
+        char = char.slice(0, i) + '0' + char.slice(i + 1)
+        i--
+      }
+    }
+    return '1' + char
+  })
+}
+// kangkangbierenzmxd
+function incrementString(input) {
+  if(isNaN(parseInt(input[input.length - 1]))) return input + '1';
+  return input.replace(/(0*)([0-9]+$)/, function(match, p1, p2) {
+    var up = parseInt(p2) + 1;
+    return up.toString().length > p2.length ? p1.slice(0, -1) + up : p1 + up;
+  });
+}
+// ............
+function incrementString(input) {
+  return input.replace(/([0-8]?)(9*)$/, function(s, d, ns) {
+      return +d + 1 + ns.replace(/9/g, '0');
+    });
+}
+
+// 匹配字符串中不包含 ef 的单词
+/\b(?!\w*ef\w*\b)\w+/
+
+// 1113124 -> 1,113,124
+str.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+// ,(?=([^"]*"[^"]*"[^"]*)*$)
+右边有偶数个"的逗号
+
+//,(?=[^"]*"[^"]*([^"]*"[^"]*"[^"]*)*$)
+匹配右边有奇数个"的逗号
+
+// 能被 4 整除
+/([13579][26]|[2468][048])$/.test(num)
+```
 
 # question
 
@@ -303,6 +423,32 @@ const args = Array.from(arguments);
     - 会抛弃对象的 constructor ，所有的构造函数会指向 Object
     - 对象有循环引用的时候会报错
 
+    ```js
+    /* 需要考虑循环引用的情况 */
+    cloneDeep: value => {
+      if (value === null || typeof value !== 'object') return value
+
+      var ctor = value.constructor
+      var obj
+
+      switch (ctor) {
+        case RegExp:
+          obj = new ctor(value)
+          break
+        default:
+          obj = new ctor()
+      }
+
+      for (var key in value) {
+        if (value.hasOwnProperty(key)) {
+          obj[key] = sanvvv.cloneDeep(value[key])
+        }
+      }
+
+      return obj
+    },
+    ```
+
 27. 冒泡
 
   - if !swaped return
@@ -311,6 +457,7 @@ const args = Array.from(arguments);
 28. 箭头函数
 
   - this：箭头函数根据当前的词法作用域而不是根据this机制顺序来决定this，所以，箭头函数会继承外层函数调用的this绑定，而无论this绑定到什么
+    - setTimeout 等函数内部的 this 会改变（这里是 window ），可以使用箭头函数来保证 this 不变（为外层函数调用时确定的this）
   - arguments：没有
   - prototype：没有（所以不能作为构造函数）
   - 多层嵌套函数，内层使用箭头函数可以保证 this 为外层函数中的 this
@@ -353,6 +500,7 @@ const args = Array.from(arguments);
 33. new、instanceof、Object.create()
 
   - new 做了哪些操作
+    - new`关键字做的主要的事情就是将实例对象的`__proto__`属性指向原型对象的prototype
     - 如果返回值不是对象的话会返回 this
     - 如果不加 new 的话 this 会被绑定到全局对象上
 
@@ -519,7 +667,7 @@ const args = Array.from(arguments);
 
 45. 作用域
 
-  - 规定了如何查找变量，也就是确定当前执行代码对变量的访问权限
+  - 收集并维护由所有声明的标识符（变量）组成的一系列查询，确定当前执行代码对变量的访问权限
   - 词法作用域：函数内部变量的可见性取决于函数在代码当中的位置，函数可以访问到定义这个函数的代码块中的所有变量和函数内部变量
 
 46. 调用栈
@@ -527,15 +675,6 @@ const args = Array.from(arguments);
   - 由于函数需要在执行结束后跳转回调用该函数的代码位置，因此计算机必须记住函数调用的上下文（执行上下文??）
   - 调用栈：存储这个上下文的区域，每当函数调用时，当前的上下文信息会被存储在栈顶，函数返回时系统会删除在栈顶的上下文信息，并使用该信息继续执行程序
   - 递归过多会导致栈存储空间过大（栈空间溢出）
-
-47. 闭包
-
-  - MDN：闭包是指那些能够访问自由变量的函数（自由变量是指在函数中使用的，但既不是函数参数也不是函数的局部变量的变量）
-    - 由于函数访问全局变量也相当于在访问自由变量，所以技术角度上可以认为所有函数都是闭包（权威指南就这么说）
-    - 实践角度：即使创建它的上下文已经销毁，它仍然存在；在代码中引用了自由变量
-  <!-- - 由于词法作用域 -->
-  <!-- - 可以访问另一个函数作用域中变量的函数 -->
-  - 即使父级函数的执行上下文已经在调用栈中被弹出了，闭包函数还是可以访问到父级函数的变量对象，是因为内部函数的作用域链中包含父级函数的变量对象
 
 48. 高阶函数
 
@@ -546,27 +685,6 @@ const args = Array.from(arguments);
   - 所有属性名必须用双引号括起来
   - 只能使用简单的数据表达式，不能填写函数调用、变量以及任何含有实际计算过程的代码
   - 不能有注释
-
-50. 继承
-
-  - B.prototype = Object.create(A.prototype)
-  - `B.prototype.__proto__ = A.prototype`
-  - Object.setPrototypeof(B.prototype, A.prototype)
-  - B.prototype = new A()
-  - 其他可以参见 js语言精粹：继承
-  - es5 的继承
-  - 多级继承
-
-51. 原型
-
-  - prototype
-  - 只有函数有 prototype 属性，该属性指向一个对象，对象具有一个 constructor 属性指向函数本身
-
-52. 原型链
-
-  - js 对象有一个指向原型对象的链，试图访问对象的属性时，如果在对象上找不到就会搜寻该对象的原型（顺着 `__proto__`），直到找到名字匹配的属性为止
-
-53. 无原型对象
 
 54. getter与setter
 
@@ -610,15 +728,6 @@ const args = Array.from(arguments);
     }
     ```
 
-57. js 运行原理? （javascript 是如何工作的）
-
-  - 引擎：
-    - 调用栈（Call Stack）、Memory Heap
-  - web environment：
-    - 运行上下文（Runtime）、事件循环（Event Loop）
-
-  - 引擎负责整个代码的编译以及运行，编译器则负责词法分析、语法分析、代码生成等工作而作用域则如我们熟知的一样，负责维护所有的标识符（变量）
-
 58. js 引擎
 
   - LHS、RHS
@@ -632,18 +741,13 @@ const args = Array.from(arguments);
     - V8 在JavaScript 堆上分配新对象，使用逃逸分析，当 V8 分析出此对象只在函数内部起作用（和函数有相同的生命周期），则 V8 可以把对象分配到栈上，甚至可以把某些变量分配到寄存器中，把对象作为一个简单的局部变量
     - 如果对象逃逸了，则必须在堆上分配
 
-58. Runtime
-
-  - Web APIs：DOM、XHR、setTimeout() & Node APIs
-
 58. Call Stack
 
   - 对于调用栈中的每个方法调用，都会形成（进入）自己的执行上下文（Execution Context）
 
 58. 执行上下文 Execution Context
 
-  - 执行函数代码之前，会先创建执行上下文
-  - 执行上下文包含：变量对象、作用域链、this
+  - 执行函数代码之前，会先创建执行上下文，包含函数执行过程中要用到的：变量对象、作用域链、this
   - 执行环境：全局代码、函数代码、Eval 代码
 
   - 函数创建阶段
@@ -702,6 +806,7 @@ const args = Array.from(arguments);
 
 59. 作用域链（scope chain）
 
+  - 由当前环境与上层环境的一系列变量对象组成，它保证了当前执行环境对符合访问权限的变量和函数的有序访问
   - 在创建函数时会创建一个预先包含全局变量对象的作用域链，这个作用域链被保存在函数内部的 [[Scope]] 属性中
   - 执行函数的时候，会继续补充这个作用域链
   - 作用域链只引用变量对象（活动对象），从内至外，最外层是全局变量对象，保证对执行上下文有权访问的所有变量和函数的有序访问
@@ -746,24 +851,6 @@ const args = Array.from(arguments);
   - 脏检测（Angular）
   - 数据劫持：Object.defineProperty、Proxy
   - 数据模型
-
-63. 严格模式 strict mode
-
-  - 必须要事先声明变量
-  - 直接使用函数调用（不是作为方法）的时候，this 是 undefined （而不是 window）
-  - 禁止给函数提供多个相同的参数
-  - 去除了 with 语句
-  - 会使引起静默失败的赋值语句抛出错误
-  - 禁止八进制数字语法（在 es6 中需要在数字前面加上 0o）
-  - 禁止设置 primitive 值的属性
-  - eval 不再为上层范围引入新变量（eval 不会在当前作用域中声明变量（虽然 eval 能访问到当前作用域），仅为运行的代码创建变量）
-    - eval 具有某种意义上的动态作用域
-    - 将 eval 赋值给其他变量，调用的时候是在全局的作用域中执行（而不是当前）
-  - 禁止删除变量声明 （var x; delete x;）
-  - 在非严格模式中 arguments 和函数参数完全绑定在一起，会一起修改，严格模式下不会（符合对指针的理解）
-  - 不再支持 arguments.callee（指向当前正在进行的函数）和 func.caller
-  - this 不再会被强制转换为对象（包装对象），并且未指定的 this 会变成 undefined
-  - 禁止了不在脚本或者函数层面的函数声明（在条件、循环语句中声明）
 
 64. 如何判断构造函数的调用是否是用 new 调用的
 
@@ -811,15 +898,10 @@ const args = Array.from(arguments);
   }
   ```
 
-68. WeakMap WeakSet
-
-  - 只能存放对象
-  - 使用 WeakMap 在构造函数里实现私有变量（保存 this 为键，通过 this 获取值）
-    - Map 其实也行，但是 Map 不会回收，会导致内存泄漏（用数组实现的 Map 也是同样会有泄漏问题）
-  - 在 WeakMap 中每个键对自己所引用的对象是 '弱引用' ，如果没有其他引用和该键引用同一个对象，这个对象就会被垃圾回收
-    - 所以它的 key 是非枚举的（没有办法给出所有的 key），另外也没有 size 属性
-
 69. 异步
+
+  - Javascript 本身并不是异步的，而 Javascript 程序是异步的，由其运行时环境提供，通过 event loop 实现
+  - 当遇到 IO 调用（或者定时器），就把它丢给运行时环境处理，自身（stack）继续执行后面的代码，当 IO 调用有了结果，会将结果及回调放在一个队列（callback queue）里，Javascript 线程会在合适的时机（执行栈 为空）将回调函数取出（从头部）并执行
 
   - promise
     - 语法
@@ -880,7 +962,7 @@ const args = Array.from(arguments);
       - 由于引擎需要静态决定 import 和 export 的内容，两者只能在顶级作用域下使用
       - import 语句只创建了只读变量（是引用的），但是 import 而来的函数可以修改与其同一个模块中定义的变量
       - 关于在浏览器中引入：使用 script 标签（type="module"，总是 defer）的 src 属性或者在 script 内联代码中 import
-      - 循环加载：遇到模块加载命令 import 时，不会去执行模块，而是只生成一个引用，等到真的需要用到时，再到模块里面去取值（因为是动态引用，没有缓存值）
+      - 循环加载：遇到模块加载命令 import 时（如果不是循环加载的情况就正常执行需要加载的模块），不会去执行模块，而是只生成一个引用，等到真的需要用到时，再到模块里面去取值（因为是动态引用，没有缓存值）
 
       ```js
       /* 模块语法 */
@@ -1016,6 +1098,60 @@ const args = Array.from(arguments);
 72. Symbol
 
   - 
+
+73. Object.assign
+
+  - 用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。它将返回目标对象
+
+73.  构造字面量对象时的展开运算符语法
+
+  - ES2018，类似 Object.assign() 但是不会触发 setters
+
+  ```js
+  b = {
+    ...b,
+    a: 1
+  }
+  ```
+
+74. 回溯
+
+```js
+var items = []
+var sum = ary => ary.reduce((a,b) => a+b)
+
+function targetSum(ary, target, start = 0) {
+  for(var i = start; i<ary.length; i++) {
+    items.push(ary[i])
+    if (sum(items) === target) {
+      console.log(items)
+    } else if (sum(items) < target) {
+      targetSum(ary, target, i + 1)
+    }
+    items.pop()
+  }
+}
+```
+
+75. 编译 compiler
+
+  - 大部分编译器的编译过程都分为三个阶段
+    - 解析：将代码字符串解析成抽象语法树
+    - 变换：对抽象语法树进行变换操作
+    - 再建：根据变换后的抽象语法树再生成代码字符串
+
+76. callee
+
+```js
+var data = [];
+
+for (var i = 0; i < 3; i++) {
+    (data[i] = function () {
+       console.log(arguments.callee.i) 
+    }).i = i;
+}
+```
+
 
 # review
 
