@@ -1,3 +1,18 @@
+# DOM
+## 方法
+
+- Element.normalize：将 text node 合并
+- querySelectorAll
+  - 无法选择伪元素（部分伪类是可以的），因为伪元素对 js 是透明的
+  - 返回静态集合，不会动态更新
+- attribute 和 property 的区别
+- js 动态修改 dom 节点的 css 时，浏览器会等 js 执行完再修改布局（如果期间有 js 代码需要读取布局相关的数据，浏览器也会计算但是还不会修改布局）
+
+# 堆（heap、优先队列）
+## 213
+
+能够以高效的方式维护集合的最大值或者最小值，是一种特殊形式的二叉树（对于最小堆，每个根节点都比左右子树小）
+
 
 # 判断类型
 ## 判断数组
@@ -265,8 +280,6 @@ str.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 ```
 
 # question
-
-1. new Array(arr) 和 Array(arr) 有什么区别?
 
 2. js 怎么比较数组的值是否相等?
 
@@ -827,24 +840,6 @@ str.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   - 未进入执行阶段之前，变量对象本来是不可访问的，但是进入执行阶段之后，变量对象转变为了活动对象，里面的属性都能被访问了
   - 变量对象和活动对象其实都是同一个对象, 只是处于执行上下文的不同生命周期
 
-60. Web Worker
-
-61. 垃圾回收
-
-  - 语言内嵌的 “垃圾回收器” 跟踪内存的分配和使用，以便分配的内存不再使用时自动释放它，但也只能由有限制地解决一般问题
-  - 引用计数：如果没有引用指向该对象（零引用），对象将被垃圾回收机制回收
-    - 对象对原型的引用是隐式的、对属性的引用是显式的
-    - 所以遇到两个对象之间互相引用的情况就无法回收，这样就容易发生内存泄漏
-  - 标记清除：根据对象是否可以获得来决定对象是否不再需要（现代浏览器采用）
-    - 垃圾回收器定期从根（全局对象）开始，找所有从根开始引用的对象，然后找这些对象引用的对象……
-  
-  - 内存泄漏
-    - 未将值设为 null
-    - 循环引用
-    - 无意的全局变量（全局变量是不会被清除的）
-    - 未 clearInterval 或者 clearTimeout
-    - DOM 对象容易和 javascript 之间产生循环引用
-
 62. 双向绑定
 
   - 发布-订阅
@@ -936,154 +931,6 @@ str.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
   - 将异步函数需要的其他参数封装，返回一个只需要传入 callback 的异步函数
   - thunkify
-
-70. 模块
-
-  - 规范
-    - AMD（Asyncchronous Module Definition）
-      - 是 RequireJS 在推广过程中对模块定义的规范化的产出
-      - 异步加载（适合浏览器环境），通过回调，在加载完模块后执行依赖它的语句  
-
-    - CMD（Common Module Definition）
-      - 是 SeaJS 在推广过程中对模块定义的规范化产出
-
-    - CommonJS
-      - 每个模块内部，module变量代表当前模块
-      - module 的 exports 属性是对外的接口，加载某个模块，其实是加载该模块的 module.exports 属性
-      - require：该方法读取一个文件并执行，最后返回文件内部的 exports 对象
-      - 模块可以多次加载，但是只会在第一次加载时运行一次，之后结果就缓存了（即使在其他模块中再次 require 也只会返回第一次加载的缓存）
-      - 所有模块都是 Module 的实例
-      - 如果发生模块的循环加载，即A加载B，B又加载A，则B将加载A的不完整版本（只输出已经执行的部分）
-      - require 的值是值拷贝，影响不到模块内部
-
-    - ES2015 Module
-      - 模块中的代码自动运行在严格模式下，其中的顶级变量不会添加到全局作用域中
-      - import 会在编译期间提升到模块头部
-      - 由于引擎需要静态决定 import 和 export 的内容，两者只能在顶级作用域下使用
-      - import 语句只创建了只读变量（是引用的），但是 import 而来的函数可以修改与其同一个模块中定义的变量
-      - 关于在浏览器中引入：使用 script 标签（type="module"，总是 defer）的 src 属性或者在 script 内联代码中 import
-      - 循环加载：遇到模块加载命令 import 时（如果不是循环加载的情况就正常执行需要加载的模块），不会去执行模块，而是只生成一个引用，等到真的需要用到时，再到模块里面去取值（因为是动态引用，没有缓存值）
-
-      ```js
-      /* 模块语法 */
-      export let name = 'neko'
-
-      export function sum (a, b) {
-        return a + b
-      }
-
-      function multiply (a, b) {
-        return a * b
-      }
-      export { multiply }
-
-      /* 重命名，import 同样可以 */
-      export { sum as add }
-
-      /* 输出默认值，只能给模块设定一个默认值，不必须命名 */
-      export default function (a, b) {
-        return a + b
-      }
-      export default sum
-      export { sum as default }
-
-      /* 类似于 const ，不可再次定义同名变量 */
-      import { identifier1, identifier2 } from './example.js'
-
-      /* 将整个模块引入，所有的输出可以以变量的形式访问 */
-      import * as example from './example.js'
-
-      /* 多次 import 同样的模块，该模块也只会执行一次，第一次 import 之后，其实例化的模块会驻留在内存中并随时可由另一个 import 语句引用 */
-
-      /* 引入默认值，需要注意的是没有使用花括号 */
-      import sum from './example.js'
-
-      /* 同时引入 */
-      import sum, { color } from "./example.js"
-      import { default as sum, color} from "./example.js"
-
-      /* 再输出 */
-      export { sum } from "./example.js"
-
-      /* 全局引入 */
-      /* 一些模块可能并不输出任何内容，相反，他们只是修改全局作用域内的对象（他们是可以访问到全局作用域的） */
-      Array.prototype.pushAll = function (items) {
-        return this.push(...items)
-      }
-      /* 然后引入即可 */
-      import "./example.js"
-
-      ```
-
-  - AMD 和 CMD 的区别
-    - 对于依赖的模块，AMD 是提前执行，CMD 是延迟执行（lazy loading?）
-      - AMD 直接加载完依赖再执行回调，CMD 是在执行需要依赖的代码前再加载这个依赖
-
-  - CommonJS 与 ES2015 Modules 的区别
-    - https://www.zhihu.com/question/56820346
-    - http://es6.ruanyifeng.com/#docs/module-loader
-    - https://github.com/olifer655/commonJS/issues/6
-    - CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用
-    - CommonJS 模块是运行时加载，ES6 模块是编译时（静态编译）输出接口（ES6 入门）
-
-  - 为什么在 webpack 中 import 和 require 都可以使用? 
-    - CommonJS 由 webpack 默认支持，而 import 由 babel 支持
-
-  - 循环依赖
-
-  ```js
-  // a.js
-  console.log('a starting');
-  exports.done = false;
-  const b = require('./b');
-  console.log('in a, b.done =', b.done);
-  exports.done = true;
-  console.log('a done');
-
-  // b.js
-  console.log('b starting');
-  exports.done = false;
-  const a = require('./a');
-  console.log('in b, a.done =', a.done);
-  exports.done = true;
-  console.log('b done');
-
-  // node a.js
-  // 执行结果：
-  // a starting
-  // b starting
-  // in b, a.done = false
-  // b done
-  // in a, b.done = true
-  // a done
-
-  // a.js
-  console.log('a starting')
-  import {foo} from './b';
-  console.log('in b, foo:', foo);
-  export const bar = 2;
-  console.log('a done');
-
-  // b.js
-  console.log('b starting');
-  import {bar} from './a';
-  export const foo = 'foo';
-  console.log('in a, bar:', bar);
-  setTimeout(() => {
-    console.log('in a, setTimeout bar:', bar);
-  })
-  console.log('b done');
-
-  // babel-node a.js
-  // 执行结果：
-  // b starting
-  // in a, bar: undefined
-  // b done
-  // a starting
-  // in b, foo: foo
-  // a done
-  // in a, setTimeout bar: 2
-  ```
 
 71. iterator
 

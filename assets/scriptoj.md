@@ -43,5 +43,25 @@ function *flatten2 (arr) {
 }
 ```
 
+### VNode
 
+```js
+class VNode {
+  constructor (tagName, props, children) {
+    this.tagName = tagName
+    this.props = props
+    this.children = children
+  }
 
+  render() {
+    let node = document.createElement(this.tagName)
+    Object.entries(this.props).forEach(([key, value]) => node.setAttribute(key, value))
+    this.children.forEach(c => node.appendChild(c instanceof VNode ? c.render() : document.createTextNode(c)))
+    return node
+  }
+}
+
+const h = (t, p, c) => {
+  return new VNode(t, p, c)
+}
+```

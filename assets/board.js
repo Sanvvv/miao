@@ -1,108 +1,150 @@
-var parseJson = string => {
-  let at = 0
-  let ch = string[at]
-
-  return typeParse()
-
-  function typeParse () {
-    if (ch === 't' || ch === 'f' || ch === 'n') return parseBN()
-    else if (ch === '{') return parseObject()
-    else if (ch === '[') return parseArray()
-    else if (ch === '"') return parseString()
-    else if (isNumber(ch)) return parseNumber()
-    error()
+class Vue {
+  constructor (options = {}) {
+    this.$options = options
+    let data = this._data = this.$options.data
+    // 给已经传入的 data defineProperty
+    Object.keys(data).forEach(key => this._proxy(key))
+    // 监听 data
+    observe(data)
   }
 
-  function parseObject () {
-    let obj = {}
-    do {
-      let key = typeParse(next())
-      if (!(next() === ':')) error()
-      let value = typeParse(next())
-      obj[key] = value
-    } while (next() === ',')
-    return obj
+  $watch(expOrFn, cb) {
+    new Watcher(this, expOrFn, cb);
   }
 
-  function parseArray () {
-    let arr = []
-    do {
-      arr.push(typeParse(next()))
-    } while (next() === ',')
-    return arr
-  }
-
-  function parseString () {
-    let str = ''
-    while (next() !== '"') {
-      str += ch
-    }
-    return str
-  }
-
-  function parseNumber () {
-    let num = ''
-    while (1) {
-      if (isNumber(ch)) num += ch
-      else error()
-      if (isNextEnd()) return +num
-      else next()
-    }
-  }
-
-  function parseBN () {
-    switch (ch) {
-      case 't':
-        isNext('r')
-        isNext('u')
-        isNext('e')
-        return true
-      case 'f':
-        isNext('a')
-        isNext('l')
-        isNext('s')
-        isNext('e')
-        return false
-      case 'n':
-        isNext('u')
-        isNext('l')
-        isNext('l')
-        return null
-    }
-    error('error in parseBoolean at ' + at)
-  }
-
-  function next () {
-    ch = string[++at]
-    if (ch === ' ') return next()
-    return ch
-  }
-
-  function isNext (expect) {
-    if (next() === expect) return true
-    else error()
-  }
-
-  function isNextEnd () {
-    let c = string[at + 1]
-    return c === undefined || c === ',' || c === '}' || c === ']' || c === ':'
-  }
-
-  function isNumber (c) {
-    return !isNaN(c)
-  }
-
-  function error (message) {
-    if (message) throw new Error(message)
-    else throw new SyntaxError('Unexpected token ' + ch + ' in JSON at position ' + at)
+  _proxy (key) {
+    Object.defineProperty(this, key, {
+      configurable: true,
+      enumerable: true,
+      get: () => {
+        console.log('u get it!')
+        return this._data[key]
+      },
+      set: newValue => this._data[key] = newValue
+    })
   }
 }
 
-var json = '12323 123'
-var json1 = '{"a":{"b":[1,2], "c": [1,2,3, [2]]},"b":2}'
-var json2 = '[[1,2], [1,2]]'
+function observe (value) {
+  if (!value || typeof value !== 'object') {
+    return
+  }
+  return new Observer(value)
+}
 
-console.log(parseJson(json1))
+
+class Observer {
+  constructor (value) {
+    // value === vm.data
+    this.value = value
+    this.walk(value)
+  }
+
+  // 对 vm.data 中的属性进行监听
+  walk (value) {
+    Object.entries(value).forEach(([key, val]) => defineReactive(value, key, val))
+  }
+}
+
+function defineReactive (obj, key, val) {
+  const dep = new Dep()
+  let childOb = observe(val) // 给值也添加监听，其实不用赋值也行吧?
+
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    // data.xx
+    get: () => {
+      if (Dep.target) {
+        dep.depend() 
+      }
+      return val
+    },
+    set: newVal => {
+      if (val === newVal) return
+      val = newVal
+      childOb = observe(val) // 监听新值
+      dep.notify() // 通知订阅者
+    }
+  })
+}
+
+let uid = 0
+
+class Dep {
+  constructor () {
+    // 用于区分 watcher
+    this.id = uid++
+    // 订阅者
+    this.subs = []
+  }
+
+  depend () {
+    // this 为 dep 实例本身
+    Dep.target.addDep(this)
+  }
+
+  addSub (sub) {
+    this.subs.push(sub)
+  }
+
+  notify () {
+    this.subs.forEach(sub => sub.update())
+  }
+}
+
+// 指向当前 watcher
+Dep.target = null
+
+class watcher {
+  constructor (vm, expOrFn, cb) {
+    this.depIds = {} // hash储存订阅者的id,避免重复的订阅者
+    this.vm = vm // 被订阅的数据一定来自于当前Vue实例
+    this.cb = cb // 当数据更新时想要做的事情
+    this.expOrFn = expOrFn // 被订阅的数据
+    this.val = this.get() // 维护更新之前的数据
+  }
+
+  update () {
+    this.run()
+  }
+
+  addDep (dep) {
+    if (!this.depIds.hasOwnProperty(dep.id)) {
+      dep.addSub(this)
+      this.depIds[dep.id] = dep
+    }
+  }
+
+  run () {
+    const val = this.get();
+    console.log(val);
+    if (val !== this.val) {
+      this.val = val;
+      this.cb.call(this.vm, val);
+    }
+  }
+
+  get () {
+    // 当前订阅者(Watcher)读取被订阅数据的最新更新后的值时，通知订阅者管理员收集当前订阅者
+    Dep.target = this;
+    const val = this.vm._data[this.expOrFn];
+    // 置空，用于下一个Watcher使用
+    Dep.target = null;
+    return val;
+  }
+}
+
+// test
+var vm = new Vue({
+  data: {
+    message: '1',
+    ye: 'oo'
+  }
+})
+
+vm.ye = 2
+
 
 let tree = createTree()
 // console.log(BSTIterator(tree))
